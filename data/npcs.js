@@ -15,6 +15,26 @@
       { id: "traveler_efe", name: "Gezgin Efe", type: "traveler", x: 10, y: 30, dir: "right", action: "talk", sprite: "traveler",
         dialogue: ["F5 hızlı kayıt, F9 hızlı yükleme. Eski gezgin numarasıdır, hayat kurtarır."] }
     ],
+    labInterior: [
+      { id: "liora_lab", name: "Profesör Liora", type: "professor", x: 8, y: 6, dir: "down", action: "professor", sprite: "professor",
+        dialogue: ["Laboratuvara hoş geldin! Işık masasındaki üç yoldaştan birini seçebilirsin.", "Başlangıç seçimin yolculuğunun tonunu belirler, ama ekip dengesi sonradan kurulur."] }
+    ],
+    houseBlueInterior: [
+      { id: "ada_home", name: "Ada", type: "child", x: 5, y: 6, dir: "right", action: "talk", sprite: "child",
+        dialogue: ["Evimize hoş geldin! Annem çizmelerimi sakladı ama ben yine de maceraya hazırlanıyorum."] }
+    ],
+    houseRedInterior: [
+      { id: "belgin_home", name: "Muhtar Belgin", type: "elder", x: 6, y: 6, dir: "right", action: "quest_kayipKristal", sprite: "elder",
+        dialogue: ["Kayıp kristal meselesi hâlâ aklımda. Yeşilova Yolu'nu kontrol etmeyi unutma."] }
+    ],
+    clinicInterior: [
+      { id: "healer_clinic", name: "Şifacı Duru", type: "healer", x: 8, y: 6, dir: "down", action: "heal", sprite: "healer",
+        dialogue: ["Revir güvenli. Ekibini iyileştirip seni kapının önündeki güvenli noktaya kaydederim."] }
+    ],
+    shopInterior: [
+      { id: "shopkeeper_inside", name: "Esnaf Kadir", type: "shopkeeper", x: 9, y: 5, dir: "down", action: "shop", sprite: "merchant",
+        dialogue: ["Rafları yeni dizdim. Luma Küresi stokları taze!"] }
+    ],
     yesilova: [
       { id: "trainer_pelin", name: "Yolcu Pelin", type: "trainer", x: 24, y: 18, dir: "left", action: "trainer", sprite: "trainer",
         team: [{ creatureId: "cimsirik", level: 4 }, { creatureId: "minsu", level: 4 }], money: 90,

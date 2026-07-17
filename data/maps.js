@@ -70,6 +70,63 @@
     }
   }
 
+  function makeInterior(id, name, floor, exit) {
+    var m = makeMap(id, name, 18, 12, floor);
+    setRect(m, "ground", 0, 0, 18, 2, "roomWall");
+    setRect(m, "collision", 0, 0, 18, 2, 1);
+    setRect(m, "ground", 7, 10, 4, 2, "rug");
+    setRect(m, "collision", 8, 11, 2, 1, 0);
+    m.exits.push({ x: 8, y: 11, w: 2, h: 1, to: "isikpinar", spawnX: exit.x, spawnY: exit.y });
+    return m;
+  }
+
+  function makeLabInterior() {
+    var m = makeInterior("labInterior", "Liora Laboratuvarı", "labFloor", { x: 25, y: 17 });
+    put(m, 3, 3, "bookshelf", 2, 2);
+    put(m, 12, 3, "bookshelf", 2, 2);
+    put(m, 7, 3, "labDesk", 4, 2);
+    put(m, 4, 7, "table", 2, 2);
+    put(m, 12, 7, "crystalBlue", 1, 1);
+    m.interactions.push({ x: 8, y: 5, type: "lab", text: "Üç yoldaş ışık masasının üzerinde bekliyor." });
+    return m;
+  }
+
+  function makeHouseBlueInterior() {
+    var m = makeInterior("houseBlueInterior", "Ada'nın Evi", "woodFloor", { x: 12, y: 19 });
+    put(m, 3, 3, "bedBlue", 2, 2);
+    put(m, 11, 3, "bookshelf", 2, 2);
+    put(m, 7, 6, "table", 2, 2);
+    m.interactions.push({ x: 7, y: 6, type: "note", text: "Masada çocuk çizimleri var: Parıltı ve kocaman bir Luma Küresi." });
+    return m;
+  }
+
+  function makeHouseRedInterior() {
+    var m = makeInterior("houseRedInterior", "Belgin'in Evi", "woodFloor", { x: 39, y: 20 });
+    put(m, 3, 3, "bedRed", 2, 2);
+    put(m, 11, 3, "bookshelf", 2, 2);
+    put(m, 7, 6, "table", 2, 2);
+    m.interactions.push({ x: 11, y: 3, type: "note", text: "Raflarda köy kristalleriyle ilgili eski kayıtlar duruyor." });
+    return m;
+  }
+
+  function makeClinicInterior() {
+    var m = makeInterior("clinicInterior", "Işıkpınar Reviri", "clinicFloor", { x: 17, y: 31 });
+    put(m, 3, 4, "healingBed", 3, 2);
+    put(m, 11, 4, "healingBed", 3, 2);
+    put(m, 7, 3, "healingCore", 3, 2);
+    m.interactions.push({ x: 8, y: 5, type: "heal", text: "Şifa çekirdeği ekibini yeniler." });
+    return m;
+  }
+
+  function makeShopInterior() {
+    var m = makeInterior("shopInterior", "Kadir'in Dükkanı", "shopFloor", { x: 35, y: 31 });
+    put(m, 4, 3, "shelfGoods", 2, 2);
+    put(m, 12, 3, "shelfGoods", 2, 2);
+    put(m, 6, 6, "shopCounter", 6, 2);
+    m.interactions.push({ x: 9, y: 7, type: "shop", text: "Dükkan tezgahı düzenli ve dolu." });
+    return m;
+  }
+
   function makeVillage() {
     var m = makeMap("isikpinar", "Işıkpınar Köyü", 58, 42, "grass");
     setRect(m, "ground", 5, 18, 49, 4, "road");
@@ -91,10 +148,12 @@
     scatter(m, "flowerPink", 26, { x: 5, y: 22, w: 48, h: 15 });
     scatter(m, "flowerYellow", 20, { x: 5, y: 5, w: 48, h: 12 });
     m.interactions.push(
-      { x: 24, y: 16, type: "lab", text: "Liora'nın laboratuvarı. İçeride başlangıç yoldaşları bekliyor." },
+      { x: 24, y: 16, type: "door", to: "labInterior", spawnX: 8, spawnY: 9, text: "Liora'nın laboratuvarına giriyorsun." },
+      { x: 12, y: 18, type: "door", to: "houseBlueInterior", spawnX: 8, spawnY: 9, text: "Mavi çatılı eve giriyorsun." },
+      { x: 39, y: 19, type: "door", to: "houseRedInterior", spawnX: 8, spawnY: 9, text: "Kırmızı çatılı eve giriyorsun." },
       { x: 20, y: 19, type: "sign", text: "Işıkpınar Köyü - Kristal ışığın sıcak kaldığı yer." },
-      { x: 16, y: 30, type: "heal", text: "Şifa İstasyonu" },
-      { x: 35, y: 30, type: "shop", text: "Kadir'in Dükkanı" },
+      { x: 16, y: 30, type: "door", to: "clinicInterior", spawnX: 8, spawnY: 9, text: "Işıkpınar Reviri'ne giriyorsun." },
+      { x: 35, y: 30, type: "door", to: "shopInterior", spawnX: 8, spawnY: 9, text: "Kadir'in Dükkanı'na giriyorsun." },
       { x: 42, y: 24, type: "well", text: "Kuyunun kristal yuvası boş görünüyor." }
     );
     m.exits.push({ x: 56, y: 18, w: 2, h: 4, to: "yesilova", spawnX: 3, spawnY: 20 });
@@ -247,6 +306,11 @@
 
   window.LUMA_DATA.maps = {
     isikpinar: makeVillage(),
+    labInterior: makeLabInterior(),
+    houseBlueInterior: makeHouseBlueInterior(),
+    houseRedInterior: makeHouseRedInterior(),
+    clinicInterior: makeClinicInterior(),
+    shopInterior: makeShopInterior(),
     yesilova: makeRoad(),
     fisilti: makeForest(),
     kristalGol: makeLake(),

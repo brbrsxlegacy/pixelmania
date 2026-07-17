@@ -21,6 +21,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  align-items: start;
   pointer-events: none;
 }
 
@@ -29,6 +30,7 @@
   border: 2px solid #101521;
   background: rgba(255, 244, 210, .94);
   box-shadow: 0 3px 0 rgba(0, 0, 0, .25);
+  align-self: start;
 }
 
 .combatant.player {
@@ -128,6 +130,34 @@ body.battle-active .touch-controls {
 }
 
 @media (max-width: 620px) {
+  .battle-bars {
+    inset: 5px 5px auto 5px;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  .combatant {
+    padding: 4px;
+    line-height: 1.15;
+  }
+
+  .combatant strong {
+    font-size: 12px;
+  }
+
+  .hp-shell {
+    height: 7px;
+    margin-top: 2px;
+  }
+
+  .xp-shell {
+    height: 4px;
+  }
+
+  .combatant small {
+    font-size: 10px;
+  }
+
   .battle-menu {
     grid-template-columns: repeat(2, 1fr);
     max-height: 44vh;
@@ -135,6 +165,6 @@ body.battle-active .touch-controls {
   }
 
   .combatant.player {
-    margin-top: 82px;
+    margin-top: 36px;
   }
 }

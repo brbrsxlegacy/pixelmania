@@ -38,6 +38,7 @@
         <button data-menu-action="new">Yeni Oyun</button>
         <button data-menu-action="continue">Devam Et</button>
         <button data-menu-action="slots">Kayıt Seç</button>
+        <button data-menu-action="multiplayer">Çok Oyunculu</button>
         <button data-menu-action="settings">Ayarlar</button>
         <button data-menu-action="controls">Kontroller</button>
         <button data-menu-action="about">Hakkında</button>
@@ -104,11 +105,8 @@
     </section>
 
     <section id="touchControls" class="touch-controls" aria-label="Dokunmatik kontroller">
-      <div class="touch-dpad">
-        <button data-control="up" aria-label="Yukarı">▲</button>
-        <button data-control="left" aria-label="Sol">◀</button>
-        <button data-control="right" aria-label="Sağ">▶</button>
-        <button data-control="down" aria-label="Aşağı">▼</button>
+      <div class="touch-stick" id="touchStick" aria-label="Hareket joystiği">
+        <span class="touch-knob" id="touchKnob"></span>
       </div>
       <div class="touch-actions">
         <button data-control="run">Koş</button>
@@ -144,6 +142,7 @@
   <script src="js/capture.js"></script>
   <script src="js/battle.js"></script>
   <script src="js/shop.js"></script>
+  <script src="js/multiplayer.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/game.js"></script>
   <script src="js/main.js"></script>

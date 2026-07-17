@@ -8,6 +8,12 @@
     return (h ? h + "s " : "") + m + "d";
   }
 
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[ch];
+    });
+  }
+
   L.UiController = function (game) {
     this.game = game;
     this.mainMenu = document.getElementById("mainMenu");
@@ -36,6 +42,7 @@
       if (action === "new") self.game.newGame();
       if (action === "continue") self.game.continueLatest();
       if (action === "slots") self.showSlots("load", "menu");
+      if (action === "multiplayer") self.showMultiplayer("menu");
       if (action === "settings") self.showSettings("menu");
       if (action === "controls") self.showControls("menu");
       if (action === "about") self.showAbout("menu");
@@ -121,6 +128,7 @@
       "<button class='panel-row' data-pause='bag'>Çanta</button>" +
       "<button class='panel-row' data-pause='quests'>Görevler</button>" +
       "<button class='panel-row' data-pause='map'>Harita</button>" +
+      "<button class='panel-row' data-pause='multiplayer'>Çok Oyunculu</button>" +
       "<button class='panel-row' data-pause='settings'>Ayarlar</button>" +
       "<button class='panel-row' data-pause='save'>Kaydet</button>" +
       "<button class='panel-row danger' data-pause='main'>Ana Menü</button>" +
@@ -232,6 +240,30 @@
     this.showPanel("Harita", html, "map", "world");
   };
 
+  L.UiController.prototype.showMultiplayer = function (returnMode) {
+    var mp = this.game.multiplayer;
+    var hasGame = !!this.game.state;
+    var html = "";
+    if (!hasGame) {
+      html += "<div class='panel-row'><strong>Önce oyuna gir</strong><br><small>Oda kurmak veya katılmak için Yeni Oyun başlat ya da bir kayıt yükle.</small></div>";
+      html += "<button data-mp-new='1'>Yeni Oyun Başlat</button>";
+      html += "<button data-mp-slots='1'>Kayıt Seç</button>";
+      this.showPanel("Çok Oyunculu", html, "multiplayer", returnMode || "menu");
+      return;
+    }
+    if (mp && mp.roomCode) {
+      html += "<div class='panel-row'><strong>Oda: " + mp.roomCode + "</strong><br><small>Bu kodu arkadaşına ver. Aynı haritadaysanız birbirinizi görebilirsiniz.</small></div>";
+      html += "<div class='panel-row'><strong>Adın:</strong> " + escapeHtml(mp.playerName) + "<br><strong>Bağlı oyuncu:</strong> " + (Object.keys(mp.remotePlayers).length + 1) + "</div>";
+      html += "<button data-mp-leave='1' class='danger'>Odadan Çık</button>";
+    } else {
+      html += "<div class='panel-row'><label>Oyuncu adı<br><input data-mp-name maxlength='16' value='" + escapeHtml(mp ? mp.playerName : "Oyuncu") + "'></label></div>";
+      html += "<div class='panel-grid'><button class='primary' data-mp-create='1'>Oda Kur</button></div>";
+      html += "<div class='panel-row'><label>Oda kodu<br><input data-mp-code maxlength='8' placeholder='ABCDE'></label><br><button data-mp-join='1'>Odaya Katıl</button></div>";
+      html += "<div class='panel-row'><small>Firebase bağlantısı için internet gerekir. Veritabanı kuralları izin vermiyorsa hata mesajı gösterilir.</small></div>";
+    }
+    this.showPanel("Çok Oyunculu", html, "multiplayer", returnMode || "world");
+  };
+
   L.UiController.prototype.showSettings = function (returnMode) {
     var s = this.game.state ? this.game.state.settings : L.Save.loadSettings();
     var row = function (label, key, type) {
@@ -248,7 +280,7 @@
 
   L.UiController.prototype.showControls = function (returnMode) {
     var html = "<div class='panel-row'><strong>Masaüstü</strong><br>WASD / Oklar: Hareket<br>Sol Shift: Koş<br>E / Enter: Etkileşim<br>Escape: Menü<br>Q: Hızlı eşya<br>F5: Hızlı kayıt<br>F9: Hızlı yükleme</div>" +
-      "<div class='panel-row'><strong>Mobil</strong><br>Yön pedi hareket, A etkileşim, Koş koşma, Q hızlı eşya, Menü duraklatma içindir.</div>";
+      "<div class='panel-row'><strong>Mobil</strong><br>Joystick hareket, A etkileşim, Koş koşma, Q hızlı eşya, Menü duraklatma içindir.</div>";
     this.showPanel("Kontroller", html, "controls", returnMode || "world");
   };
 
@@ -282,12 +314,37 @@
       if (pause === "bag") this.showInventory();
       if (pause === "quests") this.showQuests();
       if (pause === "map") this.showMap();
+      if (pause === "multiplayer") this.showMultiplayer("world");
       if (pause === "settings") this.showSettings("world");
       if (pause === "save") this.showSlots("save", "world");
       if (pause === "main" && confirm("Ana menüye dönmek istiyor musun? Kaydedilmemiş ilerleme kaybolabilir.")) {
         this.closePanel();
         this.showMain();
       }
+      return;
+    }
+    if (button.hasAttribute("data-mp-new")) {
+      this.closePanel();
+      this.game.newGame();
+      return;
+    }
+    if (button.hasAttribute("data-mp-slots")) {
+      this.showSlots("load", "menu");
+      return;
+    }
+    if (button.hasAttribute("data-mp-create")) {
+      this.startMultiplayerCreate();
+      return;
+    }
+    if (button.hasAttribute("data-mp-join")) {
+      this.startMultiplayerJoin();
+      return;
+    }
+    if (button.hasAttribute("data-mp-leave")) {
+      this.game.multiplayer.leaveRoom().then(function () {
+        L.UI.notify("Odadan çıkıldı.");
+        L.UI.showMultiplayer("world");
+      });
       return;
     }
     var active = button.getAttribute("data-team-active");
@@ -394,5 +451,34 @@
     L.Save.saveSettings(settings);
     L.Audio.applySettings(settings);
     document.body.classList.toggle("touch-enabled", !!settings.touchControls);
+  };
+
+  L.UiController.prototype.multiplayerNameValue = function () {
+    var input = this.panelContent.querySelector("[data-mp-name]");
+    return input ? input.value.trim() : "Oyuncu";
+  };
+
+  L.UiController.prototype.startMultiplayerCreate = function () {
+    var self = this;
+    this.notify("Oda kuruluyor...");
+    this.game.multiplayer.createRoom(this.multiplayerNameValue()).then(function (code) {
+      self.notify("Oda kuruldu: " + code);
+      self.showMultiplayer("world");
+    }).catch(function (err) {
+      self.notify("Oda kurulamadı: " + err.message);
+    });
+  };
+
+  L.UiController.prototype.startMultiplayerJoin = function () {
+    var self = this;
+    var codeInput = this.panelContent.querySelector("[data-mp-code]");
+    var code = codeInput ? codeInput.value.trim() : "";
+    this.notify("Odaya bağlanılıyor...");
+    this.game.multiplayer.joinRoom(code, this.multiplayerNameValue()).then(function (roomCode) {
+      self.notify("Odaya katıldın: " + roomCode);
+      self.showMultiplayer("world");
+    }).catch(function (err) {
+      self.notify("Odaya katılamadın: " + err.message);
+    });
   };
 })();

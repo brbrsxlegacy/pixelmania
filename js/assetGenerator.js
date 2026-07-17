@@ -81,6 +81,30 @@
         case "caveFloor":
           shadeTile(ctx, x, y, "#555b66", "#444957", time);
           break;
+        case "woodFloor":
+          rect(ctx, x, y, TILE, TILE, "#b77a45");
+          rect(ctx, x, y + 7, TILE, 1, "#8a5532");
+          rect(ctx, x + 7, y, 1, TILE, "#c99055");
+          break;
+        case "labFloor":
+          shadeTile(ctx, x, y, "#d9e7d5", "#b8cfbf", time);
+          break;
+        case "clinicFloor":
+          shadeTile(ctx, x, y, "#f2e1c5", "#e7b9b1", time);
+          break;
+        case "shopFloor":
+          shadeTile(ctx, x, y, "#d9ad63", "#ba7e3e", time);
+          break;
+        case "roomWall":
+          rect(ctx, x, y, TILE, TILE, "#6f86a8");
+          rect(ctx, x, y + 10, TILE, 6, "#4e5d7c");
+          rect(ctx, x + 1, y + 1, 14, 1, "#9db6cf");
+          break;
+        case "rug":
+          rect(ctx, x, y, TILE, TILE, "#9f3d4b");
+          rect(ctx, x + 2, y + 2, 12, 12, "#d2a05d");
+          rect(ctx, x + 5, y + 5, 6, 6, "#fff4d2");
+          break;
         default:
           shadeTile(ctx, x, y, "#70c461", "#5dab54", time);
       }
@@ -186,13 +210,72 @@
           rect(ctx, x + 2, y + 8, 12, 2, "#f2b94b");
           rect(ctx, x + 7, y + 9, 2, 3, "#172033");
           break;
+        case "bookshelf":
+          rect(ctx, x + 1, y + 1, 30, 30, "#172033");
+          rect(ctx, x + 3, y + 3, 26, 26, "#7d4f32");
+          rect(ctx, x + 5, y + 7, 22, 3, "#f2b94b");
+          rect(ctx, x + 5, y + 14, 22, 3, "#6aa9c8");
+          rect(ctx, x + 5, y + 21, 22, 3, "#d9514e");
+          break;
+        case "table":
+          rect(ctx, x + 1, y + 8, 30, 16, "#172033");
+          rect(ctx, x + 3, y + 6, 26, 16, "#a86f42");
+          rect(ctx, x + 6, y + 9, 20, 3, "#d2a05d");
+          rect(ctx, x + 5, y + 22, 4, 9, "#744428");
+          rect(ctx, x + 23, y + 22, 4, 9, "#744428");
+          break;
+        case "labDesk":
+          rect(ctx, x + 1, y + 9, 62, 22, "#172033");
+          rect(ctx, x + 3, y + 7, 58, 22, "#dbe8d2");
+          rect(ctx, x + 8, y + 3, 10, 9, "#54b86b");
+          rect(ctx, x + 27, y + 2, 10, 10, "#e46d45");
+          rect(ctx, x + 45, y + 3, 10, 9, "#4aa8d8");
+          drawTinySpark(ctx, x + 32, y + 1, "#fff4d2", time);
+          break;
+        case "bedBlue":
+        case "bedRed":
+          var blanket = code === "bedBlue" ? "#4f76b9" : "#c65642";
+          rect(ctx, x + 1, y + 2, 30, 28, "#172033");
+          rect(ctx, x + 3, y + 4, 26, 24, "#fff4d2");
+          rect(ctx, x + 3, y + 13, 26, 15, blanket);
+          rect(ctx, x + 6, y + 6, 10, 6, "#f8e3be");
+          break;
+        case "healingBed":
+          rect(ctx, x + 1, y + 4, 46, 24, "#172033");
+          rect(ctx, x + 3, y + 6, 42, 20, "#fff4d2");
+          rect(ctx, x + 5, y + 16, 38, 8, "#e46d45");
+          rect(ctx, x + 22, y + 9, 4, 10, "#e46d45");
+          rect(ctx, x + 19, y + 12, 10, 4, "#e46d45");
+          break;
+        case "healingCore":
+          rect(ctx, x + 5, y + 8, 38, 23, "#172033");
+          rect(ctx, x + 7, y + 10, 34, 19, "#dbe8d2");
+          rect(ctx, x + 18, y + 2, 12, 14, "#93d4e8");
+          drawTinySpark(ctx, x + 34, y + 4, "#fff4d2", time);
+          break;
+        case "shopCounter":
+          rect(ctx, x + 1, y + 8, 94, 22, "#172033");
+          rect(ctx, x + 3, y + 6, 90, 22, "#9a663b");
+          rect(ctx, x + 8, y + 10, 26, 7, "#f2b94b");
+          rect(ctx, x + 55, y + 10, 26, 7, "#54b86b");
+          break;
+        case "shelfGoods":
+          rect(ctx, x + 1, y + 2, 30, 28, "#172033");
+          rect(ctx, x + 3, y + 4, 26, 24, "#8b5a37");
+          rect(ctx, x + 6, y + 8, 5, 6, "#4aa8d8");
+          rect(ctx, x + 15, y + 8, 5, 6, "#f2b94b");
+          rect(ctx, x + 23, y + 8, 4, 6, "#e46d45");
+          rect(ctx, x + 6, y + 19, 19, 3, "#fff4d2");
+          break;
       }
     },
 
     objectDepth: function (code, tileX, tileY) {
       var heights = {
         tree: 36, pine: 36, lab: 75, houseBlue: 64, houseRed: 64, shop: 64,
-        healingStation: 50, caveMouth: 48, dock: 16
+        healingStation: 50, caveMouth: 48, dock: 16, bookshelf: 32, table: 32,
+        labDesk: 32, bedBlue: 32, bedRed: 32, healingBed: 32, healingCore: 32,
+        shopCounter: 32, shelfGoods: 32
       };
       return tileY * TILE + (heights[code] || 16);
     },
@@ -211,6 +294,24 @@
       rect(ctx, x + 9, y + 15, 3, 4 + (legA ? 0 : 2), "#172033");
       if (dir === "left") rect(ctx, x + 3, y + 6 + bob, 2, 5, "#f0c08f");
       if (dir === "right") rect(ctx, x + 11, y + 6 + bob, 2, 5, "#f0c08f");
+    },
+
+    drawRemotePlayer: function (ctx, remote, x, y, time) {
+      var bob = Math.sin((time || 0) * 3 + remote.x) > .5 ? 1 : 0;
+      rect(ctx, x + 2, y + 16, 12, 4, "rgba(12, 21, 31, .32)");
+      rect(ctx, x + 3, y + 3 + bob, 10, 13, "#172033");
+      rect(ctx, x + 4, y + 4 + bob, 8, 11, "#7a63d8");
+      rect(ctx, x + 5, y + bob, 6, 6, "#172033");
+      rect(ctx, x + 6, y + 1 + bob, 4, 4, "#f0c08f");
+      rect(ctx, x + 3, y + bob, 10, 3, "#54b86b");
+      rect(ctx, x + 4, y + 15, 3, 4, "#172033");
+      rect(ctx, x + 9, y + 15, 3, 4, "#172033");
+      var label = String(remote.name || "Oyuncu").slice(0, 12);
+      ctx.font = "7px monospace";
+      var width = Math.max(22, ctx.measureText(label).width + 6);
+      rect(ctx, x + 7 - width / 2, y - 9, width, 8, "rgba(23, 32, 51, .78)");
+      ctx.fillStyle = "#fff4d2";
+      ctx.fillText(label, Math.round(x + 10 - width / 2), y - 3);
     },
 
     drawNpc: function (ctx, npc, x, y, time) {

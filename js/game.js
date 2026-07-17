@@ -42,6 +42,7 @@
     this.ui = new L.UiController(this);
     this.dialogue = new L.Dialogue(this);
     this.battle = new L.Battle(this);
+    this.multiplayer = new L.Multiplayer(this);
     this.encounterCooldown = 0;
     this.transitionCooldown = 0;
     this.autosaveTimer = 0;
@@ -187,11 +188,32 @@
     }, 520);
   };
 
+  L.Game.prototype.findSafeCheckpoint = function (mapId, tileX, tileY) {
+    var map = this.mapSystem.get(mapId);
+    if (!map) return { mapId: "isikpinar", x: 25, y: 30 };
+    for (var radius = 0; radius <= 6; radius += 1) {
+      for (var yy = tileY - radius; yy <= tileY + radius; yy += 1) {
+        for (var xx = tileX - radius; xx <= tileX + radius; xx += 1) {
+          if (xx < 1 || yy < 1 || xx >= map.w - 1 || yy >= map.h - 1) continue;
+          if (!map.collision[yy * map.w + xx]) return { mapId: mapId, x: xx, y: yy };
+        }
+      }
+    }
+    return { mapId: mapId, x: 1, y: 1 };
+  };
+
+  L.Game.prototype.healingCheckpoint = function () {
+    return this.findSafeCheckpoint("isikpinar", 17, 31);
+  };
+
   L.Game.prototype.returnToCheckpoint = function () {
     var cp = this.state.checkpoint || { mapId: "isikpinar", x: 25, y: 30 };
-    this.loadMap(cp.mapId);
-    this.player.setTile(cp.x, cp.y);
+    var safe = this.findSafeCheckpoint(cp.mapId, cp.x, cp.y);
+    this.loadMap(safe.mapId);
+    this.player.setTile(safe.x, safe.y);
+    this.player.dir = "down";
     this.camera.follow(this.player, this.map, 1);
+    this.syncState();
     this.autosaveSoon();
   };
 
@@ -303,7 +325,7 @@
       document.getElementById("fadeLayer").classList.add("active");
       setTimeout(function () {
         L.Creatures.healTeam(self.state.team);
-        self.state.checkpoint = { mapId: self.map.id, x: Math.floor(self.player.x / 16), y: Math.floor(self.player.y / 16) };
+        self.state.checkpoint = self.healingCheckpoint();
         self.autosaveSoon();
         if (L.Audio) L.Audio.play("heal");
         self.ui.notify("Ekip tamamen iyileşti.");
@@ -335,6 +357,10 @@
     var interaction = this.mapSystem.interactionAt(this.map, tile.x, tile.y);
     if (!interaction) return;
     var self = this;
+    if (interaction.type === "door") {
+      this.changeMap({ to: interaction.to, spawnX: interaction.spawnX, spawnY: interaction.spawnY });
+      return;
+    }
     if (interaction.type === "lab") {
       if (!this.state.story.starterChosen) this.dialogue.show("Laboratuvar", [interaction.text, "Üç yoldaş ışık masasında seni bekliyor."], function () { self.ui.openStarter(); });
       else this.dialogue.show("Laboratuvar", ["Liora'nın notları masada. Farklı elementleri dengelemek ekibi güçlendirir."]);
@@ -344,6 +370,10 @@
     if (interaction.type === "shop") return L.Shop.open(this);
     if (interaction.type === "itemChest") {
       this.collectItem({ id: "chest_" + interaction.itemId, itemId: interaction.itemId, qty: interaction.qty || 1, questObjective: interaction.objective });
+      return;
+    }
+    if (interaction.type === "note") {
+      this.dialogue.show("Not", [interaction.text]);
       return;
     }
     this.dialogue.show(interaction.type === "sign" ? "Tabela" : "Bilgi", [interaction.text]);
@@ -394,6 +424,7 @@
     if (this.mode === "dialogue") this.dialogue.update(dt);
     if (this.mode === "battle") this.battle.update(dt);
     if (!this.state) return;
+    this.multiplayer.update(dt);
     this.state.playTime += this.mode === "world" ? dt : 0;
     this.transitionCooldown = Math.max(0, this.transitionCooldown - dt);
     this.encounterCooldown = Math.max(0, this.encounterCooldown - dt);

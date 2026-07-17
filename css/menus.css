@@ -152,6 +152,16 @@
   padding: 10px;
 }
 
+.panel-content input {
+  width: 100%;
+  min-height: 34px;
+  margin-top: 5px;
+  padding: 6px 8px;
+  border: 2px solid #101521;
+  background: #fff8df;
+  color: #172033;
+}
+
 .panel-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));

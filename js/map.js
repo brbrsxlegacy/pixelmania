@@ -49,6 +49,11 @@
     game.npcs.current.forEach(function (npc) {
       drawables.push({ type: "npc", npc: npc, x: npc.x, y: npc.y, depth: npc.y * TILE + 18 });
     });
+    if (game.multiplayer) {
+      game.multiplayer.sameMapPlayers(map.id).forEach(function (remote) {
+        drawables.push({ type: "remote", remote: remote, depth: remote.y + 20 });
+      });
+    }
     drawables.push({ type: "player", depth: game.player.y + game.player.h });
 
     drawables.sort(function (a, b) { return a.depth - b.depth; });
@@ -57,6 +62,7 @@
       if (d.type === "decor") L.Asset.drawObject(ctx, d.code, d.x * TILE - camera.x, d.y * TILE - camera.y, time);
       if (d.type === "item") L.Asset.drawObject(ctx, "chest", d.item.x * TILE - camera.x, d.item.y * TILE - camera.y, time);
       if (d.type === "npc") L.Asset.drawNpc(ctx, d.npc, d.npc.x * TILE + 1 - camera.x, d.npc.y * TILE - 2 - camera.y, time);
+      if (d.type === "remote") L.Asset.drawRemotePlayer(ctx, d.remote, Math.round(d.remote.x - camera.x), Math.round(d.remote.y - camera.y), time);
       if (d.type === "player") game.player.draw(ctx, camera, time);
     });
 
@@ -78,8 +84,8 @@
     for (var i = 0; i < map.interactions.length; i += 1) {
       var it = map.interactions[i];
       if (it.x === tx && it.y === ty) return it;
-      var radius = it.type === "lab" ? 4 : 1;
-      if (Math.abs(it.x - tx) <= radius && Math.abs(it.y - ty) <= radius && ["heal", "shop", "lab", "cave", "well"].indexOf(it.type) >= 0) return it;
+      var radius = it.type === "lab" ? 4 : (it.type === "door" ? 2 : 1);
+      if (Math.abs(it.x - tx) <= radius && Math.abs(it.y - ty) <= radius && ["heal", "shop", "lab", "cave", "well", "door"].indexOf(it.type) >= 0) return it;
     }
     return null;
   };
