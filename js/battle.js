@@ -68,6 +68,7 @@
   L.Battle.prototype.startCommon = function (message) {
     this.active = true;
     this.busy = false;
+    document.body.classList.add("battle-active");
     this.screen.classList.remove("hidden");
     this.game.mode = "battle";
     this.setMessage(message);
@@ -80,6 +81,7 @@
   L.Battle.prototype.end = function () {
     this.active = false;
     this.busy = false;
+    document.body.classList.remove("battle-active");
     this.screen.classList.add("hidden");
     this.game.mode = "world";
     this.game.encounterCooldown = 4;
