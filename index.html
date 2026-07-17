@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172033">
+  <title>Işık Muhafızları: Luma Yolu</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/menus.css">
+  <link rel="stylesheet" href="css/battle.css">
+</head>
+<body>
+  <main id="gameShell" class="game-shell">
+    <div id="screenFrame" class="screen-frame">
+      <canvas id="gameCanvas" width="480" height="270" aria-label="Işık Muhafızları oyun alanı"></canvas>
+      <div id="fadeLayer" class="fade-layer"></div>
+      <div id="worldHud" class="world-hud hidden">
+        <span id="hudMap">Işıkpınar Köyü</span>
+        <span id="hudQuest">Görev yok</span>
+        <span id="hudMoney">0 Luma</span>
+        <span id="hudFps" class="hidden">60 FPS</span>
+      </div>
+      <div id="notificationStack" class="notification-stack" aria-live="polite"></div>
+    </div>
+
+    <section id="mainMenu" class="main-menu overlay-screen">
+      <div class="menu-sky">
+        <span class="cloud cloud-a"></span>
+        <span class="cloud cloud-b"></span>
+        <span class="cloud cloud-c"></span>
+      </div>
+      <div class="title-block">
+        <p class="eyebrow">Kristaller ışıldıyor</p>
+        <h1>Işık Muhafızları</h1>
+        <p class="subtitle">Luma Yolu</p>
+      </div>
+      <nav class="menu-stack" aria-label="Ana menü">
+        <button data-menu-action="new">Yeni Oyun</button>
+        <button data-menu-action="continue">Devam Et</button>
+        <button data-menu-action="slots">Kayıt Seç</button>
+        <button data-menu-action="settings">Ayarlar</button>
+        <button data-menu-action="controls">Kontroller</button>
+        <button data-menu-action="about">Hakkında</button>
+      </nav>
+      <p class="menu-footer">Tamamen özgün yaratıklar, çevrimdışı oynanış, otomatik kayıt.</p>
+    </section>
+
+    <section id="dialogueBox" class="dialogue-box hidden" aria-live="polite">
+      <div class="dialogue-name" id="dialogueName">Liora</div>
+      <p id="dialogueText"></p>
+      <div id="dialogueChoices" class="dialogue-choices"></div>
+      <button id="dialogueNext" class="dialogue-next" aria-label="Devam et">▼</button>
+    </section>
+
+    <section id="starterScreen" class="starter-screen overlay-screen hidden">
+      <div class="starter-card">
+        <div class="starter-art-wrap">
+          <canvas id="starterCanvas" width="160" height="120"></canvas>
+        </div>
+        <div class="starter-info">
+          <p class="eyebrow">İlk yol arkadaşını seç</p>
+          <h2 id="starterName">Filizik</h2>
+          <p id="starterType" class="type-pill">Yaprak</p>
+          <p id="starterDesc"></p>
+          <div id="starterStats" class="stat-grid"></div>
+          <div id="starterAbilities" class="ability-preview"></div>
+        </div>
+        <div class="starter-actions">
+          <button data-starter-action="prev">Önceki</button>
+          <button data-starter-action="select" class="primary">Seç</button>
+          <button data-starter-action="next">Sonraki</button>
+          <button data-starter-action="back" class="quiet">Geri</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="battleScreen" class="battle-screen overlay-screen hidden">
+      <canvas id="battleCanvas" width="480" height="170"></canvas>
+      <div class="battle-bars">
+        <div class="combatant enemy">
+          <div><strong id="enemyName">Yaratık</strong> <span id="enemyLevel">Sv. 1</span></div>
+          <div class="hp-shell"><span id="enemyHpBar"></span></div>
+          <small id="enemyHpText"></small>
+        </div>
+        <div class="combatant player">
+          <div><strong id="playerCreatureName">Yaratık</strong> <span id="playerLevel">Sv. 1</span></div>
+          <div class="hp-shell"><span id="playerHpBar"></span></div>
+          <small id="playerHpText"></small>
+          <div class="xp-shell"><span id="playerXpBar"></span></div>
+        </div>
+      </div>
+      <div class="battle-message" id="battleMessage">Ne yapacaksın?</div>
+      <div class="battle-menu" id="battleMenu"></div>
+    </section>
+
+    <section id="panelScreen" class="panel-screen overlay-screen hidden">
+      <div class="panel-window">
+        <header>
+          <h2 id="panelTitle">Menü</h2>
+          <button id="panelClose" aria-label="Kapat">×</button>
+        </header>
+        <div id="panelContent" class="panel-content"></div>
+      </div>
+    </section>
+
+    <section id="touchControls" class="touch-controls" aria-label="Dokunmatik kontroller">
+      <div class="touch-dpad">
+        <button data-control="up" aria-label="Yukarı">▲</button>
+        <button data-control="left" aria-label="Sol">◀</button>
+        <button data-control="right" aria-label="Sağ">▶</button>
+        <button data-control="down" aria-label="Aşağı">▼</button>
+      </div>
+      <div class="touch-actions">
+        <button data-control="run">Koş</button>
+        <button data-control="action" class="touch-main">A</button>
+        <button data-control="quick">Q</button>
+        <button data-control="menu">Menü</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/abilities.js"></script>
+  <script src="data/creatures.js"></script>
+  <script src="data/items.js"></script>
+  <script src="data/quests.js"></script>
+  <script src="data/npcs.js"></script>
+  <script src="data/maps.js"></script>
+
+  <script src="js/audio.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/abilities.js"></script>
+  <script src="js/creatures.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/quests.js"></script>
+  <script src="js/assetGenerator.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/collision.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/npc.js"></script>
+  <script src="js/dialogue.js"></script>
+  <script src="js/capture.js"></script>
+  <script src="js/battle.js"></script>
+  <script src="js/shop.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
