@@ -253,7 +253,8 @@
       { id: "cimsirik", min: 3, max: 6, weight: 7 },
       { id: "minsu", min: 3, max: 5, weight: 4 },
       { id: "ruzgocuk", min: 4, max: 6, weight: 3 },
-      { id: "voltik", min: 5, max: 7, weight: 1 }
+      { id: "voltik", min: 5, max: 7, weight: 1 },
+      { id: "barbo", min: 6, max: 8, weight: 1 }
     ];
     return m;
   }
@@ -289,7 +290,8 @@
       { id: "ruzgocuk", min: 5, max: 8, weight: 4 },
       { id: "agackulak", min: 7, max: 9, weight: 2 },
       { id: "golgemir", min: 8, max: 10, weight: 1 },
-      { id: "parilti", min: 8, max: 10, weight: 1 }
+      { id: "parilti", min: 8, max: 10, weight: 1 },
+      { id: "crownlex", min: 8, max: 11, weight: 1 }
     ];
     return m;
   }

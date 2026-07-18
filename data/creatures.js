@@ -183,5 +183,24 @@
         if (creatures[generated[i + 1]]) creatures[generated[i + 1]].evolution = { level: 28 + i % 7, into: generated[i + 2] };
       }
     })();
+
+    Object.assign(creatures, {
+      crownlex: {
+        id: "crownlex", name: "Crownlex", element: "Yaprak", rarity: "Nadir", captureDifficulty: 58,
+        baseStats: { hp: 39, attack: 13, defense: 11, speed: 17 },
+        abilities: ["yaprakDarbesi", "hizKanadi", "camKalkan", "polenUykusu"],
+        description: "Başındaki yaprak tacıyla orman rüzgarını dinleyen özgün bir Luma. Sessiz kanat çırpışıyla iz bırakmadan süzülür.",
+        evolution: null,
+        sprite: { body: "owl", colors: ["#365f42", "#e0c974", "#fff4d2"], variant: 7, mark: "crest" }
+      },
+      barbo: {
+        id: "barbo", name: "Barbo", element: "Elektrik", rarity: "Nadir", captureDifficulty: 57,
+        baseStats: { hp: 35, attack: 14, defense: 9, speed: 20 },
+        abilities: ["voltKivilcimi", "simsekZiplamasi", "hizKanadi", "voltKivilcimi"],
+        description: "Bıyık tüyleri statik kıvılcımla kabaran çevik bir Luma. Neşeli görünür ama kuyruğu şarj olunca yaklaşanı zıplatır.",
+        evolution: null,
+        sprite: { body: "mouse", colors: ["#d79531", "#ffe66b", "#2e3959"], variant: 5, mark: "tail" }
+      }
+    });
   })();
 })();
