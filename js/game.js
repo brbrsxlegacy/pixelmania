@@ -21,6 +21,7 @@
       world: { targetMapId: null, discovered: { isikpinar: true } },
       dex: { seen: {}, caught: {} },
       badges: {},
+      pvp: { wins: 0, losses: 0 },
       story: { introSeen: false, starterChosen: false, rivalFirstDone: false },
       defeatedTrainers: {},
       collectedItems: {},
@@ -136,6 +137,7 @@
     this.state.jobs.completed = Object.assign({}, base.jobs.completed, this.state.jobs.completed || {});
     this.state.housing = Object.assign(base.housing, state.housing || {});
     this.state.city = Object.assign(base.city, state.city || {});
+    this.state.pvp = Object.assign(base.pvp, state.pvp || {});
     if (L.Economy) L.Economy.ensureState(this.state);
     if (L.WorldMap) L.WorldMap.ensureState(this.state);
     L.Creatures.serializeFix(this.state);

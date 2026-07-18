@@ -301,7 +301,8 @@
   L.Battle.prototype.win = async function () {
     var state = this.game.state;
     var active = this.playerCreature();
-    var exp = Math.max(12, this.enemy.level * 16 + (this.type === "trainer" ? 20 : 0));
+    var isPvp = this.type === "trainer" && this.trainer && this.trainer.pvp;
+    var exp = isPvp ? Math.max(8, this.enemy.level * 6) : Math.max(12, this.enemy.level * 16 + (this.type === "trainer" ? 20 : 0));
     var messages = L.Creatures.gainExp(active, exp);
     for (var i = 0; i < messages.length; i += 1) {
       this.setMessage(messages[i]);
@@ -311,7 +312,12 @@
       L.Quests.progress(state, "winWild", 1);
       L.Quests.progress(state, "defeat_" + this.enemy.id, 1);
     }
-    if (this.type === "trainer" && this.trainer) {
+    if (this.type === "trainer" && this.trainer && isPvp) {
+      state.pvp = Object.assign({ wins: 0, losses: 0 }, state.pvp || {});
+      state.pvp.wins += 1;
+      this.setMessage((this.trainer.afterDialogue && this.trainer.afterDialogue[0]) || "PvP maçını kazandın!");
+      await delay(800);
+    } else if (this.type === "trainer" && this.trainer) {
       state.defeatedTrainers[this.trainer.id] = true;
       state.money += this.trainer.money || 80;
       L.Quests.progress(state, "winTrainer", 1);
@@ -337,6 +343,16 @@
   };
 
   L.Battle.prototype.lose = async function () {
+    if (this.type === "trainer" && this.trainer && this.trainer.pvp) {
+      this.setMessage("PvP maçını kaybettin. Ekip maç sonrası iyileştiriliyor...");
+      await delay(900);
+      this.game.state.pvp = Object.assign({ wins: 0, losses: 0 }, this.game.state.pvp || {});
+      this.game.state.pvp.losses += 1;
+      L.Creatures.healTeam(this.game.state.team);
+      this.end();
+      if (this.game.ui) this.game.ui.notify("PvP bitti. Ekip iyileşti, kayıt güvende.");
+      return;
+    }
     this.setMessage("Ekip yoruldu. Son şifa noktasına dönüyorsun...");
     await delay(900);
     L.Creatures.healTeam(this.game.state.team);

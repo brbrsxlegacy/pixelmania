@@ -435,12 +435,16 @@
     }
     if (mp && mp.roomCode) {
       html += "<div class='panel-row'><strong>Oda: " + mp.roomCode + "</strong><br><small>Bu kodu arkadaşına ver. Aynı haritadaysanız birbirinizi görebilirsiniz.</small></div>";
-      html += "<div class='panel-row'><strong>Adın:</strong> " + escapeHtml(mp.playerName) + "<br><strong>Bağlı oyuncu:</strong> " + (Object.keys(mp.remotePlayers).length + 1) + "</div>";
+      html += "<div class='panel-row'><strong>Adın:</strong> " + escapeHtml(mp.playerName) + "<br><strong>Bağlı oyuncu:</strong> " + (Object.keys(mp.remotePlayers).length + 1) +
+        "<br><small>PvP: " + (this.game.state.pvp && this.game.state.pvp.wins || 0) + "G / " + (this.game.state.pvp && this.game.state.pvp.losses || 0) + "M</small></div>";
       html += "<div class='panel-grid mp-actions'><button data-mp-emote='Selam!'>Selam</button><button data-mp-invite='trade'>Takas İste</button><button data-mp-invite='pvp'>PvP İste</button></div>";
       Object.keys(mp.remotePlayers).forEach(function (id) {
         var remote = mp.remotePlayers[id];
         if (remote && remote.invite) {
-          html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + ":</strong> " + escapeHtml(remote.invite.label || "İstek") + " isteği gönderdi.</div>";
+          html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + ":</strong> " + escapeHtml(remote.invite.label || "İstek") + " isteği gönderdi." +
+            (remote.invite.kind === "pvp" ? "<br><button class='primary' data-mp-accept-pvp='" + escapeHtml(id) + "'>PvP Kabul Et</button>" : "") + "</div>";
+        } else if (remote) {
+          html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + "</strong><br><small>" + escapeHtml(remote.creature || "Takım hazır") + "</small></div>";
         }
       });
       html += "<button data-mp-leave='1' class='danger'>Odadan Çık</button>";
@@ -565,9 +569,20 @@
     }
     var mpInvite = button.getAttribute("data-mp-invite");
     if (mpInvite) {
-      if (this.game.multiplayer.sendInvite(mpInvite)) this.notify((mpInvite === "trade" ? "Takas" : "PvP") + " isteği gönderildi.");
-      else this.notify("Önce bir odaya bağlan.");
+      var inviteResult = this.game.multiplayer.sendInvite(mpInvite);
+      this.notify(inviteResult.message || (inviteResult.ok ? "İstek gönderildi." : "İstek gönderilemedi."));
+      if (inviteResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!inviteResult.ok && L.Audio) L.Audio.play("error");
       this.showMultiplayer("world");
+      return;
+    }
+    var acceptPvp = button.getAttribute("data-mp-accept-pvp");
+    if (acceptPvp) {
+      var acceptResult = this.game.multiplayer.acceptPvp(acceptPvp);
+      this.notify(acceptResult.message);
+      if (acceptResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!acceptResult.ok && L.Audio) L.Audio.play("error");
+      if (!acceptResult.ok) this.showMultiplayer("world");
       return;
     }
     var outfit = button.getAttribute("data-avatar-outfit");
