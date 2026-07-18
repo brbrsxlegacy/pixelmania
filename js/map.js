@@ -59,6 +59,10 @@
         drawables.push({ type: "remote", remote: remote, depth: remote.y + 20 });
       });
     }
+    var followerCreature = game.followerCreature && game.followerCreature();
+    if (followerCreature && game.follower) {
+      drawables.push({ type: "follower", creature: followerCreature, depth: game.follower.y + 18 });
+    }
     drawables.push({ type: "player", depth: game.player.y + game.player.h });
 
     drawables.sort(function (a, b) { return a.depth - b.depth; });
@@ -69,6 +73,7 @@
       if (d.type === "npc") L.Asset.drawNpc(ctx, d.npc, d.npc.x * TILE + 1 - camera.x, d.npc.y * TILE - 2 - camera.y, time);
       if (d.type === "roamer") L.Asset.drawCreature(ctx, { id: d.roamer.creatureId }, Math.round(d.roamer.x - camera.x - 9), Math.round(d.roamer.y - camera.y - 12), .8, false, time);
       if (d.type === "remote") L.Asset.drawRemotePlayer(ctx, d.remote, Math.round(d.remote.x - camera.x), Math.round(d.remote.y - camera.y), time);
+      if (d.type === "follower") L.Asset.drawCreature(ctx, d.creature, Math.round(game.follower.x - camera.x - 7), Math.round(game.follower.y - camera.y - 8), .65, false, time);
       if (d.type === "player") game.player.draw(ctx, camera, time, game.state && game.state.avatar);
     });
 

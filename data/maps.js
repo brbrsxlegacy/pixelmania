@@ -489,6 +489,18 @@
     return m;
   }
 
+  function makeBossArena(spec) {
+    var m = makeInterior("bossArena_" + spec.id, spec.name, spec.floor, { mapId: spec.returnMap, x: spec.returnX, y: spec.returnY });
+    setRect(m, "ground", 2, 2, 14, 8, spec.floor);
+    setRect(m, "collision", 2, 2, 14, 8, 0);
+    setRect(m, "ground", 4, 4, 10, 4, spec.ring || "plaza");
+    put(m, 2, 3, spec.left || "crystalBlue", 1, 1);
+    put(m, 15, 3, spec.right || "crystalPink", 1, 1);
+    put(m, 8, 2, spec.center || "guildBoard", 2, 2);
+    m.interactions.push({ x: 8, y: 4, type: "sign", text: spec.name + " lider arenası. Hazırsan liderle konuş." });
+    return m;
+  }
+
   window.LUMA_DATA.maps = {
     isikpinar: makeVillage(),
     labInterior: makeLabInterior(),
@@ -496,6 +508,14 @@
     houseRedInterior: makeHouseRedInterior(),
     clinicInterior: makeClinicInterior(),
     shopInterior: makeShopInterior(),
+    bossArena_leaf: makeBossArena({ id: "leaf", name: "Yaprak Arenası", floor: "gardenTile", ring: "leafRoad", returnMap: "botanikBahce", returnX: 31, returnY: 14, left: "tree", right: "flowerYellow", center: "fountain" }),
+    bossArena_ember: makeBossArena({ id: "ember", name: "Alev Arenası", floor: "caveFloor", ring: "cave", returnMap: "lavKanyonu", returnX: 35, returnY: 17, left: "lavaRock", right: "crystalPink", center: "arena" }),
+    bossArena_tide: makeBossArena({ id: "tide", name: "Su Arenası", floor: "sandGrass", ring: "water", returnMap: "sahilRotasi", returnX: 31, returnY: 16, left: "palm", right: "dock", center: "fountain" }),
+    bossArena_stone: makeBossArena({ id: "stone", name: "Kaya Arenası", floor: "caveFloor", ring: "cityStone", returnMap: "kristalMaden", returnX: 31, returnY: 18, left: "rock", right: "crystalBlue", center: "ruinGate" }),
+    bossArena_wind: makeBossArena({ id: "wind", name: "Rüzgar Arenası", floor: "cityStone", ring: "asphalt", returnMap: "gokKulesi", returnX: 31, returnY: 15, left: "cityLamp", right: "cityTower", center: "crystalBlue" }),
+    bossArena_spark: makeBossArena({ id: "spark", name: "Elektrik Arenası", floor: "labFloor", ring: "plaza", returnMap: "meteorTepesi", returnX: 31, returnY: 15, left: "labDesk", right: "crystalBlue", center: "cityTower" }),
+    bossArena_shadow: makeBossArena({ id: "shadow", name: "Gölge Arenası", floor: "ruinFloor", ring: "forest", returnMap: "geceKorusu", returnX: 31, returnY: 15, left: "ruinGate", right: "rock", center: "crystalPink" }),
+    bossArena_light: makeBossArena({ id: "light", name: "Işık Arenası", floor: "plaza", ring: "marketTile", returnMap: "arenaMeydan", returnX: 31, returnY: 15, left: "crystalBlue", right: "crystalPink", center: "arena" }),
     homeStudioInterior: makePlayerHomeInterior("homeStudioInterior", "Pazar Stüdyosu", { mapId: "pazarMeydani", x: 44, y: 12 }),
     homeGardenFlatInterior: makePlayerHomeInterior("homeGardenFlatInterior", "Bahçe Dairesi", { mapId: "belediyeBahcesi", x: 26, y: 12 }),
     homeHarborRoomInterior: makePlayerHomeInterior("homeHarborRoomInterior", "Liman Odası", { mapId: "liman", x: 42, y: 13 }),

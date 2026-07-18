@@ -23,7 +23,7 @@
     state.dex.caught = Object.assign({}, state.dex.caught || {});
     state.badges = Object.assign({}, state.badges || {});
     state.pvp = Object.assign({ wins: 0, losses: 0 }, state.pvp || {});
-    state.multiplayerMeta = Object.assign({ emote: "", lastInvite: null, inviteResponse: null }, state.multiplayerMeta || {});
+    state.multiplayerMeta = Object.assign({ emote: "", ready: false, lastInvite: null, inviteResponse: null }, state.multiplayerMeta || {});
   }
 
   function mapName(id) {

@@ -146,12 +146,15 @@
       "<button class='panel-row' data-pause='team'>Yaratıklar</button>" +
       "<button class='panel-row' data-pause='bag'>Çanta</button>" +
       "<button class='panel-row' data-pause='quests'>Görevler</button>" +
+      "<button class='panel-row' data-pause='daily'>Günlük</button>" +
       "<button class='panel-row' data-pause='map'>Harita</button>" +
       "<button class='panel-row' data-pause='dex'>Lumadex</button>" +
       "<button class='panel-row' data-pause='badges'>Rozetler</button>" +
       "<button class='panel-row' data-pause='multiplayer'>Çok Oyunculu</button>" +
       "<button class='panel-row' data-pause='jobs'>Meslekler</button>" +
       "<button class='panel-row' data-pause='housing'>Evler</button>" +
+      "<button class='panel-row' data-pause='eggs'>Yumurtalar</button>" +
+      "<button class='panel-row' data-pause='market'>Pazar</button>" +
       "<button class='panel-row' data-pause='unstuck'>Sıkışmadan Kurtul</button>" +
       "<button class='panel-row' data-pause='settings'>Ayarlar</button>" +
       "<button class='panel-row' data-pause='save'>Kaydet</button>" +
@@ -206,6 +209,7 @@
         (evo ? "<small>Evrim: " + evo.to.name + " • Sv. " + evo.level + "</small><br>" : "") +
         "<button data-team-active='" + i + "'>Aktif Yap</button>" +
         (evo && evo.ready ? "<button data-team-evolve='" + i + "' class='primary'>Evrimle</button>" : "") +
+        "<button data-team-moves='" + i + "'>Yetenekler</button>" +
         "<button data-team-up='" + i + "'>Yukarı</button><button data-team-down='" + i + "'>Aşağı</button>" +
         "<button data-team-heal='" + i + "'>İksir Kullan</button>" +
         "<button data-team-store='" + i + "'>Depoya Gönder</button></div>";
@@ -254,6 +258,75 @@
     });
     html += "</div>";
     this.showPanel("Görevler", html, "quests", "world");
+  };
+
+  L.UiController.prototype.showDaily = function () {
+    var state = this.game.state;
+    if (!L.Daily) return;
+    var daily = L.Daily.ensureState(state);
+    var complete = L.Daily.isComplete(state);
+    var html = "<div class='panel-row'><strong>Günlük seri:</strong> " + (daily.streak || 0) + "<br><small>" + daily.date + " için yenilenir.</small></div>";
+    html += "<div class='panel-grid'>";
+    L.Daily.tasks.forEach(function (task) {
+      var value = Math.min(task.target, daily.tasks[task.id] || 0);
+      html += "<div class='quest-row'><strong>" + task.label + "</strong><br><small>" + value + "/" + task.target + " • " + task.reward + "</small>" +
+        "<div class='progress-shell'><span style='width:" + Math.round(value / task.target * 100) + "%'></span></div></div>";
+    });
+    html += "</div><div class='panel-row'><button class='primary' data-daily-claim='1'" + (!complete || daily.claimed ? " disabled" : "") + ">" +
+      (daily.claimed ? "Bugün alındı" : (complete ? "Ödülü Al" : "Görevleri Bitir")) + "</button></div>";
+    this.showPanel("Günlük", html, "daily", "world");
+  };
+
+  L.UiController.prototype.showEggs = function () {
+    var state = this.game.state;
+    if (!L.Eggs) return;
+    var eggs = L.Eggs.ensureState(state);
+    var html = "<div class='panel-row'><strong>Çatlayan:</strong> " + eggs.hatched + "<br><small>Yürüdükçe yumurtalar ilerler. Günlük ödül ve pazardan bulunur.</small></div>";
+    html += "<div class='panel-grid'>";
+    if (!eggs.inventory.length) html += "<div class='item-row'>Henüz yumurta yok.</div>";
+    eggs.inventory.forEach(function (egg) {
+      var percent = Math.min(100, Math.round((egg.steps || 0) / egg.stepsNeeded * 100));
+      html += "<div class='item-row'><strong>" + L.Eggs.labelFor(egg.element) + " Yumurtası</strong><br><small>" + escapeHtml(egg.source || "gizemli") + "</small>" +
+        "<div class='progress-shell'><span style='width:" + percent + "%'></span></div><small>" + percent + "%</small></div>";
+    });
+    html += "</div>";
+    this.showPanel("Yumurtalar", html, "eggs", "world");
+  };
+
+  L.UiController.prototype.showMarket = function () {
+    var state = this.game.state;
+    L.Economy.ensureState(state);
+    var mapId = this.game.map && this.game.map.id;
+    var html = "<div class='panel-row'><strong>Konum:</strong> " + (this.game.map ? this.game.map.name : "") + "<br><strong>Para:</strong> " + state.money + " Luma<br><small>Ucuz aldığını pahalı bölgede sat.</small></div>";
+    html += "<div class='panel-grid'>";
+    L.Economy.tradeGoods.forEach(function (good) {
+      var qty = state.market.goods[good.id] || 0;
+      var buy = L.Economy.tradePrice(good.id, mapId, "buy");
+      var sell = L.Economy.tradePrice(good.id, mapId, "sell");
+      html += "<div class='item-row'><strong>" + good.name + "</strong><br><small>Elinde: " + qty + " • Al " + buy + " • Sat " + sell + "</small><br>" +
+        "<button data-market-buy='" + good.id + "'>Al</button><button data-market-sell='" + good.id + "'" + (!qty ? " disabled" : "") + ">Sat</button></div>";
+    });
+    html += "<div class='item-row'><strong>Gizemli Luma Yumurtası</strong><br><small>420 Luma • yürüyerek çatlar</small><br><button data-egg-buy='1'>Yumurta Al</button></div>";
+    html += "</div>";
+    this.showPanel("Pazar", html, "market", "world");
+  };
+
+  L.UiController.prototype.showMoveTutor = function (index) {
+    var creature = this.game.state.team[index];
+    if (!creature) return this.showTeam();
+    var unlocked = L.Creatures.unlockedAbilityIds(creature);
+    var active = {};
+    creature.abilities.forEach(function (move) { active[move.id] = true; });
+    var html = "<div class='panel-row'><strong>" + creature.displayName + "</strong><br><small>En fazla 4 yetenek aktif olabilir.</small></div><div class='panel-grid'>";
+    unlocked.forEach(function (id) {
+      var ability = L.Abilities.get(id);
+      var selected = !!active[id];
+      var full = creature.abilities.length >= 4 && !selected;
+      html += "<div class='item-row'><strong>" + ability.name + "</strong><br><small>" + ability.element + " • " + ability.power + " güç • " + ability.description + "</small><br>" +
+        "<button data-move-toggle='" + index + ":" + id + "'" + (full ? " disabled" : "") + ">" + (selected ? "Çıkar" : "Aktif Et") + "</button></div>";
+    });
+    html += "</div><button data-move-back='1'>Takıma Dön</button>";
+    this.showPanel("Yetenekler", html, "moves", "world");
   };
 
   L.UiController.prototype.showMap = function () {
@@ -343,7 +416,7 @@
     var html = "<div class='panel-row'><strong>Rozetler:</strong> " + count + "/" + badges.length + "<br><small>Arena liderlerini yenerek açılır.</small></div><div class='panel-grid'>";
     badges.forEach(function (badge) {
       var owned = !!state.badges[badge[0]];
-      html += "<div class='badge-card " + (owned ? "owned" : "") + "'><span class='badge-medal'>" + (owned ? "◆" : "◇") + "</span><strong>" + badge[1] + "</strong><br><small>" + badge[2] + "</small></div>";
+      html += "<div class='badge-card " + (owned ? "owned" : "") + "'><span class='badge-medal'>" + (owned ? "◆" : "◇") + "</span><strong>" + badge[1] + "</strong><br><small>" + badge[2] + "</small><br><button data-boss-arena='" + badge[0] + "'>Arena İçine Gir</button></div>";
     });
     html += "</div>";
     this.showPanel("Rozetler", html, "badges", "world");
@@ -434,17 +507,18 @@
       return;
     }
     if (mp && mp.roomCode) {
+      var meta = this.game.state.multiplayerMeta || {};
       html += "<div class='panel-row'><strong>Oda: " + mp.roomCode + "</strong><br><small>Bu kodu arkadaşına ver. Aynı haritadaysanız birbirinizi görebilirsiniz.</small></div>";
       html += "<div class='panel-row'><strong>Adın:</strong> " + escapeHtml(mp.playerName) + "<br><strong>Bağlı oyuncu:</strong> " + (Object.keys(mp.remotePlayers).length + 1) +
-        "<br><small>PvP: " + (this.game.state.pvp && this.game.state.pvp.wins || 0) + "G / " + (this.game.state.pvp && this.game.state.pvp.losses || 0) + "M</small></div>";
-      html += "<div class='panel-grid mp-actions'><button data-mp-emote='Selam!'>Selam</button><button data-mp-invite='trade'>Takas İste</button><button data-mp-invite='pvp'>PvP İste</button></div>";
+        "<br><small>PvP: " + (this.game.state.pvp && this.game.state.pvp.wins || 0) + "G / " + (this.game.state.pvp && this.game.state.pvp.losses || 0) + "M • " + (meta.ready ? "Hazır" : "Beklemede") + "</small></div>";
+      html += "<div class='panel-grid mp-actions'><button data-mp-emote='Selam!'>Selam</button><button data-mp-ready='1'" + (meta.ready ? " class='primary'" : "") + ">" + (meta.ready ? "Hazır Değilim" : "Hazırım") + "</button><button data-mp-invite='trade'>Takas İste</button><button data-mp-invite='pvp'>PvP İste</button></div>";
       Object.keys(mp.remotePlayers).forEach(function (id) {
         var remote = mp.remotePlayers[id];
         if (remote && remote.invite) {
           html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + ":</strong> " + escapeHtml(remote.invite.label || "İstek") + " isteği gönderdi." +
             (remote.invite.kind === "pvp" ? "<br><button class='primary' data-mp-accept-pvp='" + escapeHtml(id) + "'>PvP Kabul Et</button>" : "") + "</div>";
         } else if (remote) {
-          html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + "</strong><br><small>" + escapeHtml(remote.creature || "Takım hazır") + "</small></div>";
+          html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + "</strong><br><small>" + escapeHtml(remote.creature || "Takım hazır") + " • " + (remote.ready ? "Hazır" : "Beklemede") + "</small></div>";
         }
       });
       html += "<button data-mp-leave='1' class='danger'>Odadan Çık</button>";
@@ -489,6 +563,7 @@
       html += "<div class='slot-card'><strong>Kayıt " + slot.slot + "</strong><br>";
       if (slot.exists) {
         html += "<small>" + slot.mapName + " • " + slot.starter + " Sv. " + slot.level + " • " + fmtTime(slot.playTime) + "</small><br>";
+        html += "<small>" + slot.money + " Luma • Rozet " + slot.badges + " • Dex " + slot.caught + " • PvP " + slot.pvpWins + "/" + slot.pvpLosses + " • Yumurta " + slot.eggs + "</small><br>";
         html += "<button data-slot-load='" + slot.slot + "'>Yükle</button><button data-slot-delete='" + slot.slot + "' class='danger'>Sil</button>";
       } else {
         html += "<small>Boş slot</small><br>";
@@ -506,12 +581,15 @@
       if (pause === "team") this.showTeam();
       if (pause === "bag") this.showInventory();
       if (pause === "quests") this.showQuests();
+      if (pause === "daily") this.showDaily();
       if (pause === "map") this.showMap();
       if (pause === "dex") this.showLumadex();
       if (pause === "badges") this.showBadges();
       if (pause === "multiplayer") this.showMultiplayer("world");
       if (pause === "jobs") this.showJobs();
       if (pause === "housing") this.showHousing();
+      if (pause === "eggs") this.showEggs();
+      if (pause === "market") this.showMarket();
       if (pause === "unstuck") {
         this.closePanel();
         this.game.unstuckPlayer();
@@ -534,6 +612,54 @@
     var mapTravel = button.getAttribute("data-map-travel");
     if (mapTravel) {
       if (this.game.fastTravelTo(mapTravel)) this.closePanel();
+      return;
+    }
+    if (button.hasAttribute("data-daily-claim")) {
+      if (L.Daily && L.Daily.claim(this.game)) {
+        this.notify("Günlük ödül alındı.");
+        if (L.Audio) L.Audio.play("confirm");
+      } else {
+        this.notify("Günlük ödül henüz hazır değil.");
+        if (L.Audio) L.Audio.play("error");
+      }
+      this.showDaily();
+      return;
+    }
+    var bossArena = button.getAttribute("data-boss-arena");
+    if (bossArena) {
+      this.game.enterBossArena(bossArena);
+      return;
+    }
+    var marketBuy = button.getAttribute("data-market-buy");
+    if (marketBuy) {
+      var buyTrade = L.Economy.buyTradeGood(this.game, marketBuy);
+      this.notify(buyTrade.message);
+      if (buyTrade.ok && L.Audio) L.Audio.play("confirm");
+      if (!buyTrade.ok && L.Audio) L.Audio.play("error");
+      this.showMarket();
+      return;
+    }
+    var marketSell = button.getAttribute("data-market-sell");
+    if (marketSell) {
+      var sellTrade = L.Economy.sellTradeGood(this.game, marketSell);
+      this.notify(sellTrade.message);
+      if (sellTrade.ok && L.Audio) L.Audio.play("pickup");
+      if (!sellTrade.ok && L.Audio) L.Audio.play("error");
+      this.showMarket();
+      return;
+    }
+    if (button.hasAttribute("data-egg-buy")) {
+      if (this.game.state.money >= 420 && L.Eggs) {
+        this.game.state.money -= 420;
+        L.Eggs.grant(this.game, null, "pazar");
+        this.notify("Gizemli Luma yumurtası alındı.");
+        this.game.autosaveSoon();
+        if (L.Audio) L.Audio.play("confirm");
+      } else {
+        this.notify("Yumurta için 420 Luma gerekiyor.");
+        if (L.Audio) L.Audio.play("error");
+      }
+      this.showMarket();
       return;
     }
     if (button.hasAttribute("data-mp-new")) {
@@ -563,6 +689,12 @@
     var mpEmote = button.getAttribute("data-mp-emote");
     if (mpEmote) {
       if (this.game.multiplayer.sendEmote(mpEmote)) this.notify("Mesaj gönderildi.");
+      else this.notify("Önce bir odaya bağlan.");
+      this.showMultiplayer("world");
+      return;
+    }
+    if (button.hasAttribute("data-mp-ready")) {
+      if (this.game.multiplayer.toggleReady()) this.notify("Hazır durumu güncellendi.");
       else this.notify("Önce bir odaya bağlan.");
       this.showMultiplayer("world");
       return;
@@ -658,6 +790,35 @@
       var evoCreature = this.game.state.team[Number(evolve)];
       if (L.Evolution && L.Evolution.evolveNow(this.game, evoCreature)) this.showTeam();
       else this.notify("Bu Luma henüz evrimleşemiyor.");
+      return;
+    }
+    var moveTeamIndex = button.getAttribute("data-team-moves");
+    if (moveTeamIndex != null) {
+      this.showMoveTutor(Number(moveTeamIndex));
+      return;
+    }
+    var moveToggle = button.getAttribute("data-move-toggle");
+    if (moveToggle) {
+      var parts = moveToggle.split(":");
+      var creatureIndex = Number(parts[0]);
+      var moveId = parts[1];
+      var moveCreature = this.game.state.team[creatureIndex];
+      if (!moveCreature) return this.showTeam();
+      var ids = moveCreature.abilities.map(function (move) { return move.id; });
+      var current = ids.indexOf(moveId);
+      if (current >= 0) {
+        if (ids.length <= 1) this.notify("En az bir yetenek kalmalı.");
+        else ids.splice(current, 1);
+      } else if (ids.length < 4) {
+        ids.push(moveId);
+      }
+      L.Creatures.setAbilityLoadout(moveCreature, ids);
+      this.game.autosaveSoon();
+      this.showMoveTutor(creatureIndex);
+      return;
+    }
+    if (button.hasAttribute("data-move-back")) {
+      this.showTeam();
       return;
     }
     var up = button.getAttribute("data-team-up");

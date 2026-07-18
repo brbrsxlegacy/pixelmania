@@ -179,6 +179,20 @@
   padding: 8px;
 }
 
+.progress-shell {
+  width: 100%;
+  height: 9px;
+  margin: 6px 0 2px;
+  border: 2px solid #101521;
+  background: #d7c58b;
+}
+
+.progress-shell span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #58b568, #f2b94b);
+}
+
 .avatar-card {
   min-height: 122px;
 }

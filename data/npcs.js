@@ -199,5 +199,38 @@
         afterDialogue: [row[3] + " sende. Şehir seni artık liderler listesinde konuşuyor."]
       });
     });
+    [
+      ["bossArena_leaf", "Lider Defne", "leaf", "Yaprak Rozeti", "Yaprak", 22, "ranger"],
+      ["bossArena_ember", "Lider Koray", "ember", "Alev Rozeti", "Alev", 24, "trainer2"],
+      ["bossArena_tide", "Lider Derya", "tide", "Su Rozeti", "Su", 23, "fisher"],
+      ["bossArena_stone", "Lider Sarp", "stone", "Kaya Rozeti", "Kaya", 27, "explorer"],
+      ["bossArena_wind", "Lider Alp", "wind", "Rüzgar Rozeti", "Rüzgar", 28, "trainer"],
+      ["bossArena_spark", "Lider Baran", "spark", "Elektrik Rozeti", "Elektrik", 26, "worker"],
+      ["bossArena_shadow", "Lider Mine", "shadow", "Gölge Rozeti", "Gölge", 25, "collector"],
+      ["bossArena_light", "Lider Nermin", "light", "Işık Rozeti", "Işık", 30, "mayor"]
+    ].forEach(function (row, index) {
+      if (!npcs[row[0]]) npcs[row[0]] = [];
+      npcs[row[0]].push({
+        id: "boss_" + row[2],
+        name: row[1],
+        type: "trainer",
+        boss: true,
+        badgeId: row[2],
+        badgeName: row[3],
+        x: 8,
+        y: 5,
+        dir: "down",
+        action: "trainer",
+        sprite: row[6],
+        team: [
+          { creatureId: creatureByElement(row[4], index + 11), level: row[5] },
+          { creatureId: creatureByElement(row[4], index + 19), level: row[5] + 1 },
+          { creatureId: creatureByElement(row[4], index + 27), level: row[5] + 2 }
+        ],
+        money: 520 + index * 90,
+        dialogue: [row[3] + " arena sınavı başlıyor. Hazırsan ritmini göster."],
+        afterDialogue: [row[3] + " sende. Bu arenada iz bıraktın."]
+      });
+    });
   })();
 })();

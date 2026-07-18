@@ -22,6 +22,8 @@
       dex: { seen: {}, caught: {} },
       badges: {},
       pvp: { wins: 0, losses: 0 },
+      daily: { date: null, claimed: false, tasks: {}, streak: 0 },
+      eggs: { inventory: [], hatched: 0 },
       story: { introSeen: false, starterChosen: false, rivalFirstDone: false },
       defeatedTrainers: {},
       collectedItems: {},
@@ -31,6 +33,17 @@
       savedAt: 0
     };
   }
+
+  var bossArenaMaps = {
+    leaf: "bossArena_leaf",
+    ember: "bossArena_ember",
+    tide: "bossArena_tide",
+    stone: "bossArena_stone",
+    wind: "bossArena_wind",
+    spark: "bossArena_spark",
+    shadow: "bossArena_shadow",
+    light: "bossArena_light"
+  };
 
   L.Game = function () {
     this.canvas = document.getElementById("gameCanvas");
@@ -57,6 +70,8 @@
     this.autosaveTimer = 0;
     this.lastFrame = performance.now();
     this.pendingTrainer = null;
+    this.follower = { x: this.player.x, y: this.player.y, dir: "down", trail: [] };
+    this.evolutionFx = null;
     this.settings = L.Save.loadSettings();
     L.Audio.applySettings(this.settings);
     document.body.classList.toggle("touch-enabled", !!this.settings.touchControls);
@@ -84,6 +99,7 @@
     this.player.x = this.state.player.x;
     this.player.y = this.state.player.y;
     this.player.dir = "down";
+    this.resetFollower();
     this.ui.hideMain();
     L.Quests.start(this.state, "ilkYolArkadasin", true);
     this.state.story.introSeen = true;
@@ -140,6 +156,8 @@
     this.state.pvp = Object.assign(base.pvp, state.pvp || {});
     if (L.Economy) L.Economy.ensureState(this.state);
     if (L.WorldMap) L.WorldMap.ensureState(this.state);
+    if (L.Daily) L.Daily.ensureState(this.state);
+    if (L.Eggs) L.Eggs.ensureState(this.state);
     L.Creatures.serializeFix(this.state);
     L.Audio.applySettings(this.state.settings);
     this.loadMap(this.state.mapId || "isikpinar");
@@ -147,6 +165,7 @@
     this.player.y = this.state.player.y || 30 * 16 - 2;
     this.player.dir = this.state.player.dir || "down";
     this.ensurePlayerSafe("load");
+    this.resetFollower();
     this.state.activeIndex = Math.max(0, Math.min(this.state.team.length - 1, this.state.activeIndex || 0));
     this.ui.hideMain();
     this.ui.closePanel();
@@ -217,6 +236,7 @@
       self.loadMap(exit.to);
       self.player.setTile(exit.spawnX, exit.spawnY);
       self.ensurePlayerSafe("transition");
+      self.resetFollower();
       self.camera.follow(self.player, self.map, 1);
       self.syncState();
       self.autosaveSoon();
@@ -268,6 +288,7 @@
     this.player.setTile(safe.x, safe.y);
     this.player.dir = "down";
     this.camera.follow(this.player, this.map, 1);
+    this.resetFollower();
     this.syncState();
     if (reason === "load" || reason === "manual") this.autosaveSoon();
     if (reason === "manual" && this.ui) this.ui.notify("Sıkışmadan kurtuldun.");
@@ -310,6 +331,7 @@
       this.player.setTile(safe.x, safe.y);
       this.player.dir = "down";
       this.camera.follow(this.player, this.map, 1);
+      this.resetFollower();
       this.syncState();
       this.autosaveSoon();
       this.ui.notify("En yakın güvenli noktaya alındın.");
@@ -327,6 +349,7 @@
     this.player.setTile(safe.x, safe.y);
     this.player.dir = "down";
     this.camera.follow(this.player, this.map, 1);
+    this.resetFollower();
     this.syncState();
     this.autosaveSoon();
   };
@@ -616,6 +639,7 @@
     this.player.setTile(safe.x, safe.y);
     this.player.dir = "down";
     this.camera.follow(this.player, this.map, 1);
+    this.resetFollower();
     this.syncState();
     this.autosaveSoon();
     this.ui.notify(target.name + " bölgesine hızlı seyahat edildi.");
@@ -642,6 +666,138 @@
     this.ui.notify(L.Economy.homeName(this.state) + " içine girdin.");
     if (L.Audio) L.Audio.play("confirm");
     return true;
+  };
+
+  L.Game.prototype.followerCreature = function () {
+    if (!this.state || !this.state.team || !this.state.team.length) return null;
+    return this.state.team[this.state.activeIndex] || this.state.team[0];
+  };
+
+  L.Game.prototype.resetFollower = function () {
+    this.follower = this.follower || { trail: [] };
+    this.follower.x = this.player.x - 10;
+    this.follower.y = this.player.y + 4;
+    this.follower.dir = this.player.dir || "down";
+    this.follower.trail = [];
+  };
+
+  L.Game.prototype.updateFollower = function (movedPixels) {
+    if (!this.follower) this.resetFollower();
+    if (!this.followerCreature()) return;
+    if (movedPixels > .4) {
+      this.follower.trail.push({ x: this.player.x, y: this.player.y, dir: this.player.dir });
+      if (this.follower.trail.length > 34) this.follower.trail.shift();
+    }
+    var target = this.follower.trail.length > 18 ? this.follower.trail[0] : {
+      x: this.player.x - 10,
+      y: this.player.y + 4,
+      dir: this.player.dir
+    };
+    var dx = target.x - this.follower.x;
+    var dy = target.y - this.follower.y;
+    var distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance > 180 || this.transitionCooldown > .55) {
+      this.resetFollower();
+      return;
+    }
+    this.follower.x += dx * .18;
+    this.follower.y += dy * .18;
+    this.follower.dir = target.dir || this.follower.dir || "down";
+  };
+
+  L.Game.prototype.enterBossArena = function (badgeId) {
+    if (!this.state) return false;
+    var mapId = bossArenaMaps[badgeId];
+    var map = mapId && this.mapSystem.get(mapId);
+    if (!map) {
+      this.ui.notify("Bu arena hazır değil.");
+      if (L.Audio) L.Audio.play("error");
+      return false;
+    }
+    this.ui.closePanel();
+    var safe = this.findSafeMoveTile(mapId, 8, 8);
+    this.loadMap(mapId);
+    this.player.setTile(safe.x, safe.y);
+    this.player.dir = "up";
+    this.camera.follow(this.player, this.map, 1);
+    this.resetFollower();
+    this.syncState();
+    this.autosaveSoon();
+    this.ui.notify(map.name + " içine girdin.");
+    if (L.Audio) L.Audio.play("confirm");
+    return true;
+  };
+
+  L.Game.prototype.startEvolutionFx = function (fromBase, toBase, fromName, toName) {
+    this.evolutionFx = {
+      from: fromBase && fromBase.id,
+      to: toBase && toBase.id,
+      fromName: fromName || (fromBase && fromBase.name) || "",
+      toName: toName || (toBase && toBase.name) || "",
+      t: 0,
+      duration: 2.4
+    };
+  };
+
+  L.Game.prototype.drawMiniMap = function () {
+    if (!this.state || !this.map || this.mode !== "world") return;
+    var ctx = this.ctx;
+    var x = 380;
+    var y = 32;
+    var w = 90;
+    var h = 58;
+    var sx = w / this.map.w;
+    var sy = h / this.map.h;
+    ctx.save();
+    ctx.fillStyle = "rgba(12, 18, 31, .78)";
+    ctx.fillRect(x - 4, y - 4, w + 8, h + 8);
+    ctx.strokeStyle = "#f7e8b5";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x - 3, y - 3, w + 6, h + 6);
+    for (var ty = 0; ty < this.map.h; ty += 2) {
+      for (var tx = 0; tx < this.map.w; tx += 2) {
+        var index = ty * this.map.w + tx;
+        var blocked = this.map.collision[index];
+        var encounter = this.map.encounter[index];
+        ctx.fillStyle = blocked ? "#1c2535" : (encounter ? "#6fc36a" : "#7a8792");
+        ctx.fillRect(x + Math.floor(tx * sx), y + Math.floor(ty * sy), Math.max(1, Math.ceil(sx * 2)), Math.max(1, Math.ceil(sy * 2)));
+      }
+    }
+    (this.map.exits || []).forEach(function (exit) {
+      ctx.fillStyle = "#f3c351";
+      ctx.fillRect(x + exit.x * sx - 1, y + exit.y * sy - 1, Math.max(3, exit.w * sx), Math.max(3, exit.h * sy));
+    });
+    var pt = this.playerTile();
+    ctx.fillStyle = "#fff4d2";
+    ctx.fillRect(x + pt.x * sx - 2, y + pt.y * sy - 2, 4, 4);
+    ctx.fillStyle = "#101521";
+    ctx.font = "7px monospace";
+    ctx.fillText("MAP", x + 4, y + 9);
+    ctx.restore();
+  };
+
+  L.Game.prototype.drawEvolutionFx = function () {
+    if (!this.evolutionFx) return;
+    var fx = this.evolutionFx;
+    var ctx = this.ctx;
+    var progress = Math.max(0, Math.min(1, fx.t / fx.duration));
+    ctx.save();
+    ctx.fillStyle = "rgba(9, 13, 24, " + (.28 + progress * .38) + ")";
+    ctx.fillRect(0, 0, 480, 270);
+    for (var i = 0; i < 16; i += 1) {
+      var angle = i / 16 * Math.PI * 2 + fx.t * 3;
+      var radius = 35 + Math.sin(fx.t * 5 + i) * 12 + progress * 40;
+      ctx.fillStyle = i % 2 ? "#f7e8b5" : "#8fd3ff";
+      ctx.fillRect(240 + Math.cos(angle) * radius, 123 + Math.sin(angle) * radius, 3, 3);
+    }
+    var showTo = Math.floor(fx.t * 8) % 2 === 1 || progress > .74;
+    var id = showTo ? fx.to : fx.from;
+    if (id && L.Asset) L.Asset.drawCreature(ctx, { id: id }, 210, 78, 2.4, false, this.time);
+    ctx.fillStyle = "#fff4d2";
+    ctx.font = "14px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(progress < .82 ? "Evrim başlıyor..." : fx.toName + "!", 240, 195);
+    ctx.restore();
   };
 
   L.Game.prototype.drawTargetArrow = function () {
@@ -685,6 +841,10 @@
     this.state.playTime += this.mode === "world" ? dt : 0;
     this.transitionCooldown = Math.max(0, this.transitionCooldown - dt);
     this.encounterCooldown = Math.max(0, this.encounterCooldown - dt);
+    if (this.evolutionFx) {
+      this.evolutionFx.t += dt;
+      if (this.evolutionFx.t >= this.evolutionFx.duration) this.evolutionFx = null;
+    }
     if (this.input.consume("quickSave")) this.quickSave();
     if (this.input.consume("quickLoad")) this.quickLoad();
     if (this.input.consume("unstuck")) this.unstuckPlayer();
@@ -693,7 +853,13 @@
       if (this.input.consume("quick")) this.quickUse();
       if (this.input.consume("action")) this.handleInteraction();
       if (this.mode === "world") {
+        var beforeX = this.player.x;
+        var beforeY = this.player.y;
         this.player.update(dt, this.input, this.map, this.npcs.current);
+        var moved = Math.sqrt(Math.pow(this.player.x - beforeX, 2) + Math.pow(this.player.y - beforeY, 2));
+        this.updateFollower(moved);
+        if (L.Eggs) L.Eggs.progress(this, moved / 16);
+        if (this.mode !== "world") return;
         if (this.roamers) this.roamers.update(dt, this.map);
         this.camera.follow(this.player, this.map, dt);
         this.particles.update(dt);
@@ -723,6 +889,7 @@
     }
     this.mapSystem.draw(this.ctx, this);
     this.drawTargetArrow();
+    this.drawMiniMap();
     if (this.state && this.state.settings.showControls && this.mode === "world") {
       this.ctx.fillStyle = "rgba(23, 32, 51, .72)";
       this.ctx.fillRect(8, 238, 260, 23);
@@ -730,5 +897,6 @@
       this.ctx.font = "10px monospace";
       this.ctx.fillText("E: konuş/al • Esc: menü • U: kurtul • F5: kayıt", 14, 253);
     }
+    this.drawEvolutionFx();
   };
 })();

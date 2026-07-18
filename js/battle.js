@@ -311,10 +311,12 @@
     if (this.type === "wild") {
       L.Quests.progress(state, "winWild", 1);
       L.Quests.progress(state, "defeat_" + this.enemy.id, 1);
+      if (L.Daily) L.Daily.progress(state, "winWild", 1);
     }
     if (this.type === "trainer" && this.trainer && isPvp) {
       state.pvp = Object.assign({ wins: 0, losses: 0 }, state.pvp || {});
       state.pvp.wins += 1;
+      if (L.Daily) L.Daily.progress(state, "pvpBattle", 1);
       this.setMessage((this.trainer.afterDialogue && this.trainer.afterDialogue[0]) || "PvP maçını kazandın!");
       await delay(800);
     } else if (this.type === "trainer" && this.trainer) {
@@ -348,6 +350,7 @@
       await delay(900);
       this.game.state.pvp = Object.assign({ wins: 0, losses: 0 }, this.game.state.pvp || {});
       this.game.state.pvp.losses += 1;
+      if (L.Daily) L.Daily.progress(this.game.state, "pvpBattle", 1);
       L.Creatures.healTeam(this.game.state.team);
       this.end();
       if (this.game.ui) this.game.ui.notify("PvP bitti. Ekip iyileşti, kayıt güvende.");
@@ -411,6 +414,7 @@
         var where = L.Creatures.addToCollection(state, this.enemy);
         if (L.WorldMap) L.WorldMap.recordCaught(state, this.enemy.id);
         L.Quests.progress(state, "catchAny", 1);
+        if (L.Daily) L.Daily.progress(state, "catchAny", 1);
         L.Quests.progress(state, "catch_" + this.enemy.element, 1);
         L.Quests.progress(state, "catch_" + this.enemy.id, 1);
         if (this.enemy.element === "Su") L.Quests.progress(state, "catchWater", 1);

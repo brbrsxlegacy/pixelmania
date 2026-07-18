@@ -134,6 +134,7 @@
       creature: active ? active.displayName + " Sv. " + active.level : "",
       team: team,
       pvp: Object.assign({ wins: 0, losses: 0 }, state.pvp || {}),
+      ready: !!meta.ready,
       emote: freshEmote ? String(meta.emote).slice(0, 18) : "",
       emoteAt: meta.emoteAt || 0,
       invite: freshInvite ? meta.lastInvite : null,
@@ -194,6 +195,18 @@
     if (!this.roomCode || !this.game.state) return false;
     this.game.state.multiplayerMeta = Object.assign({}, this.game.state.multiplayerMeta || {}, {
       emote: String(text || "Selam").slice(0, 18),
+      emoteAt: now()
+    });
+    this.pushNow().catch(this.handleError.bind(this));
+    return true;
+  };
+
+  L.Multiplayer.prototype.toggleReady = function () {
+    if (!this.roomCode || !this.game.state) return false;
+    var meta = this.game.state.multiplayerMeta || {};
+    this.game.state.multiplayerMeta = Object.assign({}, meta, {
+      ready: !meta.ready,
+      emote: !meta.ready ? "Hazirim" : "Beklemede",
       emoteAt: now()
     });
     this.pushNow().catch(this.handleError.bind(this));

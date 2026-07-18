@@ -61,6 +61,7 @@
       if (!info) return false;
       var oldName = creature.displayName;
       var ok = evolveCreature(game, creature, info.toId);
+      if (ok && game && game.startEvolutionFx) game.startEvolutionFx(info.from, info.to, oldName, creature.displayName);
       if (ok && game && game.ui) game.ui.notify(oldName + " evrimleşti: " + creature.displayName + "!");
       if (ok && L.Audio) L.Audio.play("victory");
       return ok;

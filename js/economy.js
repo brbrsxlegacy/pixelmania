@@ -36,6 +36,14 @@
     { id: "badgeWall", name: "Rozet Duvarı", price: 320, perk: "Lider zaferlerini sergiler." }
   ];
 
+  var tradeGoods = [
+    { id: "limanTuzu", name: "Liman Tuzu", base: 70, cheap: ["liman", "sahilRotasi"], expensive: ["sanayi", "gokKulesi"] },
+    { id: "kristalCevheri", name: "Kristal Cevheri", base: 125, cheap: ["kristalMaden", "magara"], expensive: ["pazarMeydani", "lumaAkademi"] },
+    { id: "akademiNotu", name: "Akademi Notu", base: 95, cheap: ["lumaAkademi"], expensive: ["belediyeBahcesi", "arenaMeydan"] },
+    { id: "lavCamuru", name: "Lav Camuru", base: 110, cheap: ["lavKanyonu"], expensive: ["botanikBahce", "buzulKiyi"] },
+    { id: "bahceTohumu", name: "Bahçe Tohumu", base: 82, cheap: ["botanikBahce", "belediyeBahcesi"], expensive: ["liman", "sanayi"] }
+  ];
+
   var jobChallenges = {
     kurye: [
       { question: "Paket etiketi: batı pazar, mavi çatı. Nereye götürürsün?", choices: ["Pazar Meydanı", "Meteor Tepesi", "Gece Korusu"], answer: 0 },
@@ -70,6 +78,8 @@
     state.jobs.completed = Object.assign({}, state.jobs.completed || {});
     state.housing = Object.assign({ status: "none", homeId: null, furniture: {} }, state.housing || {});
     state.housing.furniture = Object.assign({}, state.housing.furniture || {});
+    state.market = Object.assign({ goods: {}, profit: 0 }, state.market || {});
+    state.market.goods = Object.assign({}, state.market.goods || {});
   }
 
   function findJob(jobId) {
@@ -101,6 +111,7 @@
     L.Quests.progress(state, "workShift", 1);
     L.Quests.progress(state, job.objective, 1);
     L.Quests.progress(state, "earnMoney", pay);
+    if (L.Daily) L.Daily.progress(state, "workShift", 1);
     game.autosaveSoon();
     return {
       ok: true,
@@ -121,13 +132,59 @@
     };
   }
 
+  function findGood(goodId) {
+    return tradeGoods.find(function (good) { return good.id === goodId; });
+  }
+
+  function priceFor(good, mapId, side) {
+    var modifier = 1;
+    if (good.cheap.indexOf(mapId) >= 0) modifier = .72;
+    if (good.expensive.indexOf(mapId) >= 0) modifier = 1.42;
+    if (side === "sell") modifier -= .12;
+    return Math.max(12, Math.round(good.base * modifier));
+  }
+
   L.Economy = {
     avatars: avatarOptions,
     jobs: jobs,
     homes: homes,
     furniture: furniture,
+    tradeGoods: tradeGoods,
 
     ensureState: ensureState,
+
+    tradePrice: function (goodId, mapId, side) {
+      var good = findGood(goodId);
+      return good ? priceFor(good, mapId, side) : 0;
+    },
+
+    buyTradeGood: function (game, goodId) {
+      var state = game.state;
+      ensureState(state);
+      var good = findGood(goodId);
+      if (!good) return { ok: false, message: "Bu ticaret ürünü bulunamadı." };
+      var price = priceFor(good, game.map && game.map.id, "buy");
+      if (state.money < price) return { ok: false, message: "Bu alım için yeterli Luma yok." };
+      state.money -= price;
+      state.market.goods[good.id] = (state.market.goods[good.id] || 0) + 1;
+      game.autosaveSoon();
+      return { ok: true, message: good.name + " alındı. -" + price + " Luma" };
+    },
+
+    sellTradeGood: function (game, goodId) {
+      var state = game.state;
+      ensureState(state);
+      var good = findGood(goodId);
+      if (!good) return { ok: false, message: "Bu ticaret ürünü bulunamadı." };
+      if (!state.market.goods[good.id]) return { ok: false, message: "Elinde bu üründen yok." };
+      var price = priceFor(good, game.map && game.map.id, "sell");
+      state.market.goods[good.id] -= 1;
+      state.money += price;
+      state.market.profit += price;
+      L.Quests.progress(state, "earnMoney", price);
+      game.autosaveSoon();
+      return { ok: true, message: good.name + " satıldı. +" + price + " Luma" };
+    },
 
     setAvatar: function (game, outfit) {
       var state = game.state;

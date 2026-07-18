@@ -76,6 +76,10 @@
 
     preview: function (state, slot) {
       var first = state.team && state.team[0] ? state.team[0] : null;
+      var badges = state.badges ? Object.keys(state.badges).length : 0;
+      var caught = state.dex && state.dex.caught ? Object.keys(state.dex.caught).length : 0;
+      var eggs = state.eggs && Array.isArray(state.eggs.inventory) ? state.eggs.inventory.length : 0;
+      var pvp = Object.assign({ wins: 0, losses: 0 }, state.pvp || {});
       return {
         slot: slot,
         exists: true,
@@ -84,6 +88,13 @@
         playerName: state.playerName || "Oyuncu",
         starter: first ? first.name : "Yok",
         level: first ? first.level : 1,
+        money: state.money || 0,
+        badges: badges,
+        caught: caught,
+        eggs: eggs,
+        pvpWins: pvp.wins || 0,
+        pvpLosses: pvp.losses || 0,
+        streak: state.daily && state.daily.streak || 0,
         playTime: state.playTime || 0,
         savedAt: state.savedAt || Date.now(),
         savedText: nowText()

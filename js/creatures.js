@@ -85,6 +85,31 @@
       return creature;
     },
 
+    unlockedAbilityIds: function (creature) {
+      var base = data[creature && creature.id];
+      if (!base) return [];
+      return abilityIdsFor(base, creature.level || 1);
+    },
+
+    setAbilityLoadout: function (creature, ids) {
+      var base = data[creature && creature.id];
+      if (!base) return false;
+      var unlocked = {};
+      abilityIdsFor(base, creature.level || 1).forEach(function (id) { unlocked[id] = true; });
+      var existing = {};
+      (creature.abilities || []).forEach(function (move) { existing[move.id] = move.ppLeft; });
+      var chosen = (ids || []).filter(function (id, index, list) {
+        return unlocked[id] && list.indexOf(id) === index;
+      }).slice(0, 4);
+      if (!chosen.length) chosen = abilityIdsFor(base, creature.level || 1).slice(0, 1);
+      creature.abilities = chosen.map(function (id) {
+        var move = L.Abilities.createMove(id);
+        if (existing[id] != null) move.ppLeft = Math.min(move.pp, existing[id]);
+        return move;
+      });
+      return true;
+    },
+
     heal: function (creature) {
       creature.hp = creature.maxHp;
       creature.status = null;
