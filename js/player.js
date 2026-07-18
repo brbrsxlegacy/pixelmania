@@ -44,7 +44,7 @@
     }
   };
 
-  L.Player.prototype.draw = function (ctx, camera, time) {
-    L.Asset.drawPlayer(ctx, Math.round(this.x - camera.x), Math.round(this.y - camera.y), this.dir, this.moving, this.running, time);
+  L.Player.prototype.draw = function (ctx, camera, time, avatar) {
+    L.Asset.drawPlayer(ctx, Math.round(this.x - camera.x), Math.round(this.y - camera.y), this.dir, this.moving, this.running, time, avatar);
   };
 })();

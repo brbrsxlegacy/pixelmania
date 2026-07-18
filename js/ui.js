@@ -129,6 +129,8 @@
       "<button class='panel-row' data-pause='quests'>Görevler</button>" +
       "<button class='panel-row' data-pause='map'>Harita</button>" +
       "<button class='panel-row' data-pause='multiplayer'>Çok Oyunculu</button>" +
+      "<button class='panel-row' data-pause='jobs'>Meslekler</button>" +
+      "<button class='panel-row' data-pause='housing'>Evler</button>" +
       "<button class='panel-row' data-pause='settings'>Ayarlar</button>" +
       "<button class='panel-row' data-pause='save'>Kaydet</button>" +
       "<button class='panel-row danger' data-pause='main'>Ana Menü</button>" +
@@ -240,6 +242,58 @@
     this.showPanel("Harita", html, "map", "world");
   };
 
+  L.UiController.prototype.showAvatarShop = function () {
+    var self = this;
+    var state = this.game.state;
+    L.Economy.ensureState(state);
+    var html = "<div class='panel-row'><strong>Para:</strong> " + state.money + " Luma<br><small>Kilitli kıyafetleri bir kez alınca hep kullanabilirsin.</small></div>";
+    html += "<div class='panel-grid'>";
+    L.Economy.avatars.forEach(function (option) {
+      var owned = !!state.avatar.unlocked[option.id];
+      var active = state.avatar.outfit === option.id;
+      html += "<div class='item-row avatar-card'><strong>" + option.name + "</strong><br>" +
+        "<span class='avatar-swatch' data-outfit='" + option.id + "'></span><br>" +
+        "<small>" + (owned ? "Açık" : option.price + " Luma") + (active ? " • Üzerinde" : "") + "</small><br>" +
+        "<button data-avatar-outfit='" + option.id + "'" + (active ? " disabled" : "") + ">" + (owned ? "Giy" : "Al ve Giy") + "</button></div>";
+    });
+    html += "</div>";
+    this.showPanel("Karakter Dükkanı", html, "avatar", "world");
+    setTimeout(function () {
+      self.panelContent.querySelectorAll(".avatar-swatch").forEach(function (swatch) {
+        swatch.classList.add("outfit-" + swatch.getAttribute("data-outfit"));
+      });
+    }, 0);
+  };
+
+  L.UiController.prototype.showJobs = function () {
+    var state = this.game.state;
+    L.Economy.ensureState(state);
+    var html = "<div class='panel-row'><strong>Toplam vardiya:</strong> " + state.jobs.shifts + "<br><strong>Kazanılan:</strong> " + state.jobs.earned + " Luma</div>";
+    html += "<div class='panel-grid'>";
+    L.Economy.jobs.forEach(function (job) {
+      var done = state.jobs.completed[job.id] || 0;
+      html += "<div class='item-row'><strong>" + job.name + "</strong><br><small>" + job.place + " • " + done + " vardiya</small><br>" +
+        "<span>" + job.pay + "+ Luma</span><br><button data-work-job='" + job.id + "'>Vardiya Çalış</button></div>";
+    });
+    html += "</div>";
+    this.showPanel("Meslekler", html, "jobs", "world");
+  };
+
+  L.UiController.prototype.showHousing = function () {
+    var state = this.game.state;
+    L.Economy.ensureState(state);
+    var current = state.housing.status === "none" ? "Yok" : (state.housing.name + " • " + (state.housing.status === "owned" ? "Satın alındı" : "Kiralık"));
+    var html = "<div class='panel-row'><strong>Mevcut ev:</strong> " + current + "<br><strong>Para:</strong> " + state.money + " Luma</div>";
+    html += "<div class='panel-grid'>";
+    L.Economy.homes.forEach(function (home) {
+      html += "<div class='item-row'><strong>" + home.name + "</strong><br><small>" + home.district + "</small><br>" +
+        "<span>Kira " + home.rent + " • Satın al " + home.buy + " Luma</span><br>" +
+        "<button data-home-rent='" + home.id + "'>Kirala</button><button data-home-buy='" + home.id + "'>Satın Al</button></div>";
+    });
+    html += "</div>";
+    this.showPanel("Emlak Ofisi", html, "housing", "world");
+  };
+
   L.UiController.prototype.showMultiplayer = function (returnMode) {
     var mp = this.game.multiplayer;
     var hasGame = !!this.game.state;
@@ -315,6 +369,8 @@
       if (pause === "quests") this.showQuests();
       if (pause === "map") this.showMap();
       if (pause === "multiplayer") this.showMultiplayer("world");
+      if (pause === "jobs") this.showJobs();
+      if (pause === "housing") this.showHousing();
       if (pause === "settings") this.showSettings("world");
       if (pause === "save") this.showSlots("save", "world");
       if (pause === "main" && confirm("Ana menüye dönmek istiyor musun? Kaydedilmemiş ilerleme kaybolabilir.")) {
@@ -345,6 +401,44 @@
         L.UI.notify("Odadan çıkıldı.");
         L.UI.showMultiplayer("world");
       });
+      return;
+    }
+    var outfit = button.getAttribute("data-avatar-outfit");
+    if (outfit) {
+      var avatarResult = L.Economy.setAvatar(this.game, outfit);
+      this.notify(avatarResult.message);
+      if (avatarResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!avatarResult.ok && L.Audio) L.Audio.play("error");
+      this.showAvatarShop();
+      return;
+    }
+    var job = button.getAttribute("data-work-job");
+    if (job) {
+      var workResult = L.Economy.work(this.game, job);
+      this.notify(workResult.message);
+      if (workResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!workResult.ok && L.Audio) L.Audio.play("error");
+      this.showJobs();
+      return;
+    }
+    var rent = button.getAttribute("data-home-rent");
+    if (rent) {
+      if (!this.game.state.quests.ilkEvAnahtari) L.Quests.start(this.game.state, "ilkEvAnahtari");
+      var rentResult = L.Economy.rentHome(this.game, rent);
+      this.notify(rentResult.message);
+      if (rentResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!rentResult.ok && L.Audio) L.Audio.play("error");
+      this.showHousing();
+      return;
+    }
+    var buyHome = button.getAttribute("data-home-buy");
+    if (buyHome) {
+      if (!this.game.state.quests.ilkEvAnahtari) L.Quests.start(this.game.state, "ilkEvAnahtari");
+      var buyResult = L.Economy.buyHome(this.game, buyHome);
+      this.notify(buyResult.message);
+      if (buyResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!buyResult.ok && L.Audio) L.Audio.play("error");
+      this.showHousing();
       return;
     }
     var active = button.getAttribute("data-team-active");

@@ -14,6 +14,10 @@
       inventory: L.Inventory.createInitial(),
       money: 500,
       quests: L.Quests.createState(),
+      avatar: { outfit: "guardian", unlocked: { guardian: true } },
+      jobs: { shifts: 0, earned: 0, completed: {} },
+      housing: { status: "none", homeId: null },
+      city: { mayorMet: false },
       story: { introSeen: false, starterChosen: false, rivalFirstDone: false },
       defeatedTrainers: {},
       collectedItems: {},
@@ -38,6 +42,7 @@
     this.camera = new L.Camera(480, 270);
     this.player = new L.Player(25, 30);
     this.npcs = new L.NpcManager();
+    this.roamers = new L.RoamerManager();
     this.particles = new L.Particles();
     this.ui = new L.UiController(this);
     this.dialogue = new L.Dialogue(this);
@@ -108,8 +113,16 @@
   };
 
   L.Game.prototype.loadState = function (state) {
-    this.state = Object.assign(defaultState(L.Save.loadSettings()), state);
+    var base = defaultState(L.Save.loadSettings());
+    this.state = Object.assign(base, state);
     this.state.settings = Object.assign(L.Save.defaultSettings(), L.Save.loadSettings(), this.state.settings || {});
+    this.state.avatar = Object.assign(base.avatar, state.avatar || {});
+    this.state.avatar.unlocked = Object.assign({ guardian: true }, this.state.avatar.unlocked || {});
+    this.state.jobs = Object.assign(base.jobs, state.jobs || {});
+    this.state.jobs.completed = Object.assign({}, base.jobs.completed, this.state.jobs.completed || {});
+    this.state.housing = Object.assign(base.housing, state.housing || {});
+    this.state.city = Object.assign(base.city, state.city || {});
+    if (L.Economy) L.Economy.ensureState(this.state);
     L.Creatures.serializeFix(this.state);
     L.Audio.applySettings(this.state.settings);
     this.loadMap(this.state.mapId || "isikpinar");
@@ -165,6 +178,8 @@
     this.map = this.mapSystem.get(mapId);
     this.state.mapId = mapId;
     this.npcs.load(mapId);
+    if (this.roamers) this.roamers.load(this.map, this.state);
+    L.Quests.progress(this.state, "visit_" + mapId, 1);
     if (mapId === "kristalGol") L.Quests.progress(this.state, "reachLake", 1);
     if (mapId === "magara") L.Quests.progress(this.state, "enterCave", 1);
   };
@@ -281,6 +296,35 @@
       this.dialogue.show(npc.name, npc.dialogue, function () { L.Shop.open(self); });
       return;
     }
+    if (npc.action === "mayor") {
+      if (!this.state.quests.sehirPasaportu) L.Quests.start(this.state, "sehirPasaportu");
+      this.state.city.mayorMet = true;
+      L.Quests.progress(this.state, "talkMayor", 1);
+      this.dialogue.show(npc.name, npc.dialogue || ["Şehrin kapısı sana açık."], function () {
+        L.Quests.startBoardBatch(self.state, 2);
+      });
+      return;
+    }
+    if (npc.action === "quest_board") {
+      this.dialogue.show(npc.name, npc.dialogue || ["Panodaki işleri inceleyelim."], function () {
+        var started = L.Quests.startBoardBatch(self.state, 4);
+        self.ui.notify(started.length ? "Yeni işler çantanda." : "Şimdilik alınacak yeni pano görevi yok.");
+      });
+      return;
+    }
+    if (npc.action === "avatar_shop") {
+      this.dialogue.show(npc.name, npc.dialogue || ["Yeni bir tarz seçelim."], function () { self.ui.showAvatarShop(); });
+      return;
+    }
+    if (npc.action === "job_board") {
+      this.dialogue.show(npc.name, npc.dialogue || ["Bugünkü vardiyalara bakalım."], function () { self.ui.showJobs(); });
+      return;
+    }
+    if (npc.action === "real_estate") {
+      if (!this.state.quests.ilkEvAnahtari) L.Quests.start(this.state, "ilkEvAnahtari");
+      this.dialogue.show(npc.name, npc.dialogue || ["Ev seçeneklerine bakalım."], function () { self.ui.showHousing(); });
+      return;
+    }
     if (npc.action === "quest_kayipKristal") {
       if (!this.state.quests.kayipKristal) L.Quests.start(this.state, "kayipKristal");
       this.dialogue.show(npc.name, npc.dialogue);
@@ -354,6 +398,8 @@
       item = this.mapSystem.itemAt(this.map, foot.x, foot.y, this.state);
     }
     if (item) return this.collectItem(item);
+    var roamer = this.roamers && this.roamers.atFacingTile(this.player);
+    if (roamer) return this.startRoamerBattle(roamer);
     var interaction = this.mapSystem.interactionAt(this.map, tile.x, tile.y);
     if (!interaction) return;
     var self = this;
@@ -377,6 +423,17 @@
       return;
     }
     this.dialogue.show(interaction.type === "sign" ? "Tabela" : "Bilgi", [interaction.text]);
+  };
+
+  L.Game.prototype.startRoamerBattle = function (roamer) {
+    if (!this.state.team.length) {
+      this.ui.notify("Önce bir Luma yoldaşı seçmelisin.");
+      if (L.Audio) L.Audio.play("error");
+      return;
+    }
+    if (this.roamers) this.roamers.remove(roamer.id);
+    this.encounterCooldown = 4;
+    this.battle.startWild(L.Creatures.create(roamer.creatureId, roamer.level, { shiny: Math.random() < 1 / 96 }));
   };
 
   L.Game.prototype.pickEncounter = function () {
@@ -436,6 +493,7 @@
       if (this.input.consume("action")) this.handleInteraction();
       if (this.mode === "world") {
         this.player.update(dt, this.input, this.map, this.npcs.current);
+        if (this.roamers) this.roamers.update(dt, this.map);
         this.camera.follow(this.player, this.map, dt);
         this.particles.update(dt);
         var exit = this.mapSystem.exitAt(this.map, this.player.footRect(this.player.x, this.player.y));

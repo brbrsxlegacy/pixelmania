@@ -32,6 +32,19 @@
       return true;
     },
 
+    startBoardBatch: function (state, amount) {
+      var started = [];
+      Object.keys(data).some(function (id) {
+        if (started.length >= (amount || 3)) return true;
+        if (state.quests[id] || !data[id].generated) return false;
+        if (L.Quests.start(state, id, true)) started.push(data[id].title);
+        return false;
+      });
+      if (started.length && L.UI) L.UI.notify(started.length + " yeni şehir görevi alındı.");
+      if (started.length && L.Audio) L.Audio.play("quest");
+      return started;
+    },
+
     progress: function (state, objectiveId, amount) {
       var changed = false;
       Object.keys(state.quests).forEach(function (qid) {
@@ -82,6 +95,10 @@
 
     hasCompleted: function (state, id) {
       return state.quests[id] && state.quests[id].status === "completed";
+    },
+
+    count: function () {
+      return Object.keys(data).length;
     }
   };
 })();

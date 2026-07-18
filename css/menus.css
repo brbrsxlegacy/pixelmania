@@ -179,6 +179,27 @@
   padding: 8px;
 }
 
+.avatar-card {
+  min-height: 122px;
+}
+
+.avatar-swatch {
+  display: inline-block;
+  width: 58px;
+  height: 28px;
+  margin: 6px 0;
+  border: 2px solid #101521;
+  background: linear-gradient(90deg, #386fd0 0 48%, #d9514e 48% 62%, #172033 62%);
+}
+
+.outfit-ranger { background: linear-gradient(90deg, #2f8548 0 48%, #f2b94b 48% 62%, #4b3326 62%); }
+.outfit-courier { background: linear-gradient(90deg, #e46d45 0 48%, #4aa8d8 48% 62%, #172033 62%); }
+.outfit-night { background: linear-gradient(90deg, #31324f 0 48%, #7a63d8 48% 62%, #101521 62%); }
+.outfit-scholar { background: linear-gradient(90deg, #fff4d2 0 48%, #6aa9c8 48% 62%, #5c4a3d 62%); }
+.outfit-ember { background: linear-gradient(90deg, #b94b31 0 48%, #f2b94b 48% 62%, #3a2730 62%); }
+.outfit-aqua { background: linear-gradient(90deg, #2778b9 0 48%, #9de8e6 48% 62%, #172033 62%); }
+.outfit-crystal { background: linear-gradient(90deg, #8a8f91 0 48%, #93d4e8 48% 62%, #28364f 62%); }
+
 .panel-row button,
 .slot-card button,
 .team-card button,

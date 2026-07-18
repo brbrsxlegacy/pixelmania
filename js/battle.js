@@ -303,9 +303,15 @@
       this.setMessage(messages[i]);
       await delay(650);
     }
+    if (this.type === "wild") {
+      L.Quests.progress(state, "winWild", 1);
+      L.Quests.progress(state, "defeat_" + this.enemy.id, 1);
+    }
     if (this.type === "trainer" && this.trainer) {
       state.defeatedTrainers[this.trainer.id] = true;
       state.money += this.trainer.money || 80;
+      L.Quests.progress(state, "winTrainer", 1);
+      L.Quests.progress(state, "earnMoney", this.trainer.money || 80);
       if (this.trainer.questObjective) L.Quests.progress(state, this.trainer.questObjective, 1);
       this.setMessage((this.trainer.afterDialogue && this.trainer.afterDialogue[0]) || "Rakibini yendin!");
       await delay(800);
@@ -371,6 +377,9 @@
       if (roll.success) {
         this.setMessage(this.enemy.displayName + " yakalandı!");
         var where = L.Creatures.addToCollection(state, this.enemy);
+        L.Quests.progress(state, "catchAny", 1);
+        L.Quests.progress(state, "catch_" + this.enemy.element, 1);
+        L.Quests.progress(state, "catch_" + this.enemy.id, 1);
         if (this.enemy.element === "Su") L.Quests.progress(state, "catchWater", 1);
         if (L.Audio) L.Audio.play("victory");
         await delay(740);

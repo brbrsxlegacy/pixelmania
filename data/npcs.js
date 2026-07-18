@@ -74,4 +74,97 @@
         dialogue: ["Yine mi buradasın? Güzel. Demek final ışığını beraber göreceğiz."] }
     ]
   };
+
+  (function addCityNpcs() {
+    var npcs = window.LUMA_DATA.npcs;
+    function creatureByElement(element, offset) {
+      var ids = Object.keys(window.LUMA_DATA.creatures || {}).filter(function (id) {
+        var c = window.LUMA_DATA.creatures[id];
+        return c && !c.starter && c.element === element;
+      });
+      return ids.length ? ids[offset % ids.length] : "cimsirik";
+    }
+    npcs.lumaSehir = [
+      { id: "city_guide", name: "Şehir Rehberi İpek", type: "traveler", x: 30, y: 26, dir: "down", action: "talk", sprite: "clerk",
+        dialogue: ["Luma Şehri'ne hoş geldin. Batıda pazar, doğuda akademi, kuzeyde belediye var.", "Pano görevleri, meslekler ve görünen Luma'lar burada oyunun kalbidir."] },
+      { id: "city_quest_board", name: "Şehir Görev Panosu", type: "board", x: 39, y: 29, dir: "down", action: "quest_board", sprite: "sign",
+        dialogue: ["Pano yeni görevlerle dolu. Aynı anda birkaç iş almak iyi fikir."] },
+      { id: "city_job_board", name: "Meslek Panosu", type: "board", x: 20, y: 30, dir: "down", action: "job_board", sprite: "sign",
+        dialogue: ["Bugünkü vardiyalar hazır: kurye, araştırmacı, liman işçisi, arena hakemi ve daha fazlası."] }
+    ];
+    npcs.pazarMeydani = [
+      { id: "stylist_mina", name: "Stilist Mina", type: "stylist", x: 10, y: 13, dir: "down", action: "avatar_shop", sprite: "stylist",
+        dialogue: ["Tarzını yenileyelim mi? Kıyafet değişimi ücretsiz; şehirde görünüş de maceranın parçası."] },
+      { id: "broker_taner", name: "Emlakçı Taner", type: "broker", x: 46, y: 14, dir: "down", action: "real_estate", sprite: "broker",
+        dialogue: ["Kiralık stüdyo da var, satın alınacak daire de. Anahtarın olunca şehirde bir üssün olur."] },
+      { id: "market_kadir", name: "Pazar Kadir", type: "shopkeeper", x: 47, y: 25, dir: "left", action: "shop", sprite: "merchant",
+        dialogue: ["Şehir stokları geniştir. Uzun keşfe çıkmadan kürelerini tamamla."] }
+    ];
+    npcs.belediyeBahcesi = [
+      { id: "mayor_nermin", name: "Başkan Nermin", type: "mayor", x: 31, y: 14, dir: "down", action: "mayor", sprite: "mayor",
+        dialogue: ["Luma Şehri'ne resmi kaydını açalım. Çalış, görev al, evini kur; şehir yaşayan oyuncuyu sever."] },
+      { id: "belediye_board", name: "Belediye Panosu", type: "board", x: 49, y: 28, dir: "down", action: "quest_board", sprite: "sign",
+        dialogue: ["Belediye işleri: keşif, yakalama, vardiya ve bölge raporu."] }
+    ];
+    npcs.lumaAkademi = [
+      { id: "akademi_aylin", name: "Araştırmacı Aylin", type: "collector", x: 28, y: 29, dir: "down", action: "quest_board", sprite: "collector",
+        dialogue: ["Akademi panosu yeni Luma kayıtları istiyor. Katalog büyüdükçe şehir de büyür."] },
+      { id: "trainer_akademi", name: "Öğrenci Bora", type: "trainer", x: 43, y: 22, dir: "left", action: "trainer", sprite: "trainer",
+        team: [{ creatureId: creatureByElement("Elektrik", 3), level: 12 }, { creatureId: creatureByElement("Işık", 4), level: 12 }], money: 220,
+        dialogue: ["Akademide teori biterse sıra pratiğe gelir!"], afterDialogue: ["Notlarımı güncellemem lazım."] }
+    ];
+    npcs.trenIstasyonu = [
+      { id: "station_worker", name: "Makinist Rıza", type: "worker", x: 44, y: 30, dir: "left", action: "job_board", sprite: "worker",
+        dialogue: ["Ray kontrol vardiyası kısa sürer ama iyi kazandırır."] }
+    ];
+    npcs.liman = [
+      { id: "port_worker", name: "Liman Ustası Selma", type: "worker", x: 27, y: 30, dir: "up", action: "job_board", sprite: "worker",
+        dialogue: ["Sandık taşımak basit iştir; dikkatli olan daha çok kazanır."] }
+    ];
+    npcs.sanayi = [
+      { id: "factory_master", name: "Usta Cem", type: "worker", x: 29, y: 30, dir: "up", action: "job_board", sprite: "worker",
+        dialogue: ["Atölye vardiyası için sağlam bot ve sağlam sabır yeter."] }
+    ];
+    npcs.arenaMeydan = [
+      { id: "arena_board", name: "Arena Panosu", type: "board", x: 46, y: 29, dir: "down", action: "quest_board", sprite: "sign",
+        dialogue: ["Maç serileri ve vahşi Luma denge görevleri burada yayınlanır."] },
+      { id: "arena_guard", name: "Arena Gözcüsü Tuna", type: "trainer", x: 32, y: 24, dir: "down", action: "trainer", sprite: "guard",
+        team: [{ creatureId: creatureByElement("Alev", 5), level: 15 }, { creatureId: creatureByElement("Kaya", 6), level: 15 }], money: 260,
+        dialogue: ["Arena meydanına adım atan ritmini göstermeli."], afterDialogue: ["Geçiş sende."] }
+    ];
+    [
+      ["botanikBahce", "Botanikçi Nehir", "Yaprak", 13],
+      ["rengarenkCayir", "Gezgin Lalin", "Rüzgar", 14],
+      ["geceKorusu", "Gececi Doruk", "Gölge", 16],
+      ["sisBatakligi", "Sis Korucusu Ece", "Su", 17],
+      ["meteorTepesi", "Meteorcu Baran", "Elektrik", 16],
+      ["lavKanyonu", "Kanyoncu İdil", "Alev", 19],
+      ["kumruCukuru", "Çölcü Kaan", "Kaya", 18],
+      ["kristalMaden", "Madenci Sarp", "Kaya", 21],
+      ["sahilRotasi", "Sahilci Defne", "Su", 15],
+      ["buzulKiyi", "Buzulcu Nisa", "Su", 20],
+      ["gokKulesi", "Kuleci Alp", "Rüzgar", 20],
+      ["antikaHarabe", "Harabeci Mine", "Gölge", 17],
+      ["kutupPatikasi", "Kutupçu Eren", "Elektrik", 19]
+    ].forEach(function (row, index) {
+      if (!npcs[row[0]]) npcs[row[0]] = [];
+      npcs[row[0]].push({
+        id: "trainer_" + row[0],
+        name: row[1],
+        type: "trainer",
+        x: 32 + index % 3 * 4,
+        y: 18 + index % 4,
+        dir: index % 2 ? "left" : "down",
+        action: "trainer",
+        sprite: index % 2 ? "trainer2" : "trainer",
+        team: [
+          { creatureId: creatureByElement(row[2], index + 2), level: row[3] },
+          { creatureId: creatureByElement(row[2], index + 8), level: row[3] + 1 }
+        ],
+        money: 180 + row[3] * 12,
+        dialogue: ["Bu bölgenin Luma'ları kolay kolay yabancı sevmez. Önce benimle ısın."],
+        afterDialogue: ["Tamam, bölge seni tanıdı."]
+      });
+    });
+  })();
 })();

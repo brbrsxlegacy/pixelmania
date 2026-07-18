@@ -95,4 +95,76 @@
       evolution: null, sprite: { body: "fox", colors: ["#f2d86b", "#fff2a8", "#6fb6d9"] }
     }
   };
+
+  (function expandLumaCatalog() {
+    var creatures = window.LUMA_DATA.creatures;
+    var elementMoves = {
+      "Yaprak": ["yaprakDarbesi", "kokKapani", "camKalkan", "polenUykusu"],
+      "Alev": ["kozSicramasi", "alevPencesi", "korPerdesi", "firinNefesi"],
+      "Su": ["kopukAtisi", "dalgaCarpmasi", "yagmurNabzi", "inciAkimi"],
+      "Kaya": ["tasYumruk", "kristalSavunma", "magaraCokusu", "tasYumruk"],
+      "Rüzgar": ["ruzgarKesisi", "hizKanadi", "firtinaDonusu", "ruzgarKesisi"],
+      "Elektrik": ["voltKivilcimi", "simsekZiplamasi", "hizKanadi", "voltKivilcimi"],
+      "Gölge": ["golgeIsirigi", "gecePerdesi", "golgeIsirigi", "gecePerdesi"],
+      "Işık": ["isikHalesi", "safakPatlamasi", "hizKanadi", "isikHalesi"]
+    };
+    var elements = Object.keys(elementMoves);
+    var bodies = [
+      "sprout", "cat", "otter", "drop", "beetle", "bird", "fox", "mouse", "bat", "orb", "crystal", "fish", "deer",
+      "turtle", "moth", "lizard", "serpent", "golem", "crab", "owl", "rabbit", "frog", "jelly", "mantis",
+      "wolf", "flower", "snail", "sprite", "mushroom", "rhino", "penguin", "scorpion", "star"
+    ];
+    var prefixes = [
+      "Nara", "Mavi", "Kıvıl", "Pırı", "Gümüş", "Çın", "Yosun", "Bora", "Kum", "Sedef", "Lal", "Sis",
+      "Uğur", "Koral", "Doru", "Misk", "Kara", "Yıldız", "Köpük", "Çakıl", "Safir", "Mercan", "Aykır", "Zümra"
+    ];
+    var suffixes = [
+      "kuş", "pati", "kuyruk", "burun", "kanat", "göz", "çen", "mır", "taş", "su", "çik", "peri",
+      "zor", "min", "göl", "kır", "pul", "çap", "yürek", "gölge", "ışık", "diken", "tüy", "kök"
+    ];
+    var nameMarks = ["a", "on", "is", "el", "or", "ya", "um", "ek", "ir", "as", "en", "il", "os", "ur", "ia", "an", "et"];
+    var palettes = {
+      "Yaprak": [["#2f8548", "#8bd36b", "#fff4d2"], ["#456f3f", "#a8d46a", "#e0c974"], ["#1f6f55", "#54b86b", "#d9ffd1"]],
+      "Alev": [["#9f3d2e", "#f06b34", "#ffd28a"], ["#b94b31", "#f2b94b", "#fff4d2"], ["#7d351f", "#e46d45", "#f8a05f"]],
+      "Su": [["#2778b9", "#9de8e6", "#fff4d2"], ["#2d79b8", "#74d0ed", "#dff8ff"], ["#355f9f", "#4aa8d8", "#aef2ff"]],
+      "Kaya": [["#555b66", "#aeb3a5", "#fff4d2"], ["#62666b", "#93d4e8", "#f2d54a"], ["#443d47", "#8a8f91", "#d7d1c0"]],
+      "Rüzgar": [["#6fb6d9", "#e7fbff", "#576a8a"], ["#7cc7aa", "#fff4d2", "#4f76b9"], ["#8ab7df", "#f4fbff", "#7b89a6"]],
+      "Elektrik": [["#f3cf3f", "#fff2a8", "#2e3959"], ["#f2b94b", "#fff4d2", "#6f63d8"], ["#d7e354", "#ffffff", "#4467a7"]],
+      "Gölge": [["#31324f", "#67649b", "#c8c6ff"], ["#20243a", "#7a63d8", "#f08bb0"], ["#172033", "#59547c", "#a08ac8"]],
+      "Işık": [["#f2d86b", "#fff6b8", "#f08bb0"], ["#fff4d2", "#93d4e8", "#f2b94b"], ["#f7e7b2", "#ffffff", "#54b86b"]]
+    };
+    var marks = ["crest", "stripes", "spots", "horn", "wings", "tail", "gem", "mask", "none"];
+    var count = Object.keys(creatures).length;
+    var serial = count + 1;
+    while (count < 131) {
+      var element = elements[(serial * 5 + serial % 7) % elements.length];
+      var body = bodies[(serial - 16) % bodies.length];
+      var paletteSet = palettes[element];
+      var colors = paletteSet[(serial + Math.floor(serial / 3)) % paletteSet.length];
+      var id = "luma" + String(serial).padStart(3, "0");
+      if (!creatures[id]) {
+        var name = prefixes[(serial * 7) % prefixes.length] + suffixes[(serial * 13) % suffixes.length] + nameMarks[(serial * 5) % nameMarks.length];
+        var tier = serial % 19 === 0 ? "Çok Nadir" : (serial % 7 === 0 ? "Nadir" : "Yaygın");
+        creatures[id] = {
+          id: id,
+          name: name,
+          element: element,
+          rarity: tier,
+          captureDifficulty: tier === "Çok Nadir" ? 72 : (tier === "Nadir" ? 56 : 38),
+          baseStats: {
+            hp: 31 + serial % 22,
+            attack: 8 + serial % 11,
+            defense: 8 + (serial * 3) % 12,
+            speed: 7 + (serial * 5) % 14
+          },
+          abilities: elementMoves[element],
+          description: name + ", " + element + " ışığını taşıyan özgün bir Luma türüdür. Bölgesine göre rengi, duruşu ve huyu değişir.",
+          evolution: null,
+          sprite: { body: body, colors: colors, variant: serial % 12, mark: marks[serial % marks.length] }
+        };
+        count += 1;
+      }
+      serial += 1;
+    }
+  })();
 })();

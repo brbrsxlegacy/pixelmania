@@ -131,6 +131,8 @@
     var m = makeMap("isikpinar", "Işıkpınar Köyü", 58, 42, "grass");
     setRect(m, "ground", 5, 18, 49, 4, "road");
     setRect(m, "ground", 26, 8, 4, 29, "road");
+    setRect(m, "ground", 26, 0, 4, 8, "road");
+    setRect(m, "collision", 26, 0, 4, 2, 0);
     setRect(m, "ground", 18, 26, 14, 5, "plaza");
     setRect(m, "ground", 45, 30, 7, 8, "water");
     setRect(m, "collision", 45, 30, 7, 8, 1);
@@ -156,7 +158,10 @@
       { x: 35, y: 30, type: "door", to: "shopInterior", spawnX: 8, spawnY: 9, text: "Kadir'in Dükkanı'na giriyorsun." },
       { x: 42, y: 24, type: "well", text: "Kuyunun kristal yuvası boş görünüyor." }
     );
-    m.exits.push({ x: 56, y: 18, w: 2, h: 4, to: "yesilova", spawnX: 3, spawnY: 20 });
+    m.exits.push(
+      { x: 56, y: 18, w: 2, h: 4, to: "yesilova", spawnX: 3, spawnY: 20 },
+      { x: 26, y: 0, w: 4, h: 2, to: "lumaSehir", spawnX: 31, spawnY: 38 }
+    );
     m.items.push({ id: "villagePotion", x: 47, y: 28, itemId: "kucukIksir", qty: 1, hidden: true });
     m.encounters = [{ id: "cimsirik", min: 2, max: 4, weight: 6 }, { id: "minsu", min: 2, max: 3, weight: 2 }];
     return m;
@@ -294,13 +299,133 @@
     put(m, 46, 32, "chest", 1, 1);
     m.interactions.push({ x: 46, y: 32, type: "itemChest", itemId: "magaraFeneri", qty: 1, objective: "findLantern", text: "Sandığın içinde Mağara Feneri var." });
     m.items.push({ id: "cavePotion", x: 12, y: 11, itemId: "tamIksir", qty: 1 });
-    m.exits.push({ x: 4, y: 18, w: 2, h: 5, to: "kristalGol", spawnX: 49, spawnY: 24 });
+    setRect(m, "ground", 52, 18, 6, 5, "caveFloor");
+    setRect(m, "collision", 56, 18, 2, 5, 0);
+    m.exits.push(
+      { x: 4, y: 18, w: 2, h: 5, to: "kristalGol", spawnX: 49, spawnY: 24 },
+      { x: 56, y: 18, w: 2, h: 5, to: "kristalMaden", spawnX: 31, spawnY: 38 }
+    );
     m.encounters = [
       { id: "tasburun", min: 9, max: 12, weight: 5 },
       { id: "golgemir", min: 9, max: 12, weight: 3 },
       { id: "kristalik", min: 10, max: 13, weight: 2 },
       { id: "lumeru", min: 12, max: 14, weight: 1 }
     ];
+    return m;
+  }
+
+  function patternedScatter(map, code, count, area, salt) {
+    for (var i = 0; i < count; i += 1) {
+      var x = area.x + (i * 7 + salt * 3 + i * i) % area.w;
+      var y = area.y + (i * 11 + salt * 5 + i * 2) % area.h;
+      if (!map.collision[idx(map, x, y)]) map.decoration[idx(map, x, y)] = code;
+    }
+  }
+
+  function addDirectionalExit(map, side, to, spawnX, spawnY, roadTile) {
+    roadTile = roadTile || "road";
+    var e = { to: to, spawnX: spawnX, spawnY: spawnY };
+    if (side === "north") {
+      Object.assign(e, { x: 28, y: 0, w: 8, h: 2 });
+      setRect(map, "ground", 28, 0, 8, 5, roadTile);
+      setRect(map, "collision", 28, 0, 8, 2, 0);
+    }
+    if (side === "south") {
+      Object.assign(e, { x: 28, y: map.h - 2, w: 8, h: 2 });
+      setRect(map, "ground", 28, map.h - 5, 8, 5, roadTile);
+      setRect(map, "collision", 28, map.h - 2, 8, 2, 0);
+    }
+    if (side === "west") {
+      Object.assign(e, { x: 0, y: 18, w: 2, h: 7 });
+      setRect(map, "ground", 0, 18, 8, 7, roadTile);
+      setRect(map, "collision", 0, 18, 2, 7, 0);
+    }
+    if (side === "east") {
+      Object.assign(e, { x: map.w - 2, y: 18, w: 2, h: 7 });
+      setRect(map, "ground", map.w - 8, 18, 8, 7, roadTile);
+      setRect(map, "collision", map.w - 2, 18, 2, 7, 0);
+    }
+    map.exits.push(e);
+  }
+
+  function addLinks(map, links, roadTile) {
+    (links || []).forEach(function (link) {
+      addDirectionalExit(map, link.side, link.to, link.spawnX, link.spawnY, roadTile);
+    });
+  }
+
+  function encounterPool(elements, min, max, salt) {
+    var all = window.LUMA_DATA.creatures || {};
+    var buckets = {};
+    Object.keys(all).forEach(function (id) {
+      var c = all[id];
+      if (!c || c.starter) return;
+      if (!buckets[c.element]) buckets[c.element] = [];
+      buckets[c.element].push(id);
+    });
+    var pool = [];
+    elements.forEach(function (element, elementIndex) {
+      var ids = buckets[element] || ["cimsirik"];
+      for (var i = 0; i < 3; i += 1) {
+        var id = ids[(salt + i * 7 + elementIndex * 11) % ids.length];
+        pool.push({ id: id, min: min + elementIndex, max: max + elementIndex, weight: Math.max(1, 6 - i - elementIndex) });
+      }
+    });
+    return pool;
+  }
+
+  function makeCityDistrict(spec) {
+    var m = makeMap(spec.id, spec.name, 64, 42, spec.ground || "cityStone");
+    setRect(m, "ground", 0, 18, 64, 7, "asphalt");
+    setRect(m, "ground", 28, 0, 8, 42, "asphalt");
+    setRect(m, "ground", 22, 14, 20, 15, spec.centerTile || "cityStone");
+    setRect(m, "collision", 0, 18, 64, 7, 0);
+    setRect(m, "collision", 28, 0, 8, 42, 0);
+    (spec.objects || []).forEach(function (o) { put(m, o.x, o.y, o.code, o.w, o.h); });
+    for (var i = 0; i < 9; i += 1) {
+      put(m, 8 + i * 6, i % 2 ? 29 : 10, "cityLamp", 1, 2);
+    }
+    patternedScatter(m, spec.flower || "flowerYellow", 18, { x: 5, y: 5, w: 54, h: 31 }, spec.salt || 1);
+    addLinks(m, spec.links, "asphalt");
+    m.interactions.push({ x: 31, y: 20, type: "sign", text: spec.name + " - Luma Şehri bağlantı noktası." });
+    return m;
+  }
+
+  function makeWildRegion(spec) {
+    var m = makeMap(spec.id, spec.name, 64, 42, spec.ground);
+    setRect(m, "ground", 0, 18, 64, 6, spec.path || "road");
+    setRect(m, "ground", 29, 0, 6, 42, spec.path || "road");
+    setRect(m, "collision", 0, 18, 64, 6, 0);
+    setRect(m, "collision", 29, 0, 6, 42, 0);
+    setRect(m, "ground", 7, 7, 17, 9, "tallGrass");
+    setRect(m, "encounter", 7, 7, 17, 9, 1);
+    setRect(m, "ground", 39, 8, 16, 9, "tallGrass");
+    setRect(m, "encounter", 39, 8, 16, 9, 1);
+    setRect(m, "ground", 12, 28, 38, 8, "tallGrass");
+    setRect(m, "encounter", 12, 28, 38, 8, 1);
+    if (spec.water) {
+      setRect(m, "ground", 43, 24, 14, 11, spec.water);
+      setRect(m, "collision", 43, 24, 14, 11, 1);
+    }
+    if (spec.objects) spec.objects.forEach(function (o) { put(m, o.x, o.y, o.code, o.w, o.h); });
+    var borderCode = spec.border || (spec.ground === "snow" ? "iceRock" : (spec.ground === "desert" ? "palm" : (spec.ground === "cave" ? "rock" : "tree")));
+    for (var bx = 2; bx < m.w - 3; bx += 4) {
+      if (!(bx > 27 && bx < 37)) {
+        put(m, bx, 1, borderCode, borderCode === "tree" || borderCode === "pine" ? 2 : 1, borderCode === "tree" || borderCode === "pine" ? 2 : 1);
+        put(m, bx, m.h - 4, borderCode, borderCode === "tree" || borderCode === "pine" ? 2 : 1, borderCode === "tree" || borderCode === "pine" ? 2 : 1);
+      }
+    }
+    for (var by = 4; by < m.h - 5; by += 4) {
+      if (!(by > 16 && by < 26)) {
+        put(m, 1, by, borderCode, borderCode === "tree" || borderCode === "pine" ? 2 : 1, borderCode === "tree" || borderCode === "pine" ? 2 : 1);
+        put(m, m.w - 4, by, borderCode, borderCode === "tree" || borderCode === "pine" ? 2 : 1, borderCode === "tree" || borderCode === "pine" ? 2 : 1);
+      }
+    }
+    patternedScatter(m, spec.scatter || "flowerPink", 28, { x: 4, y: 5, w: 56, h: 32 }, spec.salt || 2);
+    addLinks(m, spec.links, spec.path || "road");
+    m.encounters = encounterPool(spec.elements, spec.min, spec.max, spec.salt || 1);
+    m.roamerCount = spec.roamerCount || 4;
+    m.interactions.push({ x: 31, y: 20, type: "sign", text: spec.name + " bölgesinde görünen Luma'lara yaklaşınca A/E ile savaşabilirsin." });
     return m;
   }
 
@@ -314,6 +439,158 @@
     yesilova: makeRoad(),
     fisilti: makeForest(),
     kristalGol: makeLake(),
-    magara: makeCave()
+    magara: makeCave(),
+    lumaSehir: makeCityDistrict({
+      id: "lumaSehir", name: "Luma Şehri Merkez", centerTile: "plaza", salt: 3,
+      objects: [
+        { x: 6, y: 7, code: "cityTower", w: 4, h: 5 },
+        { x: 45, y: 6, code: "apartment", w: 5, h: 5 },
+        { x: 23, y: 15, code: "fountain", w: 3, h: 2 },
+        { x: 39, y: 27, code: "guildBoard", w: 2, h: 2 },
+        { x: 19, y: 28, code: "jobBoard", w: 2, h: 2 }
+      ],
+      links: [
+        { side: "south", to: "isikpinar", spawnX: 28, spawnY: 2 },
+        { side: "west", to: "pazarMeydani", spawnX: 58, spawnY: 20 },
+        { side: "east", to: "lumaAkademi", spawnX: 4, spawnY: 20 },
+        { side: "north", to: "belediyeBahcesi", spawnX: 31, spawnY: 38 }
+      ]
+    }),
+    pazarMeydani: makeCityDistrict({
+      id: "pazarMeydani", name: "Pazar Meydanı", centerTile: "marketTile", flower: "flowerPink", salt: 4,
+      objects: [
+        { x: 7, y: 7, code: "styleShop", w: 4, h: 4 },
+        { x: 42, y: 7, code: "realEstate", w: 5, h: 4 },
+        { x: 10, y: 28, code: "stall", w: 3, h: 3 },
+        { x: 25, y: 28, code: "stall", w: 3, h: 3 },
+        { x: 44, y: 28, code: "shop", w: 5, h: 4 }
+      ],
+      links: [
+        { side: "east", to: "lumaSehir", spawnX: 5, spawnY: 20 },
+        { side: "west", to: "liman", spawnX: 58, spawnY: 20 },
+        { side: "north", to: "trenIstasyonu", spawnX: 31, spawnY: 38 },
+        { side: "south", to: "sanayi", spawnX: 31, spawnY: 4 }
+      ]
+    }),
+    belediyeBahcesi: makeCityDistrict({
+      id: "belediyeBahcesi", name: "Belediye Bahçesi", centerTile: "gardenTile", salt: 5,
+      objects: [
+        { x: 22, y: 5, code: "mayorHall", w: 6, h: 5 },
+        { x: 9, y: 26, code: "fountain", w: 3, h: 2 },
+        { x: 48, y: 26, code: "guildBoard", w: 2, h: 2 }
+      ],
+      links: [
+        { side: "south", to: "lumaSehir", spawnX: 31, spawnY: 4 },
+        { side: "north", to: "gokKulesi", spawnX: 31, spawnY: 38 },
+        { side: "west", to: "antikaHarabe", spawnX: 58, spawnY: 20 },
+        { side: "east", to: "meteorTepesi", spawnX: 4, spawnY: 20 }
+      ]
+    }),
+    lumaAkademi: makeCityDistrict({
+      id: "lumaAkademi", name: "Luma Akademisi", centerTile: "labFloor", flower: "flowerYellow", salt: 6,
+      objects: [
+        { x: 7, y: 6, code: "lab", w: 7, h: 5 },
+        { x: 44, y: 6, code: "cityTower", w: 4, h: 5 },
+        { x: 27, y: 28, code: "guildBoard", w: 2, h: 2 }
+      ],
+      links: [
+        { side: "west", to: "lumaSehir", spawnX: 58, spawnY: 20 },
+        { side: "east", to: "arenaMeydan", spawnX: 4, spawnY: 20 },
+        { side: "north", to: "botanikBahce", spawnX: 31, spawnY: 38 },
+        { side: "south", to: "sahilRotasi", spawnX: 31, spawnY: 4 }
+      ]
+    }),
+    trenIstasyonu: makeCityDistrict({
+      id: "trenIstasyonu", name: "Tren İstasyonu", centerTile: "cityStone", salt: 7,
+      objects: [{ x: 18, y: 7, code: "station", w: 6, h: 4 }, { x: 45, y: 27, code: "jobBoard", w: 2, h: 2 }],
+      links: [
+        { side: "south", to: "pazarMeydani", spawnX: 31, spawnY: 4 },
+        { side: "north", to: "kutupPatikasi", spawnX: 31, spawnY: 38 }
+      ]
+    }),
+    liman: makeCityDistrict({
+      id: "liman", name: "Kristal Liman", centerTile: "marketTile", salt: 8,
+      objects: [{ x: 7, y: 7, code: "dock", w: 5, h: 1 }, { x: 39, y: 7, code: "station", w: 6, h: 4 }, { x: 26, y: 28, code: "jobBoard", w: 2, h: 2 }],
+      links: [
+        { side: "east", to: "pazarMeydani", spawnX: 5, spawnY: 20 },
+        { side: "north", to: "sahilRotasi", spawnX: 31, spawnY: 38 }
+      ]
+    }),
+    sanayi: makeCityDistrict({
+      id: "sanayi", name: "Sanayi Bölgesi", ground: "asphalt", centerTile: "cityStone", salt: 9,
+      objects: [{ x: 6, y: 6, code: "factory", w: 6, h: 4 }, { x: 42, y: 8, code: "factory", w: 6, h: 4 }, { x: 28, y: 28, code: "jobBoard", w: 2, h: 2 }],
+      links: [
+        { side: "north", to: "pazarMeydani", spawnX: 31, spawnY: 38 },
+        { side: "east", to: "arenaMeydan", spawnX: 4, spawnY: 20 }
+      ]
+    }),
+    arenaMeydan: makeCityDistrict({
+      id: "arenaMeydan", name: "Arena Meydanı", centerTile: "plaza", salt: 10,
+      objects: [{ x: 19, y: 6, code: "arena", w: 6, h: 5 }, { x: 45, y: 28, code: "guildBoard", w: 2, h: 2 }],
+      links: [
+        { side: "west", to: "lumaAkademi", spawnX: 58, spawnY: 20 },
+        { side: "south", to: "sanayi", spawnX: 58, spawnY: 20 }
+      ]
+    }),
+    botanikBahce: makeWildRegion({
+      id: "botanikBahce", name: "Botanik Bahçe", ground: "gardenTile", path: "leafRoad", elements: ["Yaprak", "Işık"], min: 10, max: 14, salt: 11,
+      objects: [{ x: 46, y: 26, code: "fountain", w: 3, h: 2 }],
+      links: [{ side: "south", to: "lumaAkademi", spawnX: 31, spawnY: 4 }, { side: "east", to: "rengarenkCayir", spawnX: 4, spawnY: 20 }]
+    }),
+    rengarenkCayir: makeWildRegion({
+      id: "rengarenkCayir", name: "Rengarenk Çayır", ground: "meadow", path: "road", elements: ["Yaprak", "Rüzgar", "Işık"], min: 11, max: 15, salt: 12,
+      links: [{ side: "west", to: "botanikBahce", spawnX: 58, spawnY: 20 }, { side: "north", to: "geceKorusu", spawnX: 31, spawnY: 38 }]
+    }),
+    geceKorusu: makeWildRegion({
+      id: "geceKorusu", name: "Gece Korusu", ground: "forest", path: "leafRoad", elements: ["Gölge", "Yaprak", "Rüzgar"], min: 13, max: 17, salt: 13,
+      links: [{ side: "south", to: "rengarenkCayir", spawnX: 31, spawnY: 4 }, { side: "east", to: "sisBatakligi", spawnX: 4, spawnY: 20 }]
+    }),
+    sisBatakligi: makeWildRegion({
+      id: "sisBatakligi", name: "Sis Bataklığı", ground: "swamp", path: "leafRoad", water: "swamp", elements: ["Gölge", "Su", "Yaprak"], min: 14, max: 19, salt: 14,
+      links: [{ side: "west", to: "geceKorusu", spawnX: 58, spawnY: 20 }]
+    }),
+    meteorTepesi: makeWildRegion({
+      id: "meteorTepesi", name: "Meteor Tepesi", ground: "caveFloor", path: "road", elements: ["Kaya", "Elektrik", "Işık"], min: 12, max: 16, salt: 15,
+      objects: [{ x: 45, y: 27, code: "crystalBlue", w: 1, h: 1 }, { x: 18, y: 31, code: "crystalPink", w: 1, h: 1 }],
+      links: [{ side: "west", to: "belediyeBahcesi", spawnX: 58, spawnY: 20 }, { side: "east", to: "lavKanyonu", spawnX: 4, spawnY: 20 }]
+    }),
+    lavKanyonu: makeWildRegion({
+      id: "lavKanyonu", name: "Lav Kanyonu", ground: "cave", path: "caveFloor", water: "lava", scatter: "lavaRock", elements: ["Alev", "Kaya", "Elektrik"], min: 15, max: 20, salt: 16,
+      objects: [{ x: 12, y: 8, code: "lavaRock", w: 1, h: 1 }, { x: 50, y: 13, code: "lavaRock", w: 1, h: 1 }],
+      links: [{ side: "west", to: "meteorTepesi", spawnX: 58, spawnY: 20 }, { side: "south", to: "kumruCukuru", spawnX: 31, spawnY: 4 }, { side: "east", to: "kristalMaden", spawnX: 4, spawnY: 20 }]
+    }),
+    kumruCukuru: makeWildRegion({
+      id: "kumruCukuru", name: "Kumru Çukuru", ground: "desert", path: "road", scatter: "rock", elements: ["Kaya", "Alev", "Rüzgar"], min: 14, max: 18, salt: 17,
+      objects: [{ x: 8, y: 30, code: "palm", w: 1, h: 2 }, { x: 53, y: 10, code: "palm", w: 1, h: 2 }],
+      links: [{ side: "north", to: "lavKanyonu", spawnX: 31, spawnY: 38 }]
+    }),
+    kristalMaden: makeWildRegion({
+      id: "kristalMaden", name: "Kristal Maden", ground: "cave", path: "caveFloor", scatter: "crystalBlue", elements: ["Kaya", "Gölge", "Işık"], min: 17, max: 22, salt: 18,
+      objects: [{ x: 47, y: 9, code: "caveMouth", w: 4, h: 3 }, { x: 17, y: 31, code: "crystalPink", w: 1, h: 1 }],
+      links: [{ side: "west", to: "lavKanyonu", spawnX: 58, spawnY: 20 }, { side: "south", to: "magara", spawnX: 54, spawnY: 20 }]
+    }),
+    sahilRotasi: makeWildRegion({
+      id: "sahilRotasi", name: "Sahil Rotası", ground: "sandGrass", path: "road", water: "water", scatter: "palm", elements: ["Su", "Rüzgar", "Işık"], min: 11, max: 16, salt: 19,
+      links: [{ side: "north", to: "lumaAkademi", spawnX: 31, spawnY: 38 }, { side: "west", to: "liman", spawnX: 31, spawnY: 4 }, { side: "east", to: "buzulKiyi", spawnX: 4, spawnY: 20 }]
+    }),
+    buzulKiyi: makeWildRegion({
+      id: "buzulKiyi", name: "Buzul Kıyısı", ground: "snow", path: "cityStone", water: "water", scatter: "iceRock", elements: ["Su", "Kaya", "Rüzgar"], min: 16, max: 21, salt: 20,
+      objects: [{ x: 16, y: 10, code: "iceRock", w: 1, h: 1 }, { x: 51, y: 30, code: "iceRock", w: 1, h: 1 }],
+      links: [{ side: "west", to: "sahilRotasi", spawnX: 58, spawnY: 20 }]
+    }),
+    gokKulesi: makeWildRegion({
+      id: "gokKulesi", name: "Gök Kulesi", ground: "cityStone", path: "asphalt", scatter: "cityLamp", elements: ["Rüzgar", "Elektrik", "Işık"], min: 15, max: 21, salt: 21,
+      objects: [{ x: 24, y: 6, code: "cityTower", w: 4, h: 5 }, { x: 41, y: 26, code: "crystalBlue", w: 1, h: 1 }],
+      links: [{ side: "south", to: "belediyeBahcesi", spawnX: 31, spawnY: 4 }]
+    }),
+    antikaHarabe: makeWildRegion({
+      id: "antikaHarabe", name: "Antika Harabe", ground: "ruinFloor", path: "road", scatter: "rock", elements: ["Gölge", "Kaya", "Işık"], min: 13, max: 18, salt: 22,
+      objects: [{ x: 23, y: 7, code: "ruinGate", w: 4, h: 4 }, { x: 46, y: 28, code: "crystalPink", w: 1, h: 1 }],
+      links: [{ side: "east", to: "belediyeBahcesi", spawnX: 5, spawnY: 20 }]
+    }),
+    kutupPatikasi: makeWildRegion({
+      id: "kutupPatikasi", name: "Kutup Patikası", ground: "snow", path: "cityStone", scatter: "iceRock", elements: ["Su", "Rüzgar", "Elektrik"], min: 14, max: 20, salt: 23,
+      links: [{ side: "south", to: "trenIstasyonu", spawnX: 31, spawnY: 4 }]
+    })
   };
 })();
