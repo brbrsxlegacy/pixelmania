@@ -37,23 +37,31 @@
     this.mainMenu.addEventListener("click", function (event) {
       var button = event.target.closest("[data-menu-action]");
       if (!button) return;
-      var action = button.getAttribute("data-menu-action");
-      if (L.Audio) L.Audio.play("confirm");
-      if (action === "new") self.game.newGame();
-      if (action === "continue") self.game.continueLatest();
-      if (action === "slots") self.showSlots("load", "menu");
-      if (action === "multiplayer") self.showMultiplayer("menu");
-      if (action === "settings") self.showSettings("menu");
-      if (action === "controls") self.showControls("menu");
-      if (action === "about") self.showAbout("menu");
+      try {
+        var action = button.getAttribute("data-menu-action");
+        if (L.Audio) L.Audio.play("confirm");
+        if (action === "new") self.game.newGame();
+        if (action === "continue") self.game.continueLatest();
+        if (action === "slots") self.showSlots("load", "menu");
+        if (action === "multiplayer") self.showMultiplayer("menu");
+        if (action === "settings") self.showSettings("menu");
+        if (action === "controls") self.showControls("menu");
+        if (action === "about") self.showAbout("menu");
+      } catch (err) {
+        self.handleUiError(err);
+      }
     });
 
     this.panelClose.addEventListener("click", function () { self.closePanel(); });
     this.panelContent.addEventListener("click", function (event) {
       var target = event.target.closest("button");
       if (!target) return;
-      if (L.Shop.handleClick && L.Shop.handleClick(target)) return;
-      self.handlePanelClick(target);
+      try {
+        if (L.Shop.handleClick && L.Shop.handleClick(target)) return;
+        self.handlePanelClick(target);
+      } catch (err) {
+        self.handleUiError(err);
+      }
     });
     this.panelContent.addEventListener("input", function (event) {
       self.handleSettingInput(event.target);
@@ -62,16 +70,27 @@
     this.starterScreen.addEventListener("click", function (event) {
       var button = event.target.closest("[data-starter-action]");
       if (!button) return;
-      var action = button.getAttribute("data-starter-action");
-      if (action === "prev") self.starterIndex = (self.starterIndex + self.starterIds.length - 1) % self.starterIds.length;
-      if (action === "next") self.starterIndex = (self.starterIndex + 1) % self.starterIds.length;
-      if (action === "select") self.game.chooseStarter(self.starterIds[self.starterIndex]);
-      if (action === "back") self.closeStarter();
-      if (action === "prev" || action === "next") {
-        if (L.Audio) L.Audio.play("menu");
-        self.renderStarter();
+      try {
+        var action = button.getAttribute("data-starter-action");
+        if (action === "prev") self.starterIndex = (self.starterIndex + self.starterIds.length - 1) % self.starterIds.length;
+        if (action === "next") self.starterIndex = (self.starterIndex + 1) % self.starterIds.length;
+        if (action === "select") self.game.chooseStarter(self.starterIds[self.starterIndex]);
+        if (action === "back") self.closeStarter();
+        if (action === "prev" || action === "next") {
+          if (L.Audio) L.Audio.play("menu");
+          self.renderStarter();
+        }
+      } catch (err) {
+        self.handleUiError(err);
       }
     });
+  };
+
+  L.UiController.prototype.handleUiError = function (err) {
+    console.error(err);
+    this.notify("Buton takıldı; kayıt silinmedi. Sayfayı yenileyip tekrar dene.");
+    if (L.Audio) L.Audio.play("error");
+    if (this.game) this.game.updateBodyMode();
   };
 
   L.UiController.prototype.showMain = function () {

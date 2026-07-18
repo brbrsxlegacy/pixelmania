@@ -57,6 +57,17 @@
 
     recalc: function (creature) {
       var base = data[creature.id];
+      if (!base) return null;
+      creature.level = Math.max(1, Math.min(50, Number(creature.level) || 1));
+      creature.shiny = !!creature.shiny;
+      creature.name = base.name;
+      creature.displayName = creature.shiny ? "Parıltılı " + base.name : base.name;
+      creature.element = base.element;
+      creature.rarity = base.rarity;
+      creature.captureDifficulty = base.captureDifficulty;
+      creature.description = base.description;
+      creature.evolution = base.evolution;
+      creature.abilities = Array.isArray(creature.abilities) ? creature.abilities : [];
       var ratio = creature.maxHp > 0 ? creature.hp / creature.maxHp : 1;
       creature.maxHp = stat(base.baseStats, creature.level, "hp", creature.shiny);
       creature.attack = stat(base.baseStats, creature.level, "attack", creature.shiny);
@@ -120,8 +131,16 @@
     },
 
     serializeFix: function (state) {
-      (state.team || []).forEach(function (c) { L.Creatures.recalc(c); });
-      (state.storage || []).forEach(function (c) { L.Creatures.recalc(c); });
+      function fixList(list) {
+        return (Array.isArray(list) ? list : []).map(function (c) {
+          if (!c || !data[c.id]) return null;
+          if (!c.uid) c.uid = "cr_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
+          return L.Creatures.recalc(c);
+        }).filter(Boolean);
+      }
+      state.team = fixList(state.team);
+      state.storage = fixList(state.storage);
+      state.activeIndex = Math.max(0, Math.min(Math.max(0, state.team.length - 1), Number(state.activeIndex) || 0));
     }
   };
 })();

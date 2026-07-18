@@ -116,8 +116,19 @@
   };
 
   L.Game.prototype.loadState = function (state) {
+    state = state && typeof state === "object" ? state : {};
     var base = defaultState(L.Save.loadSettings());
     this.state = Object.assign(base, state);
+    if (!this.mapSystem.get(this.state.mapId)) this.state.mapId = "isikpinar";
+    this.state.player = Object.assign({}, base.player, state.player || {});
+    this.state.checkpoint = Object.assign({}, base.checkpoint, state.checkpoint || {});
+    this.state.team = Array.isArray(state.team) ? state.team : [];
+    this.state.storage = Array.isArray(state.storage) ? state.storage : [];
+    this.state.inventory = Object.assign(L.Inventory.createInitial(), state.inventory || {});
+    this.state.quests = state.quests && typeof state.quests === "object" ? state.quests : L.Quests.createState();
+    this.state.defeatedTrainers = Object.assign({}, state.defeatedTrainers || {});
+    this.state.collectedItems = Object.assign({}, state.collectedItems || {});
+    this.state.story = Object.assign({}, base.story, state.story || {});
     this.state.settings = Object.assign(L.Save.defaultSettings(), L.Save.loadSettings(), this.state.settings || {});
     this.state.avatar = Object.assign(base.avatar, state.avatar || {});
     this.state.avatar.unlocked = Object.assign({ guardian: true }, this.state.avatar.unlocked || {});
@@ -140,6 +151,10 @@
     this.mode = "world";
     this.camera.follow(this.player, this.map, 1);
     this.ui.notify("Kayıt yüklendi.");
+  };
+
+  L.Game.prototype.updateBodyMode = function () {
+    document.body.classList.toggle("world-input-active", !!this.state && this.mode === "world");
   };
 
   L.Game.prototype.syncState = function () {
@@ -660,6 +675,7 @@
   };
 
   L.Game.prototype.update = function (dt) {
+    this.updateBodyMode();
     if (this.mode === "dialogue") this.dialogue.update(dt);
     if (this.mode === "battle") this.battle.update(dt);
     if (!this.state) return;

@@ -306,6 +306,10 @@ body.touch-enabled .touch-controls {
   display: flex;
 }
 
+body:not(.world-input-active) .touch-controls {
+  display: none !important;
+}
+
 @media (hover: none), (pointer: coarse) {
   .touch-controls {
     display: flex;
