@@ -129,6 +129,7 @@
     this.player.x = this.state.player.x || 25 * 16 + 1;
     this.player.y = this.state.player.y || 30 * 16 - 2;
     this.player.dir = this.state.player.dir || "down";
+    this.ensurePlayerSafe("load");
     this.state.activeIndex = Math.max(0, Math.min(this.state.team.length - 1, this.state.activeIndex || 0));
     this.ui.hideMain();
     this.ui.closePanel();
@@ -193,6 +194,7 @@
     setTimeout(function () {
       self.loadMap(exit.to);
       self.player.setTile(exit.spawnX, exit.spawnY);
+      self.ensurePlayerSafe("transition");
       self.camera.follow(self.player, self.map, 1);
       self.syncState();
       self.autosaveSoon();
@@ -206,15 +208,90 @@
   L.Game.prototype.findSafeCheckpoint = function (mapId, tileX, tileY) {
     var map = this.mapSystem.get(mapId);
     if (!map) return { mapId: "isikpinar", x: 25, y: 30 };
-    for (var radius = 0; radius <= 6; radius += 1) {
+    for (var radius = 0; radius <= 14; radius += 1) {
       for (var yy = tileY - radius; yy <= tileY + radius; yy += 1) {
         for (var xx = tileX - radius; xx <= tileX + radius; xx += 1) {
           if (xx < 1 || yy < 1 || xx >= map.w - 1 || yy >= map.h - 1) continue;
-          if (!map.collision[yy * map.w + xx]) return { mapId: mapId, x: xx, y: yy };
+          if (this.isSafeTile(map, xx, yy)) return { mapId: mapId, x: xx, y: yy };
         }
       }
     }
     return { mapId: mapId, x: 1, y: 1 };
+  };
+
+  L.Game.prototype.isSafeTile = function (map, tileX, tileY) {
+    if (!map || tileX < 1 || tileY < 1 || tileX >= map.w - 1 || tileY >= map.h - 1) return false;
+    var px = tileX * 16 + 1;
+    var py = tileY * 16 - 2;
+    var foot = this.player.footRect(px, py);
+    var blockers = this.map && map.id === this.map.id ? this.npcs.current : [];
+    return !L.Collision.rectBlocked(map, foot.x, foot.y, foot.w, foot.h, blockers);
+  };
+
+  L.Game.prototype.playerTile = function () {
+    var foot = this.player.footRect(this.player.x, this.player.y);
+    return L.Collision.tileAtPixel(this.map, foot.x + foot.w / 2, foot.y + foot.h / 2);
+  };
+
+  L.Game.prototype.playerBlocked = function () {
+    if (!this.map) return false;
+    var foot = this.player.footRect(this.player.x, this.player.y);
+    return L.Collision.rectBlocked(this.map, foot.x, foot.y, foot.w, foot.h, this.npcs.current);
+  };
+
+  L.Game.prototype.ensurePlayerSafe = function (reason) {
+    if (!this.map || !this.playerBlocked()) return false;
+    var tile = this.playerTile();
+    var safe = this.findSafeCheckpoint(this.map.id, tile.x, tile.y);
+    this.player.setTile(safe.x, safe.y);
+    this.player.dir = "down";
+    this.camera.follow(this.player, this.map, 1);
+    this.syncState();
+    if (reason === "load" || reason === "manual") this.autosaveSoon();
+    if (reason === "manual" && this.ui) this.ui.notify("Sıkışmadan kurtuldun.");
+    if (reason === "load" && this.ui) this.ui.notify("Kayıttaki sıkışma düzeltildi.");
+    return true;
+  };
+
+  L.Game.prototype.hasMovementRoom = function (map, tileX, tileY) {
+    if (!this.isSafeTile(map, tileX, tileY)) return false;
+    var px = tileX * 16 + 1;
+    var py = tileY * 16 - 2;
+    var foot = this.player.footRect(px, py);
+    var blockers = this.map && map.id === this.map.id ? this.npcs.current : [];
+    var offsets = [[0, -10], [0, 10], [-10, 0], [10, 0]];
+    for (var i = 0; i < offsets.length; i += 1) {
+      if (!L.Collision.rectBlocked(map, foot.x + offsets[i][0], foot.y + offsets[i][1], foot.w, foot.h, blockers)) return true;
+    }
+    return false;
+  };
+
+  L.Game.prototype.findSafeMoveTile = function (mapId, tileX, tileY) {
+    var map = this.mapSystem.get(mapId);
+    if (!map) return { mapId: "isikpinar", x: 25, y: 30 };
+    for (var radius = 0; radius <= 16; radius += 1) {
+      for (var yy = tileY - radius; yy <= tileY + radius; yy += 1) {
+        for (var xx = tileX - radius; xx <= tileX + radius; xx += 1) {
+          if (xx < 1 || yy < 1 || xx >= map.w - 1 || yy >= map.h - 1) continue;
+          if (this.hasMovementRoom(map, xx, yy)) return { mapId: mapId, x: xx, y: yy };
+        }
+      }
+    }
+    return this.findSafeCheckpoint(mapId, tileX, tileY);
+  };
+
+  L.Game.prototype.unstuckPlayer = function () {
+    if (!this.state || !this.map) return;
+    if (!this.ensurePlayerSafe("manual")) {
+      var tile = this.playerTile();
+      var safe = this.findSafeMoveTile(this.map.id, tile.x, tile.y);
+      this.player.setTile(safe.x, safe.y);
+      this.player.dir = "down";
+      this.camera.follow(this.player, this.map, 1);
+      this.syncState();
+      this.autosaveSoon();
+      this.ui.notify("En yakın güvenli noktaya alındın.");
+    }
   };
 
   L.Game.prototype.healingCheckpoint = function () {
@@ -487,6 +564,7 @@
     this.encounterCooldown = Math.max(0, this.encounterCooldown - dt);
     if (this.input.consume("quickSave")) this.quickSave();
     if (this.input.consume("quickLoad")) this.quickLoad();
+    if (this.input.consume("unstuck")) this.unstuckPlayer();
     if (this.mode === "world") {
       if (this.input.consume("menu")) this.ui.showPause();
       if (this.input.consume("quick")) this.quickUse();
@@ -526,7 +604,7 @@
       this.ctx.fillRect(8, 238, 260, 23);
       this.ctx.fillStyle = "#fff4d2";
       this.ctx.font = "10px monospace";
-      this.ctx.fillText("E: konuş/al • Esc: menü • Shift: koş • F5: kayıt", 14, 253);
+      this.ctx.fillText("E: konuş/al • Esc: menü • U: kurtul • F5: kayıt", 14, 253);
     }
   };
 })();

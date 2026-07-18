@@ -11,6 +11,7 @@
       Enter: "action", KeyE: "action",
       Escape: "menu",
       KeyQ: "quick",
+      KeyU: "unstuck",
       F5: "quickSave",
       F9: "quickLoad"
     };

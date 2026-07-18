@@ -131,6 +131,7 @@
       "<button class='panel-row' data-pause='multiplayer'>Çok Oyunculu</button>" +
       "<button class='panel-row' data-pause='jobs'>Meslekler</button>" +
       "<button class='panel-row' data-pause='housing'>Evler</button>" +
+      "<button class='panel-row' data-pause='unstuck'>Sıkışmadan Kurtul</button>" +
       "<button class='panel-row' data-pause='settings'>Ayarlar</button>" +
       "<button class='panel-row' data-pause='save'>Kaydet</button>" +
       "<button class='panel-row danger' data-pause='main'>Ana Menü</button>" +
@@ -333,8 +334,8 @@
   };
 
   L.UiController.prototype.showControls = function (returnMode) {
-    var html = "<div class='panel-row'><strong>Masaüstü</strong><br>WASD / Oklar: Hareket<br>Sol Shift: Koş<br>E / Enter: Etkileşim<br>Escape: Menü<br>Q: Hızlı eşya<br>F5: Hızlı kayıt<br>F9: Hızlı yükleme</div>" +
-      "<div class='panel-row'><strong>Mobil</strong><br>Joystick hareket, A etkileşim, Koş koşma, Q hızlı eşya, Menü duraklatma içindir.</div>";
+    var html = "<div class='panel-row'><strong>Masaüstü</strong><br>WASD / Oklar: Hareket<br>Sol Shift: Koş<br>E / Enter: Etkileşim<br>Escape: Menü<br>Q: Hızlı eşya<br>U: Sıkışmadan kurtul<br>F5: Hızlı kayıt<br>F9: Hızlı yükleme</div>" +
+      "<div class='panel-row'><strong>Mobil</strong><br>Joystick hareket, A etkileşim, Koş koşma, Q hızlı eşya, Menü duraklatma içindir. Menüden Sıkışmadan Kurtul'u kullanabilirsin.</div>";
     this.showPanel("Kontroller", html, "controls", returnMode || "world");
   };
 
@@ -371,6 +372,10 @@
       if (pause === "multiplayer") this.showMultiplayer("world");
       if (pause === "jobs") this.showJobs();
       if (pause === "housing") this.showHousing();
+      if (pause === "unstuck") {
+        this.closePanel();
+        this.game.unstuckPlayer();
+      }
       if (pause === "settings") this.showSettings("world");
       if (pause === "save") this.showSlots("save", "world");
       if (pause === "main" && confirm("Ana menüye dönmek istiyor musun? Kaydedilmemiş ilerleme kaybolabilir.")) {
