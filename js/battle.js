@@ -53,6 +53,7 @@
     this.enemyParty = [enemy];
     this.enemyIndex = 0;
     this.enemy = enemy;
+    if (L.WorldMap && this.game.state) L.WorldMap.recordSeen(this.game.state, enemy.id);
     this.startCommon("Vahşi " + enemy.displayName + " ortaya çıktı!");
   };
 
@@ -62,6 +63,9 @@
     this.enemyParty = party;
     this.enemyIndex = 0;
     this.enemy = this.enemyParty[0];
+    if (L.WorldMap && this.game.state) {
+      this.enemyParty.forEach(function (enemy) { L.WorldMap.recordSeen(this.game.state, enemy.id); }, this);
+    }
     this.startCommon(trainer.name + " meydan okuyor!");
   };
 
@@ -315,9 +319,21 @@
       if (this.trainer.questObjective) L.Quests.progress(state, this.trainer.questObjective, 1);
       this.setMessage((this.trainer.afterDialogue && this.trainer.afterDialogue[0]) || "Rakibini yendin!");
       await delay(800);
+      if (this.trainer.badgeId) {
+        state.badges = state.badges || {};
+        if (!state.badges[this.trainer.badgeId]) {
+          state.badges[this.trainer.badgeId] = { name: this.trainer.badgeName || "Rozet", wonAt: Date.now() };
+          L.Quests.progress(state, "badge_" + this.trainer.badgeId, 1);
+          this.setMessage((this.trainer.badgeName || "Rozet") + " kazandın!");
+          await delay(820);
+        }
+      }
     }
     if (L.Audio) L.Audio.play("victory");
     this.end();
+    if (L.Evolution && active && active.hp > 0) {
+      setTimeout(function () { L.Evolution.prompt(this.game, active); }.bind(this), 80);
+    }
   };
 
   L.Battle.prototype.lose = async function () {
@@ -377,6 +393,7 @@
       if (roll.success) {
         this.setMessage(this.enemy.displayName + " yakalandı!");
         var where = L.Creatures.addToCollection(state, this.enemy);
+        if (L.WorldMap) L.WorldMap.recordCaught(state, this.enemy.id);
         L.Quests.progress(state, "catchAny", 1);
         L.Quests.progress(state, "catch_" + this.enemy.element, 1);
         L.Quests.progress(state, "catch_" + this.enemy.id, 1);

@@ -166,5 +166,22 @@
       }
       serial += 1;
     }
+
+    (function wireEvolutionChains() {
+      var generated = Object.keys(creatures).filter(function (id) { return /^luma\d+/.test(id); }).sort();
+      var named = ["minsu", "cimsirik", "tasburun", "ruzgocuk", "korcik", "voltik", "golgemir", "parilti", "kristalik", "nilperi", "agackulak"];
+      var starterTargets = { filizik: "luma016", kozpati: "luma017", kopukcu: "luma018" };
+      Object.keys(starterTargets).forEach(function (id) {
+        if (creatures[id] && creatures[starterTargets[id]]) creatures[id].evolution = { level: 16, into: starterTargets[id] };
+      });
+      named.forEach(function (id, index) {
+        var target = generated[3 + index * 2];
+        if (creatures[id] && creatures[target]) creatures[id].evolution = { level: 18 + index % 6, into: target };
+      });
+      for (var i = 0; i < generated.length - 2; i += 3) {
+        if (creatures[generated[i]]) creatures[generated[i]].evolution = { level: 14 + i % 9, into: generated[i + 1] };
+        if (creatures[generated[i + 1]]) creatures[generated[i + 1]].evolution = { level: 28 + i % 7, into: generated[i + 2] };
+      }
+    })();
   })();
 })();

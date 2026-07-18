@@ -483,6 +483,14 @@
       rect(ctx, x + 7 - width / 2, y - 9, width, 8, "rgba(23, 32, 51, .78)");
       ctx.fillStyle = "#fff4d2";
       ctx.fillText(label, Math.round(x + 10 - width / 2), y - 3);
+      if (remote.emote) {
+        var emote = String(remote.emote).slice(0, 18);
+        var emoteWidth = Math.max(34, ctx.measureText(emote).width + 8);
+        rect(ctx, x + 7 - emoteWidth / 2, y - 22, emoteWidth, 10, "rgba(255, 244, 210, .9)");
+        rect(ctx, x + 7, y - 12, 3, 3, "rgba(255, 244, 210, .9)");
+        ctx.fillStyle = "#172033";
+        ctx.fillText(emote, Math.round(x + 11 - emoteWidth / 2), y - 15);
+      }
     },
 
     drawNpc: function (ctx, npc, x, y, time) {

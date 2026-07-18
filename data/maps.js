@@ -1,5 +1,6 @@
 (function () {
   window.LUMA_DATA = window.LUMA_DATA || {};
+  var extraMaps = {};
 
   function layer(w, h, value) {
     return Array.from({ length: w * h }, function () { return value; });
@@ -76,7 +77,7 @@
     setRect(m, "collision", 0, 0, 18, 2, 1);
     setRect(m, "ground", 7, 10, 4, 2, "rug");
     setRect(m, "collision", 8, 11, 2, 1, 0);
-    m.exits.push({ x: 8, y: 11, w: 2, h: 1, to: "isikpinar", spawnX: exit.x, spawnY: exit.y });
+    m.exits.push({ x: 8, y: 11, w: 2, h: 1, to: exit.mapId || "isikpinar", spawnX: exit.x, spawnY: exit.y });
     return m;
   }
 
@@ -125,6 +126,60 @@
     put(m, 6, 6, "shopCounter", 6, 2);
     m.interactions.push({ x: 9, y: 7, type: "shop", text: "Dükkan tezgahı düzenli ve dolu." });
     return m;
+  }
+
+  function makePlayerHomeInterior(id, name, exit) {
+    var m = makeInterior(id, name, "woodFloor", exit);
+    put(m, 3, 3, "bedBlue", 2, 2);
+    put(m, 11, 3, "bookshelf", 2, 2);
+    put(m, 7, 6, "table", 2, 2);
+    put(m, 13, 7, "crystalBlue", 1, 1);
+    m.interactions.push(
+      { x: 4, y: 5, type: "homeBed", text: "Kendi yatağında dinleniyorsun." },
+      { x: 8, y: 8, type: "homeDecor", text: "Ev dekorlarını düzenle." },
+      { x: 13, y: 8, type: "note", text: "Küçük Luma yuvası evin sıcak noktasına kurulmuş." }
+    );
+    return m;
+  }
+
+  var buildingLabels = {
+    lab: "Araştırma Salonu",
+    cityTower: "Şehir Kulesi",
+    apartment: "Apartman Lobisi",
+    styleShop: "Stil Dükkanı",
+    realEstate: "Emlak Ofisi",
+    shop: "Pazar Dükkanı",
+    mayorHall: "Belediye Binası",
+    station: "İstasyon Ofisi",
+    factory: "Atölye Holü",
+    arena: "Arena Holü"
+  };
+
+  function makeBuildingInterior(id, name, exit, code) {
+    var floor = code === "factory" || code === "station" || code === "arena" ? "cityStone" : (code === "lab" ? "labFloor" : "woodFloor");
+    var m = makeInterior(id, name, floor, exit);
+    put(m, 3, 3, code === "shop" || code === "styleShop" ? "shelfGoods" : "bookshelf", 2, 2);
+    put(m, 11, 3, code === "factory" || code === "arena" ? "labDesk" : "bookshelf", code === "factory" || code === "arena" ? 4 : 2, 2);
+    put(m, 7, 6, code === "realEstate" || code === "mayorHall" ? "table" : "shopCounter", code === "realEstate" || code === "mayorHall" ? 2 : 6, 2);
+    if (code === "station") put(m, 5, 7, "crystalBlue", 1, 1);
+    if (code === "arena") put(m, 13, 7, "crystalPink", 1, 1);
+    m.interactions.push({ x: 8, y: 7, type: "buildingInfo", text: name + " açık. İçerideki panolar ve eşyalar yeni şehir sistemlerine bağlı." });
+    return m;
+  }
+
+  function addBuildingDoor(map, spec, object, objectIndex) {
+    if (!buildingLabels[object.code]) return;
+    var doorX = object.x + Math.max(1, Math.floor((object.w || 2) / 2));
+    var doorY = object.y + (object.h || 2);
+    if (!inBounds(map, doorX, doorY)) return;
+    var interiorId = spec.id + "_" + object.code + "_" + objectIndex + "Interior";
+    var label = buildingLabels[object.code];
+    extraMaps[interiorId] = makeBuildingInterior(interiorId, spec.name + " " + label, {
+      mapId: spec.id,
+      x: doorX,
+      y: Math.min(map.h - 2, doorY + 1)
+    }, object.code);
+    map.interactions.push({ x: doorX, y: doorY, type: "door", to: interiorId, spawnX: 8, spawnY: 9, text: label + " içine giriyorsun." });
   }
 
   function makeVillage() {
@@ -381,7 +436,10 @@
     setRect(m, "ground", 22, 14, 20, 15, spec.centerTile || "cityStone");
     setRect(m, "collision", 0, 18, 64, 7, 0);
     setRect(m, "collision", 28, 0, 8, 42, 0);
-    (spec.objects || []).forEach(function (o) { put(m, o.x, o.y, o.code, o.w, o.h); });
+    (spec.objects || []).forEach(function (o, objectIndex) {
+      put(m, o.x, o.y, o.code, o.w, o.h);
+      addBuildingDoor(m, spec, o, objectIndex);
+    });
     for (var i = 0; i < 9; i += 1) {
       put(m, 8 + i * 6, i % 2 ? 29 : 10, "cityLamp", 1, 2);
     }
@@ -436,6 +494,10 @@
     houseRedInterior: makeHouseRedInterior(),
     clinicInterior: makeClinicInterior(),
     shopInterior: makeShopInterior(),
+    homeStudioInterior: makePlayerHomeInterior("homeStudioInterior", "Pazar Stüdyosu", { mapId: "pazarMeydani", x: 44, y: 12 }),
+    homeGardenFlatInterior: makePlayerHomeInterior("homeGardenFlatInterior", "Bahçe Dairesi", { mapId: "belediyeBahcesi", x: 26, y: 12 }),
+    homeHarborRoomInterior: makePlayerHomeInterior("homeHarborRoomInterior", "Liman Odası", { mapId: "liman", x: 42, y: 13 }),
+    homeAcademyLoftInterior: makePlayerHomeInterior("homeAcademyLoftInterior", "Akademi Loftu", { mapId: "lumaAkademi", x: 47, y: 13 }),
     yesilova: makeRoad(),
     fisilti: makeForest(),
     kristalGol: makeLake(),
@@ -593,4 +655,7 @@
       links: [{ side: "south", to: "trenIstasyonu", spawnX: 31, spawnY: 4 }]
     })
   };
+  Object.keys(extraMaps).forEach(function (id) {
+    window.LUMA_DATA.maps[id] = extraMaps[id];
+  });
 })();

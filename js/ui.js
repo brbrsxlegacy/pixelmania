@@ -128,6 +128,8 @@
       "<button class='panel-row' data-pause='bag'>Çanta</button>" +
       "<button class='panel-row' data-pause='quests'>Görevler</button>" +
       "<button class='panel-row' data-pause='map'>Harita</button>" +
+      "<button class='panel-row' data-pause='dex'>Lumadex</button>" +
+      "<button class='panel-row' data-pause='badges'>Rozetler</button>" +
       "<button class='panel-row' data-pause='multiplayer'>Çok Oyunculu</button>" +
       "<button class='panel-row' data-pause='jobs'>Meslekler</button>" +
       "<button class='panel-row' data-pause='housing'>Evler</button>" +
@@ -177,11 +179,14 @@
     var state = this.game.state;
     var html = "<div class='panel-grid'>";
     state.team.forEach(function (c, i) {
+      var evo = L.Evolution && L.Evolution.nextInfo(c);
       html += "<div class='team-card'><strong>" + (i === state.activeIndex ? "▶ " : "") + c.displayName + "</strong><br>" +
         "<small>" + c.element + " • Sv. " + c.level + " • HP " + c.hp + "/" + c.maxHp + " • EXP " + c.exp + "/" + c.expToNext + "</small><br>" +
         "<small>Güç " + c.attack + " • Savunma " + c.defense + " • Hız " + c.speed + "</small><br>" +
         "<small>" + c.abilities.map(function (a) { return a.name; }).join(", ") + "</small><br>" +
+        (evo ? "<small>Evrim: " + evo.to.name + " • Sv. " + evo.level + "</small><br>" : "") +
         "<button data-team-active='" + i + "'>Aktif Yap</button>" +
+        (evo && evo.ready ? "<button data-team-evolve='" + i + "' class='primary'>Evrimle</button>" : "") +
         "<button data-team-up='" + i + "'>Yukarı</button><button data-team-down='" + i + "'>Aşağı</button>" +
         "<button data-team-heal='" + i + "'>İksir Kullan</button>" +
         "<button data-team-store='" + i + "'>Depoya Gönder</button></div>";
@@ -234,13 +239,95 @@
 
   L.UiController.prototype.showMap = function () {
     var state = this.game.state;
-    var html = "<div class='panel-grid'>";
-    Object.keys(window.LUMA_DATA.maps).forEach(function (id) {
-      var m = window.LUMA_DATA.maps[id];
-      html += "<div class='panel-row'><strong>" + (state.mapId === id ? "▶ " : "") + m.name + "</strong><br><small>" + m.w + "x" + m.h + " karo</small></div>";
+    L.WorldMap.ensureState(state);
+    var questTarget = L.WorldMap.questTarget(state);
+    var nodes = L.WorldMap.allNodes();
+    var links = L.WorldMap.allLinks();
+    var html = "<div class='world-map-wrap'><div class='world-map'>";
+    html += "<svg class='world-map-lines' viewBox='0 0 100 100' preserveAspectRatio='none'>";
+    links.forEach(function (pair) {
+      var a = L.WorldMap.positions[pair[0]];
+      var b = L.WorldMap.positions[pair[1]];
+      var known = state.world.discovered[pair[0]] || state.world.discovered[pair[1]];
+      html += "<line x1='" + a[0] + "' y1='" + a[1] + "' x2='" + b[0] + "' y2='" + b[1] + "' class='" + (known ? "known" : "") + "'></line>";
+    });
+    html += "</svg>";
+    nodes.forEach(function (node) {
+      var discovered = !!state.world.discovered[node.id];
+      var classes = ["map-node"];
+      if (discovered) classes.push("discovered");
+      if (node.id === state.mapId) classes.push("current");
+      if (state.world.targetMapId === node.id) classes.push("target");
+      if (questTarget && questTarget.mapId === node.id) classes.push("quest");
+      html += "<button class='" + classes.join(" ") + "' style='left:" + node.x + "%;top:" + node.y + "%' data-map-target='" + node.id + "' title='" + node.name + "'>" +
+        "<span>" + (node.id === state.mapId ? "▲" : (questTarget && questTarget.mapId === node.id ? "!" : "•")) + "</span></button>";
+    });
+    html += "</div><div class='map-side'>";
+    var selected = state.world.targetMapId || (questTarget && questTarget.mapId) || state.mapId;
+    var selectedMap = window.LUMA_DATA.maps[selected];
+    html += "<div class='panel-row'><strong>Konum:</strong> " + this.game.map.name + "<br><strong>Hedef:</strong> " + (selectedMap ? selectedMap.name : "Yok") + "</div>";
+    if (questTarget) html += "<div class='panel-row'><strong>Görev işareti:</strong><br><small>" + questTarget.label + "</small></div>";
+    if (selectedMap) {
+      var cost = L.WorldMap.fastTravelCost(state.mapId, selected);
+      html += "<div class='panel-row'><strong>" + selectedMap.name + "</strong><br><small>" + selectedMap.w + "x" + selectedMap.h + " karo</small><br>" +
+        "<button data-map-target='" + selected + "'>Hedef Yap</button>" +
+        (selected !== state.mapId && L.WorldMap.canFastTravel(state, selected) ? "<button data-map-travel='" + selected + "'>Hızlı Git " + cost + "</button>" : "") +
+        "</div>";
+    }
+    html += "<div class='panel-row'><small>▲ sen, ! görev, sarı halka hedef. Keşfedilen bölgelere hızlı seyahat açılır.</small></div>";
+    html += "</div></div>";
+    this.showPanel("Harita", html, "map", "world");
+  };
+
+  L.UiController.prototype.showLumadex = function () {
+    var state = this.game.state;
+    L.WorldMap.ensureState(state);
+    var ids = Object.keys(window.LUMA_DATA.creatures);
+    var seen = ids.filter(function (id) { return state.dex.seen[id]; }).length;
+    var caught = ids.filter(function (id) { return state.dex.caught[id]; }).length;
+    var html = "<div class='panel-row'><strong>Lumadex:</strong> " + caught + "/" + ids.length + " yakalandı • " + seen + "/" + ids.length + " görüldü</div>";
+    html += "<div class='panel-grid dex-grid'>";
+    ids.forEach(function (id, index) {
+      var base = window.LUMA_DATA.creatures[id];
+      var isSeen = !!state.dex.seen[id] || !!state.dex.caught[id];
+      var isCaught = !!state.dex.caught[id];
+      var colors = base.sprite && base.sprite.colors || ["#8a8f91", "#fff4d2", "#172033"];
+      var habitats = L.WorldMap.habitats(id);
+      var chain = L.Evolution ? L.Evolution.chainFor(id).map(function (cid) { return window.LUMA_DATA.creatures[cid].name; }).join(" > ") : base.name;
+      html += "<div class='dex-card " + (isCaught ? "caught" : (isSeen ? "seen" : "unknown")) + "'>" +
+        "<span class='dex-no'>#" + String(index + 1).padStart(3, "0") + "</span>" +
+        "<span class='dex-dot' style='background:linear-gradient(135deg," + colors[0] + "," + colors[1] + "," + colors[2] + ")'></span>" +
+        "<strong>" + (isSeen ? base.name : "???") + "</strong><br>" +
+        "<small>" + (isSeen ? base.element + " • " + base.rarity : "Henüz görülmedi") + "</small><br>" +
+        (isSeen ? "<small>Evrim: " + chain + "</small><br>" : "") +
+        (habitats[0] ? "<button data-map-target='" + habitats[0] + "'>Habitat</button>" : "") +
+        "</div>";
     });
     html += "</div>";
-    this.showPanel("Harita", html, "map", "world");
+    this.showPanel("Lumadex", html, "dex", "world");
+  };
+
+  L.UiController.prototype.showBadges = function () {
+    var state = this.game.state;
+    L.WorldMap.ensureState(state);
+    var badges = [
+      ["leaf", "Yaprak Rozeti", "Botanik Bahçe"],
+      ["ember", "Köz Rozeti", "Lav Kanyonu"],
+      ["tide", "Dalga Rozeti", "Sahil Rotası"],
+      ["stone", "Kristal Rozeti", "Kristal Maden"],
+      ["wind", "Gök Rozeti", "Gök Kulesi"],
+      ["spark", "Volt Rozeti", "Meteor Tepesi"],
+      ["shadow", "Gece Rozeti", "Gece Korusu"],
+      ["light", "Şafak Rozeti", "Arena Meydanı"]
+    ];
+    var count = badges.filter(function (b) { return state.badges[b[0]]; }).length;
+    var html = "<div class='panel-row'><strong>Rozetler:</strong> " + count + "/" + badges.length + "<br><small>Arena liderlerini yenerek açılır.</small></div><div class='panel-grid'>";
+    badges.forEach(function (badge) {
+      var owned = !!state.badges[badge[0]];
+      html += "<div class='badge-card " + (owned ? "owned" : "") + "'><span class='badge-medal'>" + (owned ? "◆" : "◇") + "</span><strong>" + badge[1] + "</strong><br><small>" + badge[2] + "</small></div>";
+    });
+    html += "</div>";
+    this.showPanel("Rozetler", html, "badges", "world");
   };
 
   L.UiController.prototype.showAvatarShop = function () {
@@ -270,11 +357,22 @@
     var state = this.game.state;
     L.Economy.ensureState(state);
     var html = "<div class='panel-row'><strong>Toplam vardiya:</strong> " + state.jobs.shifts + "<br><strong>Kazanılan:</strong> " + state.jobs.earned + " Luma</div>";
+    if (state.jobs.active) {
+      var activeJob = L.Economy.jobs.find(function (job) { return job.id === state.jobs.active.jobId; });
+      html += "<div class='panel-row job-challenge'><strong>" + (activeJob ? activeJob.name : "Vardiya") + "</strong><br>" +
+        "<small>" + escapeHtml(state.jobs.active.question) + "</small><div class='choice-stack'>";
+      state.jobs.active.choices.forEach(function (choice, index) {
+        html += "<button data-work-answer='" + index + "'>" + escapeHtml(choice) + "</button>";
+      });
+      html += "</div></div>";
+      this.showPanel("Meslekler", html, "jobs", "world");
+      return;
+    }
     html += "<div class='panel-grid'>";
     L.Economy.jobs.forEach(function (job) {
       var done = state.jobs.completed[job.id] || 0;
       html += "<div class='item-row'><strong>" + job.name + "</strong><br><small>" + job.place + " • " + done + " vardiya</small><br>" +
-        "<span>" + job.pay + "+ Luma</span><br><button data-work-job='" + job.id + "'>Vardiya Çalış</button></div>";
+        "<span>" + job.pay + "+ Luma</span><br><button data-work-job='" + job.id + "'>Mini Vardiya</button></div>";
     });
     html += "</div>";
     this.showPanel("Meslekler", html, "jobs", "world");
@@ -285,6 +383,16 @@
     L.Economy.ensureState(state);
     var current = state.housing.status === "none" ? "Yok" : (state.housing.name + " • " + (state.housing.status === "owned" ? "Satın alındı" : "Kiralık"));
     var html = "<div class='panel-row'><strong>Mevcut ev:</strong> " + current + "<br><strong>Para:</strong> " + state.money + " Luma</div>";
+    if (state.housing.status !== "none") {
+      html += "<div class='panel-row'><button class='primary' data-home-visit='1'>Evime Git</button><br><small>Evde yatakla iyileşebilir, dekor masasıyla düzenleme yapabilirsin.</small></div>";
+      html += "<div class='panel-grid'>";
+      L.Economy.furniture.forEach(function (item) {
+        var owned = !!state.housing.furniture[item.id];
+        html += "<div class='item-row'><strong>" + item.name + "</strong><br><small>" + item.perk + "</small><br>" +
+          "<span>" + (owned ? "Evde" : item.price + " Luma") + "</span><br><button data-home-decor='" + item.id + "'" + (owned ? " disabled" : "") + ">" + (owned ? "Yerleşti" : "Satın Al") + "</button></div>";
+      });
+      html += "</div>";
+    }
     html += "<div class='panel-grid'>";
     L.Economy.homes.forEach(function (home) {
       html += "<div class='item-row'><strong>" + home.name + "</strong><br><small>" + home.district + "</small><br>" +
@@ -309,6 +417,13 @@
     if (mp && mp.roomCode) {
       html += "<div class='panel-row'><strong>Oda: " + mp.roomCode + "</strong><br><small>Bu kodu arkadaşına ver. Aynı haritadaysanız birbirinizi görebilirsiniz.</small></div>";
       html += "<div class='panel-row'><strong>Adın:</strong> " + escapeHtml(mp.playerName) + "<br><strong>Bağlı oyuncu:</strong> " + (Object.keys(mp.remotePlayers).length + 1) + "</div>";
+      html += "<div class='panel-grid mp-actions'><button data-mp-emote='Selam!'>Selam</button><button data-mp-invite='trade'>Takas İste</button><button data-mp-invite='pvp'>PvP İste</button></div>";
+      Object.keys(mp.remotePlayers).forEach(function (id) {
+        var remote = mp.remotePlayers[id];
+        if (remote && remote.invite) {
+          html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + ":</strong> " + escapeHtml(remote.invite.label || "İstek") + " isteği gönderdi.</div>";
+        }
+      });
       html += "<button data-mp-leave='1' class='danger'>Odadan Çık</button>";
     } else {
       html += "<div class='panel-row'><label>Oyuncu adı<br><input data-mp-name maxlength='16' value='" + escapeHtml(mp ? mp.playerName : "Oyuncu") + "'></label></div>";
@@ -369,6 +484,8 @@
       if (pause === "bag") this.showInventory();
       if (pause === "quests") this.showQuests();
       if (pause === "map") this.showMap();
+      if (pause === "dex") this.showLumadex();
+      if (pause === "badges") this.showBadges();
       if (pause === "multiplayer") this.showMultiplayer("world");
       if (pause === "jobs") this.showJobs();
       if (pause === "housing") this.showHousing();
@@ -382,6 +499,18 @@
         this.closePanel();
         this.showMain();
       }
+      return;
+    }
+    var mapTarget = button.getAttribute("data-map-target");
+    if (mapTarget) {
+      L.WorldMap.setTarget(this.game.state, mapTarget);
+      this.notify((window.LUMA_DATA.maps[mapTarget] ? window.LUMA_DATA.maps[mapTarget].name : mapTarget) + " hedeflendi.");
+      if (this.panel.dataset.context === "map") this.showMap();
+      return;
+    }
+    var mapTravel = button.getAttribute("data-map-travel");
+    if (mapTravel) {
+      if (this.game.fastTravelTo(mapTravel)) this.closePanel();
       return;
     }
     if (button.hasAttribute("data-mp-new")) {
@@ -408,6 +537,20 @@
       });
       return;
     }
+    var mpEmote = button.getAttribute("data-mp-emote");
+    if (mpEmote) {
+      if (this.game.multiplayer.sendEmote(mpEmote)) this.notify("Mesaj gönderildi.");
+      else this.notify("Önce bir odaya bağlan.");
+      this.showMultiplayer("world");
+      return;
+    }
+    var mpInvite = button.getAttribute("data-mp-invite");
+    if (mpInvite) {
+      if (this.game.multiplayer.sendInvite(mpInvite)) this.notify((mpInvite === "trade" ? "Takas" : "PvP") + " isteği gönderildi.");
+      else this.notify("Önce bir odaya bağlan.");
+      this.showMultiplayer("world");
+      return;
+    }
     var outfit = button.getAttribute("data-avatar-outfit");
     if (outfit) {
       var avatarResult = L.Economy.setAvatar(this.game, outfit);
@@ -419,11 +562,34 @@
     }
     var job = button.getAttribute("data-work-job");
     if (job) {
-      var workResult = L.Economy.work(this.game, job);
+      var workResult = L.Economy.startWork(this.game, job);
       this.notify(workResult.message);
       if (workResult.ok && L.Audio) L.Audio.play("confirm");
       if (!workResult.ok && L.Audio) L.Audio.play("error");
       this.showJobs();
+      return;
+    }
+    var workAnswer = button.getAttribute("data-work-answer");
+    if (workAnswer != null) {
+      var shiftResult = L.Economy.finishWork(this.game, workAnswer);
+      this.notify(shiftResult.message);
+      if (shiftResult.ok && L.Audio) L.Audio.play(shiftResult.correct ? "confirm" : "pickup");
+      if (!shiftResult.ok && L.Audio) L.Audio.play("error");
+      this.showJobs();
+      return;
+    }
+    if (button.hasAttribute("data-home-visit")) {
+      this.closePanel();
+      this.game.visitHome();
+      return;
+    }
+    var decor = button.getAttribute("data-home-decor");
+    if (decor) {
+      var decorResult = L.Economy.decorateHome(this.game, decor);
+      this.notify(decorResult.message);
+      if (decorResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!decorResult.ok && L.Audio) L.Audio.play("error");
+      this.showHousing();
       return;
     }
     var rent = button.getAttribute("data-home-rent");
@@ -451,6 +617,13 @@
       this.game.state.activeIndex = Number(active);
       this.notify("Aktif yaratık değişti.");
       this.showTeam();
+      return;
+    }
+    var evolve = button.getAttribute("data-team-evolve");
+    if (evolve != null) {
+      var evoCreature = this.game.state.team[Number(evolve)];
+      if (L.Evolution && L.Evolution.evolveNow(this.game, evoCreature)) this.showTeam();
+      else this.notify("Bu Luma henüz evrimleşemiyor.");
       return;
     }
     var up = button.getAttribute("data-team-up");

@@ -129,6 +129,59 @@ body.battle-active .touch-controls {
   75% { transform: translateX(-2px); }
 }
 
+@media (hover: none), (pointer: coarse) {
+  body.battle-active .battle-bars {
+    inset: 5px 5px auto 5px;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  body.battle-active .combatant {
+    max-width: 210px;
+    padding: 4px;
+    line-height: 1.12;
+  }
+
+  body.battle-active .combatant strong {
+    font-size: 12px;
+  }
+
+  body.battle-active .combatant small {
+    font-size: 10px;
+  }
+
+  body.battle-active .combatant.player {
+    justify-self: end;
+    margin-top: 38px;
+  }
+
+  body.battle-active .hp-shell {
+    height: 7px;
+    margin-top: 2px;
+  }
+
+  body.battle-active .xp-shell {
+    height: 4px;
+  }
+}
+
+@media (hover: none) and (orientation: landscape), (pointer: coarse) and (orientation: landscape) {
+  body.battle-active .battle-message {
+    min-height: 32px;
+    padding: 6px 8px;
+  }
+
+  body.battle-active .battle-menu {
+    min-height: 48px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-height: 34vh;
+  }
+
+  body.battle-active .battle-menu button {
+    min-height: 36px;
+  }
+}
+
 @media (max-width: 620px) {
   .battle-bars {
     inset: 5px 5px auto 5px;

@@ -91,6 +91,9 @@
   L.Multiplayer.prototype.payload = function () {
     var state = this.game.state || {};
     var active = state.team && state.team[state.activeIndex || 0];
+    var meta = state.multiplayerMeta || {};
+    var freshEmote = meta.emote && now() - (meta.emoteAt || 0) < 5500;
+    var freshInvite = meta.lastInvite && now() - (meta.lastInvite.at || 0) < 12000;
     return {
       id: this.playerId,
       name: this.playerName || "Oyuncu",
@@ -100,6 +103,9 @@
       dir: this.game.player.dir || "down",
       mode: this.game.mode,
       creature: active ? active.displayName + " Sv. " + active.level : "",
+      emote: freshEmote ? String(meta.emote).slice(0, 18) : "",
+      emoteAt: meta.emoteAt || 0,
+      invite: freshInvite ? meta.lastInvite : null,
       updatedAt: now()
     };
   };
@@ -150,6 +156,28 @@
   L.Multiplayer.prototype.pushNow = async function () {
     if (!this.roomCode || !this.game.state) return;
     await this.request("PATCH", "/rooms/" + this.roomCode + "/players/" + this.playerId, this.payload());
+  };
+
+  L.Multiplayer.prototype.sendEmote = function (text) {
+    if (!this.roomCode || !this.game.state) return false;
+    this.game.state.multiplayerMeta = Object.assign({}, this.game.state.multiplayerMeta || {}, {
+      emote: String(text || "Selam").slice(0, 18),
+      emoteAt: now()
+    });
+    this.pushNow().catch(this.handleError.bind(this));
+    return true;
+  };
+
+  L.Multiplayer.prototype.sendInvite = function (kind) {
+    if (!this.roomCode || !this.game.state) return false;
+    var label = kind === "trade" ? "Takas" : "PvP";
+    this.game.state.multiplayerMeta = Object.assign({}, this.game.state.multiplayerMeta || {}, {
+      lastInvite: { kind: kind, label: label, from: this.playerName || "Oyuncu", at: now() },
+      emote: label + " isteği",
+      emoteAt: now()
+    });
+    this.pushNow().catch(this.handleError.bind(this));
+    return true;
   };
 
   L.Multiplayer.prototype.pollNow = async function () {

@@ -301,10 +301,142 @@
   margin: 8px 0;
 }
 
+.choice-stack {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.job-challenge button,
+.mp-actions button {
+  min-height: 34px;
+}
+
+.world-map-wrap {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.35fr) minmax(145px, .65fr);
+  gap: 10px;
+}
+
+.world-map {
+  position: relative;
+  min-height: 220px;
+  border: 2px solid #101521;
+  background:
+    linear-gradient(180deg, #9adbea 0 45%, #7ecb6b 45% 100%);
+  overflow: hidden;
+}
+
+.world-map::before {
+  content: "";
+  position: absolute;
+  inset: 58% 0 0;
+  background: #4aa8d8;
+  opacity: .42;
+}
+
+.world-map-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.world-map-lines line {
+  stroke: rgba(23, 32, 51, .28);
+  stroke-width: .9;
+}
+
+.world-map-lines line.known {
+  stroke: #f2b94b;
+  stroke-width: 1.4;
+}
+
+.map-node {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 2px solid #101521;
+  background: #8a8f91;
+  color: #172033;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+}
+
+.map-node.discovered { background: #fff4d2; }
+.map-node.current { background: #54b86b; }
+.map-node.target { box-shadow: 0 0 0 4px rgba(242, 185, 75, .62), 0 3px 0 rgba(0, 0, 0, .22); }
+.map-node.quest { background: #e46d45; color: #fff4d2; }
+
+.map-side {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.dex-grid {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.dex-card,
+.badge-card {
+  border: 2px solid #101521;
+  background: #fff8df;
+  color: #172033;
+  padding: 8px;
+}
+
+.dex-card.unknown {
+  filter: grayscale(.75);
+  opacity: .72;
+}
+
+.dex-card.caught {
+  background: #e7ffd0;
+}
+
+.dex-no {
+  display: inline-block;
+  min-width: 42px;
+  color: #59547c;
+}
+
+.dex-dot {
+  display: inline-block;
+  width: 22px;
+  height: 14px;
+  margin: 0 5px -2px 0;
+  border: 2px solid #101521;
+}
+
+.badge-medal {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 7px;
+  border: 2px solid #101521;
+  background: #8a8f91;
+  color: #fff4d2;
+}
+
+.badge-card.owned .badge-medal {
+  background: #f2b94b;
+  color: #172033;
+}
+
 @media (max-width: 520px) {
   .starter-card {
     grid-template-columns: 1fr;
     max-height: calc(100vh - 110px);
     overflow: auto;
+  }
+
+  .world-map-wrap {
+    grid-template-columns: 1fr;
   }
 }

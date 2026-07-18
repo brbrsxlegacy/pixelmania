@@ -15,9 +15,12 @@
       money: 500,
       quests: L.Quests.createState(),
       avatar: { outfit: "guardian", unlocked: { guardian: true } },
-      jobs: { shifts: 0, earned: 0, completed: {} },
-      housing: { status: "none", homeId: null },
+      jobs: { shifts: 0, earned: 0, completed: {}, active: null },
+      housing: { status: "none", homeId: null, furniture: {} },
       city: { mayorMet: false },
+      world: { targetMapId: null, discovered: { isikpinar: true } },
+      dex: { seen: {}, caught: {} },
+      badges: {},
       story: { introSeen: false, starterChosen: false, rivalFirstDone: false },
       defeatedTrainers: {},
       collectedItems: {},
@@ -123,6 +126,7 @@
     this.state.housing = Object.assign(base.housing, state.housing || {});
     this.state.city = Object.assign(base.city, state.city || {});
     if (L.Economy) L.Economy.ensureState(this.state);
+    if (L.WorldMap) L.WorldMap.ensureState(this.state);
     L.Creatures.serializeFix(this.state);
     L.Audio.applySettings(this.state.settings);
     this.loadMap(this.state.mapId || "isikpinar");
@@ -178,6 +182,7 @@
   L.Game.prototype.loadMap = function (mapId) {
     this.map = this.mapSystem.get(mapId);
     this.state.mapId = mapId;
+    if (L.WorldMap) L.WorldMap.discover(this.state, mapId);
     this.npcs.load(mapId);
     if (this.roamers) this.roamers.load(this.map, this.state);
     L.Quests.progress(this.state, "visit_" + mapId, 1);
@@ -316,6 +321,7 @@
     }
     var starter = L.Creatures.create(starterId, 5);
     L.Creatures.addToCollection(this.state, starter);
+    if (L.WorldMap) L.WorldMap.recordCaught(this.state, starterId);
     this.state.activeIndex = 0;
     this.state.story.starterChosen = true;
     L.Quests.progress(this.state, "chooseStarter", 1);
@@ -490,6 +496,20 @@
       return;
     }
     if (interaction.type === "heal") return this.healTeam({ name: "Şifa İstasyonu" });
+    if (interaction.type === "homeBed") {
+      this.dialogue.show("Ev", [interaction.text, "Ekip dinlendi; burası yeni güvenli noktan oldu."], function () {
+        L.Creatures.healTeam(self.state.team);
+        self.state.checkpoint = self.findSafeCheckpoint(self.map.id, 8, 9);
+        self.autosaveSoon();
+        self.ui.notify("Evde dinlendin. Ekip tamamen iyileşti.");
+        if (L.Audio) L.Audio.play("heal");
+      });
+      return;
+    }
+    if (interaction.type === "homeDecor") {
+      this.ui.showHousing();
+      return;
+    }
     if (interaction.type === "shop") return L.Shop.open(this);
     if (interaction.type === "itemChest") {
       this.collectItem({ id: "chest_" + interaction.itemId, itemId: interaction.itemId, qty: interaction.qty || 1, questObjective: interaction.objective });
@@ -554,6 +574,91 @@
     }
   };
 
+  L.Game.prototype.fastTravelTo = function (mapId) {
+    if (!this.state || !this.map || !L.WorldMap) return false;
+    if (mapId === this.map.id) {
+      this.ui.notify("Zaten buradasın.");
+      return false;
+    }
+    if (!L.WorldMap.canFastTravel(this.state, mapId)) {
+      this.ui.notify("Bu bölge henüz keşfedilmedi.");
+      if (L.Audio) L.Audio.play("error");
+      return false;
+    }
+    var target = this.mapSystem.get(mapId);
+    if (!target) return false;
+    var cost = L.WorldMap.fastTravelCost(this.map.id, mapId);
+    if (this.state.money < cost) {
+      this.ui.notify("Hızlı seyahat için " + cost + " Luma gerekiyor.");
+      if (L.Audio) L.Audio.play("error");
+      return false;
+    }
+    this.state.money -= cost;
+    var safe = this.findSafeMoveTile(mapId, Math.floor(target.w / 2), Math.floor(target.h / 2));
+    this.loadMap(mapId);
+    this.player.setTile(safe.x, safe.y);
+    this.player.dir = "down";
+    this.camera.follow(this.player, this.map, 1);
+    this.syncState();
+    this.autosaveSoon();
+    this.ui.notify(target.name + " bölgesine hızlı seyahat edildi.");
+    if (L.Audio) L.Audio.play("confirm");
+    return true;
+  };
+
+  L.Game.prototype.visitHome = function () {
+    if (!this.state || !L.Economy) return false;
+    L.Economy.ensureState(this.state);
+    if (this.state.housing.status === "none") {
+      this.ui.notify("Önce bir ev kirala veya satın al.");
+      if (L.Audio) L.Audio.play("error");
+      return false;
+    }
+    var mapId = L.Economy.homeInteriorId(this.state);
+    var safe = this.findSafeMoveTile(mapId, 8, 9);
+    this.loadMap(mapId);
+    this.player.setTile(safe.x, safe.y);
+    this.player.dir = "down";
+    this.camera.follow(this.player, this.map, 1);
+    this.syncState();
+    this.autosaveSoon();
+    this.ui.notify(L.Economy.homeName(this.state) + " içine girdin.");
+    if (L.Audio) L.Audio.play("confirm");
+    return true;
+  };
+
+  L.Game.prototype.drawTargetArrow = function () {
+    if (!this.state || !this.map || !L.WorldMap) return;
+    var target = L.WorldMap.targetForHud(this);
+    if (!target || !target.exit) return;
+    var ctx = this.ctx;
+    var ex = (target.exit.x + target.exit.w / 2) * 16 - this.camera.x;
+    var ey = (target.exit.y + target.exit.h / 2) * 16 - this.camera.y;
+    var cx = Math.max(24, Math.min(456, ex));
+    var cy = Math.max(36, Math.min(238, ey));
+    var angle = Math.atan2(ey - 135, ex - 240);
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.fillStyle = "#f2b94b";
+    ctx.strokeStyle = "#101521";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(13, 0);
+    ctx.lineTo(-9, -8);
+    ctx.lineTo(-5, 0);
+    ctx.lineTo(-9, 8);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = "rgba(23, 32, 51, .78)";
+    ctx.fillRect(Math.max(8, cx - 54), Math.max(28, cy - 24), 108, 14);
+    ctx.fillStyle = "#fff4d2";
+    ctx.font = "8px monospace";
+    ctx.fillText(target.label.slice(0, 18), Math.max(12, cx - 50), Math.max(38, cy - 14));
+  };
+
   L.Game.prototype.update = function (dt) {
     if (this.mode === "dialogue") this.dialogue.update(dt);
     if (this.mode === "battle") this.battle.update(dt);
@@ -599,6 +704,7 @@
       return;
     }
     this.mapSystem.draw(this.ctx, this);
+    this.drawTargetArrow();
     if (this.state && this.state.settings.showControls && this.mode === "world") {
       this.ctx.fillStyle = "rgba(23, 32, 51, .72)";
       this.ctx.fillRect(8, 238, 260, 23);
