@@ -122,9 +122,11 @@
   display: grid;
   grid-template-rows: auto 1fr;
   border: 3px solid #101521;
-  background: #fff4d2;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.22) 0 12px, transparent 12px 24px) 0 0 / 24px 24px,
+    #fff4d2;
   color: #172033;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, .42);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, .42), inset 0 0 0 2px rgba(255, 255, 255, .32);
 }
 
 .panel-window header {
@@ -134,7 +136,9 @@
   gap: 8px;
   padding: 8px 10px;
   border-bottom: 2px solid #101521;
-  background: #f2b94b;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.28), transparent 42%),
+    #f2b94b;
 }
 
 .panel-window h2 {
@@ -174,9 +178,12 @@
 .item-row,
 .quest-row {
   border: 2px solid #101521;
-  background: #fff8df;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,244,210,.16)),
+    #fff8df;
   color: #172033;
   padding: 8px;
+  box-shadow: inset 0 -2px 0 rgba(78, 53, 35, .16), 0 2px 0 rgba(0, 0, 0, .15);
 }
 
 .progress-shell {
@@ -224,18 +231,27 @@
   min-height: 32px;
   border: 2px solid #101521;
   margin: 3px 3px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.38), rgba(239,213,141,.4)),
+    #fff4d2;
 }
 
 .primary {
-  background: #f2b94b;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.38), rgba(190,121,39,.22)),
+    #f2b94b !important;
 }
 
 .quiet {
-  background: #dbe8d2;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.38), rgba(73,132,83,.18)),
+    #dbe8d2 !important;
 }
 
 .danger {
-  background: #e46d45;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.26), rgba(98,24,24,.24)),
+    #e46d45 !important;
   color: #fff4d2;
 }
 

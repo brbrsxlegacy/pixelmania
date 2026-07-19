@@ -512,17 +512,36 @@
     var ctx = this.ctx;
     var t = this.game.time;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    ctx.fillStyle = "#8ed6e9";
+    ctx.fillStyle = "#83d2ee";
     ctx.fillRect(0, 0, 480, 170);
-    ctx.fillStyle = "#72bf65";
+    ctx.fillStyle = "#bdefff";
+    ctx.fillRect(0, 0, 480, 2);
+    ctx.fillStyle = "#78c27f";
+    for (var hill = 0; hill < 5; hill += 1) {
+      ctx.fillRect(hill * 104 - 20, 72 + (hill % 2) * 9, 96, 24);
+      ctx.fillRect(hill * 104 + 7, 61 + (hill % 2) * 8, 42, 12);
+    }
+    ctx.fillStyle = "#5fb95f";
     ctx.fillRect(0, 93, 480, 77);
+    ctx.fillStyle = "#79cf65";
+    ctx.fillRect(0, 93, 480, 4);
+    ctx.fillStyle = "#4fa44f";
+    for (var grass = 0; grass < 28; grass += 1) {
+      ctx.fillRect((grass * 19 + Math.floor(t * 9)) % 500 - 20, 106 + grass % 5 * 11, 8, 2);
+    }
     ctx.fillStyle = "#4aa8d8";
     for (var i = 0; i < 16; i += 1) {
       ctx.fillRect((i * 35 + Math.floor(t * 18)) % 520 - 40, 118 + (i % 3) * 7, 18, 2);
     }
-    ctx.fillStyle = "rgba(13, 27, 33, .18)";
-    ctx.fillRect(54, 124, 132, 12);
-    ctx.fillRect(298, 76, 132, 12);
+    ctx.fillStyle = "rgba(13, 27, 33, .22)";
+    ctx.fillRect(54, 126, 132, 12);
+    ctx.fillRect(298, 78, 132, 12);
+    ctx.fillStyle = "#76c66b";
+    ctx.fillRect(58, 120, 124, 10);
+    ctx.fillRect(302, 72, 124, 10);
+    ctx.fillStyle = "#4f9d55";
+    ctx.fillRect(60, 128, 120, 3);
+    ctx.fillRect(304, 80, 120, 3);
     var player = this.playerCreature();
     if (player) L.Asset.drawCreature(ctx, player, 78 + (this.flashSide === "player" ? 8 : 0), 73, 2.2, false, t);
     if (this.enemy) L.Asset.drawCreature(ctx, this.enemy, 320 - (this.flashSide === "enemy" ? 8 : 0), 32, 2, true, t);

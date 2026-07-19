@@ -28,8 +28,10 @@
 .combatant {
   padding: 7px;
   border: 2px solid #101521;
-  background: rgba(255, 244, 210, .94);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, .25);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(239,213,141,.24)),
+    rgba(255, 244, 210, .95);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .25), inset 0 -2px 0 rgba(111, 74, 38, .2);
   align-self: start;
 }
 
@@ -42,7 +44,8 @@
   height: 9px;
   margin-top: 4px;
   border: 2px solid #101521;
-  background: #4a4f5d;
+  background: #343b49;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16);
 }
 
 .hp-shell span,
@@ -50,7 +53,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: #54b86b;
+  background: linear-gradient(90deg, #4fb45b, #85d968);
   transition: width .25s steps(8);
 }
 
@@ -67,7 +70,9 @@
   min-height: 42px;
   padding: 8px 10px;
   border-top: 3px solid #101521;
-  background: #fff4d2;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.42), rgba(239,213,141,.28)),
+    #fff4d2;
   color: #172033;
   line-height: 1.35;
 }
@@ -80,7 +85,9 @@
   gap: 6px;
   padding: 7px;
   border-top: 2px solid #101521;
-  background: #28364f;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), transparent),
+    #28364f;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -88,6 +95,9 @@
 .battle-menu button {
   min-height: 42px;
   border: 2px solid #101521;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.42), rgba(239,213,141,.34)),
+    #fff4d2;
 }
 
 body.battle-active .touch-controls {
