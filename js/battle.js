@@ -78,6 +78,7 @@
     this.screen.classList.remove("hidden");
     this.game.mode = "battle";
     this.setMessage(bossMode ? "Gorkemli " + message : message);
+    if (L.Audio) L.Audio.playBattleMusic(bossMode);
     if (L.Audio) L.Audio.play("encounter");
     this.renderMainMenu();
     this.updateBars();
@@ -93,6 +94,7 @@
     this.game.mode = "world";
     this.game.encounterCooldown = 4;
     this.game.autosaveSoon();
+    if (L.Audio) L.Audio.playMapMusic(this.game.map);
   };
 
   L.Battle.prototype.setMessage = function (message) {

@@ -230,6 +230,7 @@
     if (L.WorldMap) L.WorldMap.discover(this.state, mapId);
     this.npcs.load(mapId);
     if (this.roamers) this.roamers.load(this.map, this.state);
+    if (L.Audio) L.Audio.playMapMusic(this.map);
     L.Quests.progress(this.state, "visit_" + mapId, 1);
     if (mapId === "kristalGol") L.Quests.progress(this.state, "reachLake", 1);
     if (mapId === "magara") L.Quests.progress(this.state, "enterCave", 1);

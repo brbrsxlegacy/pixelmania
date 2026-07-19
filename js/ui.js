@@ -97,6 +97,7 @@
     this.mainMenu.classList.remove("hidden");
     document.getElementById("worldHud").classList.add("hidden");
     this.game.mode = "menu";
+    if (L.Audio) L.Audio.stopMusic();
   };
 
   L.UiController.prototype.hideMain = function () {
