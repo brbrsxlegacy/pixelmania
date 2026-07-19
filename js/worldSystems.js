@@ -7,7 +7,8 @@
     trenIstasyonu: [36, 30], liman: [23, 48], sanayi: [36, 64], arenaMeydan: [73, 50],
     botanikBahce: [63, 31], rengarenkCayir: [77, 28], geceKorusu: [79, 15], sisBatakligi: [92, 17],
     meteorTepesi: [62, 16], lavKanyonu: [75, 12], kumruCukuru: [75, 27], kristalMaden: [90, 10],
-    sahilRotasi: [62, 66], buzulKiyi: [78, 72], gokKulesi: [47, 12], antikaHarabe: [31, 18], kutupPatikasi: [35, 13]
+    sahilRotasi: [62, 66], buzulKiyi: [78, 72], gokKulesi: [47, 12], antikaHarabe: [31, 18], kutupPatikasi: [35, 13],
+    kokLabirenti: [69, 24], derinKristalZindan: [94, 6], batikMahzen: [70, 78]
   };
 
   var cityStations = {

@@ -501,6 +501,35 @@
     return m;
   }
 
+  function makeDungeon(spec) {
+    var m = makeMap(spec.id, spec.name, 46, 38, spec.floor || "caveFloor");
+    setRect(m, "ground", 4, 4, 38, 30, spec.floor || "caveFloor");
+    setRect(m, "ground", 20, 0, 6, 38, spec.path || spec.floor || "caveFloor");
+    setRect(m, "ground", 0, 17, 46, 5, spec.path || spec.floor || "caveFloor");
+    setRect(m, "collision", 20, 0, 6, 38, 0);
+    setRect(m, "collision", 0, 17, 46, 5, 0);
+    setRect(m, "ground", 7, 7, 11, 8, "tallGrass");
+    setRect(m, "encounter", 7, 7, 11, 8, 1);
+    setRect(m, "ground", 28, 8, 10, 8, "tallGrass");
+    setRect(m, "encounter", 28, 8, 10, 8, 1);
+    setRect(m, "ground", 10, 25, 26, 7, "tallGrass");
+    setRect(m, "encounter", 10, 25, 26, 7, 1);
+    for (var i = 0; i < 10; i += 1) {
+      put(m, 6 + i * 4 % 34, 5 + i * 7 % 26, spec.rock || "rock", 1, 1);
+    }
+    put(m, 21, 3, spec.gate || "ruinGate");
+    put(m, 9, 12, spec.spark || "crystalBlue", 1, 1);
+    put(m, 36, 27, spec.spark2 || "crystalPink", 1, 1);
+    m.exits.push({ x: 21, y: 36, w: 4, h: 2, to: spec.returnMap, spawnX: spec.returnX, spawnY: spec.returnY });
+    m.interactions.push({ x: 23, y: 34, type: "sign", text: spec.name + " çıkışı. Hazır değilsen geri dön." });
+    m.items.push({ id: spec.id + "_cache_a", x: 8, y: 8, itemId: spec.itemA || "gucluLumaKuresi", qty: spec.qtyA || 1 });
+    m.items.push({ id: spec.id + "_cache_b", x: 35, y: 12, itemId: spec.itemB || "buyukIksir", qty: spec.qtyB || 2, hidden: true });
+    m.items.push({ id: spec.id + "_relic", x: 22, y: 6, itemId: spec.relic || "kristalLumaKuresi", qty: 1 });
+    m.encounters = encounterPool(spec.elements, spec.min, spec.max, spec.salt || 33);
+    m.roamerCount = 5;
+    return m;
+  }
+
   window.LUMA_DATA.maps = {
     isikpinar: makeVillage(),
     labInterior: makeLabInterior(),
@@ -677,6 +706,35 @@
       links: [{ side: "south", to: "trenIstasyonu", spawnX: 31, spawnY: 4 }]
     })
   };
+
+  window.LUMA_DATA.maps.kokLabirenti = makeDungeon({
+    id: "kokLabirenti", name: "Kök Labirenti", floor: "forest", path: "leafRoad", rock: "tree", gate: "ruinGate",
+    returnMap: "botanikBahce", returnX: 57, returnY: 29, elements: ["Yaprak", "Gölge", "Işık"], min: 18, max: 23, salt: 41,
+    itemA: "gucluLumaKuresi", itemB: "buyukIksir", relic: "kristalLumaKuresi"
+  });
+  window.LUMA_DATA.maps.derinKristalZindan = makeDungeon({
+    id: "derinKristalZindan", name: "Derin Kristal Zindanı", floor: "caveFloor", path: "cityStone", rock: "crystalBlue", gate: "caveMouth",
+    returnMap: "kristalMaden", returnX: 47, returnY: 14, elements: ["Kaya", "Elektrik", "Işık"], min: 22, max: 28, salt: 42,
+    itemA: "kristalLumaKuresi", itemB: "tamIksir", relic: "kristalLumaKuresi"
+  });
+  window.LUMA_DATA.maps.batikMahzen = makeDungeon({
+    id: "batikMahzen", name: "Batık Mahzen", floor: "ruinFloor", path: "sandGrass", rock: "rock", gate: "caveMouth",
+    returnMap: "sahilRotasi", returnX: 55, returnY: 23, elements: ["Su", "Gölge", "Kaya"], min: 19, max: 25, salt: 43,
+    itemA: "gucluLumaKuresi", itemB: "panzehir", qtyB: 3, relic: "kristalLumaKuresi"
+  });
+
+  put(window.LUMA_DATA.maps.botanikBahce, 56, 27, "ruinGate", 4, 4);
+  setRect(window.LUMA_DATA.maps.botanikBahce, "collision", 57, 29, 2, 2, 0);
+  window.LUMA_DATA.maps.botanikBahce.exits.push({ x: 57, y: 29, w: 2, h: 2, to: "kokLabirenti", spawnX: 22, spawnY: 34 });
+
+  put(window.LUMA_DATA.maps.kristalMaden, 47, 10, "caveMouth", 4, 3);
+  setRect(window.LUMA_DATA.maps.kristalMaden, "collision", 48, 13, 2, 2, 0);
+  window.LUMA_DATA.maps.kristalMaden.exits.push({ x: 48, y: 13, w: 2, h: 2, to: "derinKristalZindan", spawnX: 22, spawnY: 34 });
+
+  put(window.LUMA_DATA.maps.sahilRotasi, 54, 21, "caveMouth", 4, 3);
+  setRect(window.LUMA_DATA.maps.sahilRotasi, "collision", 55, 23, 2, 2, 0);
+  window.LUMA_DATA.maps.sahilRotasi.exits.push({ x: 55, y: 23, w: 2, h: 2, to: "batikMahzen", spawnX: 22, spawnY: 34 });
+
   Object.keys(extraMaps).forEach(function (id) {
     window.LUMA_DATA.maps[id] = extraMaps[id];
   });

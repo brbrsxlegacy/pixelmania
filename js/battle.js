@@ -24,6 +24,7 @@
     this.enemyIndex = 0;
     this.enemy = null;
     this.trainer = null;
+    this.effects = [];
     this.bind();
   };
 
@@ -72,6 +73,7 @@
   L.Battle.prototype.startCommon = function (message) {
     this.active = true;
     this.busy = false;
+    this.effects = [];
     var bossMode = !!(this.trainer && (this.trainer.boss || this.trainer.giant || this.trainer.storyBossId));
     document.body.classList.add("battle-active");
     document.body.classList.toggle("boss-battle", bossMode);
@@ -212,7 +214,7 @@
       await delay(560);
       return;
     }
-    this.animateAttack(turn.side, move.animation);
+    this.animateAttack(turn.side, move.animation, move.element);
     if (move.power <= 0) {
       this.applyEffect(user, target, move.effect, true);
       this.setMessage(user.displayName + " " + move.name + " kullandı.");
@@ -494,8 +496,16 @@
     }
   };
 
-  L.Battle.prototype.animateAttack = function (side) {
+  L.Battle.prototype.animateAttack = function (side, animation, element) {
     this.flashSide = side;
+    this.effects.push({
+      side: side,
+      element: element || "Normal",
+      animation: animation || "hit",
+      start: this.game.time,
+      duration: .58,
+      seed: Math.random() * 1000
+    });
     setTimeout(function (battle) { battle.flashSide = null; }, 160, this);
   };
 
@@ -522,6 +532,89 @@
     document.getElementById("playerHpBar").style.width = Math.max(0, player.hp / player.maxHp * 100) + "%";
     document.getElementById("playerHpText").textContent = player.hp + "/" + player.maxHp;
     document.getElementById("playerXpBar").style.width = Math.max(0, player.exp / player.expToNext * 100) + "%";
+  };
+
+  L.Battle.prototype.drawBattleEffects = function (ctx, time) {
+    var active = [];
+    for (var e = 0; e < this.effects.length; e += 1) {
+      var fx = this.effects[e];
+      var p = (time - fx.start) / fx.duration;
+      if (p < 0 || p > 1) continue;
+      active.push(fx);
+      var targetEnemy = fx.side === "player";
+      var x = targetEnemy ? 360 : 108;
+      var y = targetEnemy ? 64 : 112;
+      var alpha = 1 - p;
+      var spread = 8 + p * 30;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = 2;
+      if (fx.element === "Alev") {
+        ctx.fillStyle = "#f06b34";
+        for (var f = 0; f < 7; f += 1) ctx.fillRect(x - 22 + f * 7, y + Math.sin(f + fx.seed) * 8 - p * 20, 5, 10);
+        ctx.fillStyle = "#ffd28a";
+        ctx.fillRect(x - 8, y - spread / 2, 16, 8);
+      } else if (fx.element === "Su") {
+        ctx.strokeStyle = "#9de8ff";
+        for (var s = 0; s < 6; s += 1) {
+          ctx.beginPath();
+          ctx.arc(x - 24 + s * 10, y - 8 + p * 22, 4 + p * 4, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      } else if (fx.element === "Elektrik") {
+        ctx.strokeStyle = "#fff26b";
+        ctx.beginPath();
+        ctx.moveTo(x - 28, y - 24);
+        ctx.lineTo(x - 12, y - 4);
+        ctx.lineTo(x - 20, y - 2);
+        ctx.lineTo(x + 5, y + 24);
+        ctx.lineTo(x - 1, y + 4);
+        ctx.lineTo(x + 24, y + 13);
+        ctx.stroke();
+      } else if (fx.element === "Kaya") {
+        ctx.fillStyle = "#8a8f91";
+        for (var r = 0; r < 8; r += 1) ctx.fillRect(x - 28 + r * 8, y - 16 + (r % 3) * 9 + p * 10, 6, 5);
+      } else if (fx.element === "Yaprak") {
+        ctx.fillStyle = "#54b86b";
+        for (var l = 0; l < 9; l += 1) {
+          ctx.fillRect(x - 28 + l * 7 + Math.sin(p * 5 + l) * 8, y - 18 + l % 4 * 9, 7, 3);
+        }
+      } else if (fx.element === "Rüzgar") {
+        ctx.strokeStyle = "#e7fbff";
+        for (var w = 0; w < 4; w += 1) {
+          ctx.beginPath();
+          ctx.arc(x, y, spread + w * 8, Math.PI * .1, Math.PI * 1.25);
+          ctx.stroke();
+        }
+      } else if (fx.element === "Gölge") {
+        ctx.fillStyle = "rgba(28, 26, 49, .65)";
+        ctx.beginPath();
+        ctx.ellipse(x, y + 4, spread, 14 + p * 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#8b7bd8";
+        ctx.stroke();
+      } else if (fx.element === "Işık") {
+        ctx.strokeStyle = "#fff6b8";
+        ctx.beginPath();
+        ctx.moveTo(x - spread, y);
+        ctx.lineTo(x + spread, y);
+        ctx.moveTo(x, y - spread);
+        ctx.lineTo(x, y + spread);
+        ctx.moveTo(x - spread * .7, y - spread * .7);
+        ctx.lineTo(x + spread * .7, y + spread * .7);
+        ctx.moveTo(x + spread * .7, y - spread * .7);
+        ctx.lineTo(x - spread * .7, y + spread * .7);
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = "#fff4d2";
+        ctx.beginPath();
+        ctx.moveTo(x - spread, y + spread * .4);
+        ctx.lineTo(x + spread, y - spread * .4);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+    this.effects = active;
   };
 
   L.Battle.prototype.draw = function () {
@@ -559,6 +652,7 @@
     ctx.fillStyle = "#4f9d55";
     ctx.fillRect(60, 128, 120, 3);
     ctx.fillRect(304, 80, 120, 3);
+    this.drawBattleEffects(ctx, t);
     var player = this.playerCreature();
     if (player) L.Asset.drawCreature(ctx, player, 78 + (this.flashSide === "player" ? 8 : 0), 73, 2.2, false, t);
     if (this.enemy) {

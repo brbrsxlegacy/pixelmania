@@ -232,5 +232,30 @@
         afterDialogue: [row[3] + " sende. Bu arenada iz bıraktın."]
       });
     });
+    [
+      ["kokLabirenti", "Kök Bekçisi Elvan", "Yaprak", 24, "ranger", "Kök Labirenti'nin kalbi seni tartıyor."],
+      ["derinKristalZindan", "Kristal Gardiyan Bora", "Kaya", 29, "explorer", "Derindeki kristaller her adımı duyar."],
+      ["batikMahzen", "Mahzen Korsanı Nil", "Su", 26, "fisher", "Batık kapıdan geçen önce benimle yüzleşir."]
+    ].forEach(function (row, index) {
+      if (!npcs[row[0]]) npcs[row[0]] = [];
+      npcs[row[0]].push({
+        id: "dungeon_boss_" + row[0],
+        name: row[1],
+        type: "trainer",
+        boss: true,
+        x: 23,
+        y: 6,
+        dir: "down",
+        action: "trainer",
+        sprite: row[4],
+        team: [
+          { creatureId: creatureByElement(row[2], index + 31), level: row[3] },
+          { creatureId: creatureByElement(row[2], index + 37), level: row[3] + 1 }
+        ],
+        money: 420 + index * 90,
+        dialogue: [row[5], "Sandıklara uzanmak istiyorsan zindanın ritmini yenmelisin."],
+        afterDialogue: ["Zindan seni tanıdı. Gizli sandıkları toplamayı unutma."]
+      });
+    });
   })();
 })();

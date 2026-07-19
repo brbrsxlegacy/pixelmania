@@ -126,7 +126,7 @@
     if (/kutup|buzul/i.test(id)) return "snow";
     if (/kristalGol|liman|sahil/i.test(id)) return "water";
     if (/lav|meteor|kumru/i.test(id)) return "ember";
-    if (/magara|maden/i.test(id)) return "cave";
+    if (/magara|maden|zindan|Labirenti|Mahzen/i.test(id)) return "cave";
     if (/antika|gece/i.test(id)) return "ruin";
     if (/tren|sanayi|gokKulesi/i.test(id)) return "machine";
     if (/lumaSehir|pazar|belediye|akademi/i.test(id)) return "city";

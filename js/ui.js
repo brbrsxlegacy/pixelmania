@@ -14,6 +14,44 @@
     });
   }
 
+  var dexElements = ["Yaprak", "Alev", "Su", "Kaya", "Rüzgar", "Elektrik", "Gölge", "Işık"];
+
+  function elementMatchups(element) {
+    var strong = [];
+    var weakTo = [];
+    dexElements.forEach(function (other) {
+      if (L.Abilities.effectiveness(element, other) > 1.1) strong.push(other);
+      if (L.Abilities.effectiveness(other, element) > 1.1) weakTo.push(other);
+    });
+    return {
+      strong: strong.length ? strong.join(", ") : "Nötr",
+      weakTo: weakTo.length ? weakTo.join(", ") : "Nötr"
+    };
+  }
+
+  function drawCreatureCard(canvas, creature, unknown) {
+    if (!canvas || !L.Asset) return;
+    var ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#9adbea";
+    ctx.fillRect(0, 0, canvas.width, Math.floor(canvas.height * .52));
+    ctx.fillStyle = "#72c55f";
+    ctx.fillRect(0, Math.floor(canvas.height * .52), canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(18, 28, 42, .22)";
+    ctx.fillRect(18, canvas.height - 12, canvas.width - 36, 6);
+    if (unknown) {
+      ctx.fillStyle = "#28364f";
+      ctx.fillRect(canvas.width / 2 - 12, 17, 24, 21);
+      ctx.fillRect(canvas.width / 2 - 5, 10, 10, 8);
+      ctx.fillStyle = "#fff4d2";
+      ctx.font = "12px monospace";
+      ctx.fillText("?", canvas.width / 2 - 4, 31);
+      return;
+    }
+    L.Asset.drawCreature(ctx, creature, Math.floor(canvas.width / 2 - 18), 13, 1.45, false, Date.now() / 1000);
+  }
+
   L.UiController = function (game) {
     this.game = game;
     this.mainMenu = document.getElementById("mainMenu");
@@ -142,6 +180,25 @@
     else this.game.mode = "world";
   };
 
+  L.UiController.prototype.renderPanelCreatureArt = function () {
+    var state = this.game.state || {};
+    this.panelContent.querySelectorAll("[data-team-art]").forEach(function (canvas) {
+      var creature = state.team && state.team[Number(canvas.getAttribute("data-team-art"))];
+      if (creature) drawCreatureCard(canvas, creature, false);
+    });
+    this.panelContent.querySelectorAll("[data-storage-art]").forEach(function (canvas) {
+      var creature = state.storage && state.storage[Number(canvas.getAttribute("data-storage-art"))];
+      if (creature) drawCreatureCard(canvas, creature, false);
+    });
+    this.panelContent.querySelectorAll("[data-dex-art]").forEach(function (canvas) {
+      var id = canvas.getAttribute("data-dex-art");
+      var base = window.LUMA_DATA.creatures[id];
+      if (!base) return;
+      var known = !!(state.dex && (state.dex.seen[id] || state.dex.caught[id]));
+      drawCreatureCard(canvas, base, !known);
+    });
+  };
+
   L.UiController.prototype.showPause = function () {
     var html = "<div class='panel-grid'>" +
       "<button class='panel-row' data-pause='team'>Yaratıklar</button>" +
@@ -210,6 +267,7 @@
       var friend = L.Progression ? L.Progression.friendship(state, c) : 0;
       var passive = L.Progression ? L.Progression.passiveFor(c) : null;
       html += "<div class='team-card'><strong>" + (i === state.activeIndex ? "▶ " : "") + c.displayName + "</strong><br>" +
+        "<canvas class='creature-card-art' width='96' height='66' data-team-art='" + i + "'></canvas>" +
         "<small>" + c.element + " • Sv. " + c.level + " • HP " + c.hp + "/" + c.maxHp + " • EXP " + c.exp + "/" + c.expToNext + "</small><br>" +
         "<small>Güç " + c.attack + " • Savunma " + c.defense + " • Hız " + c.speed + "</small><br>" +
         "<small>" + c.abilities.map(function (a) { return a.name; }).join(", ") + "</small><br>" +
@@ -227,12 +285,13 @@
     if (state.storage.length) {
       html += "<h3>Depo</h3><div class='panel-grid'>";
       state.storage.forEach(function (c, i) {
-        html += "<div class='team-card'><strong>" + c.displayName + "</strong><br><small>" + c.element + " • Sv. " + c.level + "</small><br>" +
+        html += "<div class='team-card'><strong>" + c.displayName + "</strong><br><canvas class='creature-card-art' width='96' height='66' data-storage-art='" + i + "'></canvas><small>" + c.element + " • Sv. " + c.level + "</small><br>" +
           "<button data-storage-take='" + i + "'>Ekibe Al</button></div>";
       });
       html += "</div>";
     }
     this.showPanel("Yaratıklar", html, "team", "world");
+    this.renderPanelCreatureArt();
   };
 
   L.UiController.prototype.showInventory = function () {
@@ -484,18 +543,27 @@
       var isCaught = !!state.dex.caught[id];
       var colors = base.sprite && base.sprite.colors || ["#8a8f91", "#fff4d2", "#172033"];
       var habitats = L.WorldMap.habitats(id);
+      var habitatNames = habitats.map(function (mapId) {
+        return window.LUMA_DATA.maps[mapId] ? window.LUMA_DATA.maps[mapId].name : mapId;
+      });
       var chain = L.Evolution ? L.Evolution.chainFor(id).map(function (cid) { return window.LUMA_DATA.creatures[cid].name; }).join(" > ") : base.name;
+      var match = elementMatchups(base.element);
       html += "<div class='dex-card " + (isCaught ? "caught" : (isSeen ? "seen" : "unknown")) + "'>" +
         "<span class='dex-no'>#" + String(index + 1).padStart(3, "0") + "</span>" +
         "<span class='dex-dot' style='background:linear-gradient(135deg," + colors[0] + "," + colors[1] + "," + colors[2] + ")'></span>" +
+        "<canvas class='dex-art' width='104' height='72' data-dex-art='" + id + "'></canvas>" +
         "<strong>" + (isSeen ? base.name : "???") + "</strong><br>" +
         "<small>" + (isSeen ? base.element + " • " + base.rarity : "Henüz görülmedi") + "</small><br>" +
         (isSeen ? "<small>Evrim: " + chain + "</small><br>" : "") +
+        (isSeen ? "<small>Güçlü: " + match.strong + "</small><br><small>Zayıf olduğu: " + match.weakTo + "</small><br>" : "") +
+        (isSeen && habitatNames.length ? "<small>Habitat: " + habitatNames.slice(0, 2).join(", ") + "</small><br>" : "") +
+        (isCaught ? "<small class='dex-lore'>" + escapeHtml(base.description || "Bu Luma hakkinda bilgi az.") + "</small><br>" : "") +
         (habitats[0] ? "<button data-map-target='" + habitats[0] + "'>Habitat</button>" : "") +
         "</div>";
     });
     html += "</div>";
     this.showPanel("Lumadex", html, "dex", "world");
+    this.renderPanelCreatureArt();
   };
 
   L.UiController.prototype.showBadges = function () {
