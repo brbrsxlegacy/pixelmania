@@ -39,6 +39,13 @@
   margin-top: 92px;
 }
 
+body.boss-battle .combatant.enemy {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.52), rgba(242,185,75,.28)),
+    #fff4d2;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, .32), 0 0 0 3px rgba(242, 185, 75, .28);
+}
+
 .hp-shell,
 .xp-shell {
   height: 9px;
@@ -100,6 +107,13 @@
     #fff4d2;
 }
 
+body.boss-battle .battle-message {
+  background:
+    linear-gradient(90deg, rgba(242,185,75,.36), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.42), rgba(239,213,141,.28)),
+    #fff4d2;
+}
+
 body.battle-active .touch-controls {
   display: none !important;
 }
@@ -147,9 +161,9 @@ body.battle-active .touch-controls {
   }
 
   body.battle-active .combatant {
-    max-width: 210px;
-    padding: 4px;
-    line-height: 1.12;
+    max-width: 176px;
+    padding: 3px 4px;
+    line-height: 1.05;
   }
 
   body.battle-active .combatant strong {
@@ -162,7 +176,7 @@ body.battle-active .touch-controls {
 
   body.battle-active .combatant.player {
     justify-self: end;
-    margin-top: 38px;
+    margin-top: 30px;
   }
 
   body.battle-active .hp-shell {
@@ -177,14 +191,15 @@ body.battle-active .touch-controls {
 
 @media (hover: none) and (orientation: landscape), (pointer: coarse) and (orientation: landscape) {
   body.battle-active .battle-message {
-    min-height: 32px;
-    padding: 6px 8px;
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 12px;
   }
 
   body.battle-active .battle-menu {
-    min-height: 48px;
+    min-height: 46px;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    max-height: 34vh;
+    max-height: 30vh;
   }
 
   body.battle-active .battle-menu button {

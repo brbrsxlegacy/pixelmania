@@ -147,6 +147,10 @@
       "<button class='panel-row' data-pause='bag'>Çanta</button>" +
       "<button class='panel-row' data-pause='quests'>Görevler</button>" +
       "<button class='panel-row' data-pause='daily'>Günlük</button>" +
+      "<button class='panel-row' data-pause='crafting'>Atolye</button>" +
+      "<button class='panel-row' data-pause='minigames'>Mini Oyunlar</button>" +
+      "<button class='panel-row' data-pause='weather'>Hava ve Pasifler</button>" +
+      "<button class='panel-row' data-pause='bosses'>Dev Bosslar</button>" +
       "<button class='panel-row' data-pause='map'>Harita</button>" +
       "<button class='panel-row' data-pause='dex'>Lumadex</button>" +
       "<button class='panel-row' data-pause='badges'>Rozetler</button>" +
@@ -202,13 +206,17 @@
     var html = "<div class='panel-grid'>";
     state.team.forEach(function (c, i) {
       var evo = L.Evolution && L.Evolution.nextInfo(c);
+      var friend = L.Progression ? L.Progression.friendship(state, c) : 0;
+      var passive = L.Progression ? L.Progression.passiveFor(c) : null;
       html += "<div class='team-card'><strong>" + (i === state.activeIndex ? "▶ " : "") + c.displayName + "</strong><br>" +
         "<small>" + c.element + " • Sv. " + c.level + " • HP " + c.hp + "/" + c.maxHp + " • EXP " + c.exp + "/" + c.expToNext + "</small><br>" +
         "<small>Güç " + c.attack + " • Savunma " + c.defense + " • Hız " + c.speed + "</small><br>" +
         "<small>" + c.abilities.map(function (a) { return a.name; }).join(", ") + "</small><br>" +
+        (passive ? "<small>Dostluk " + friend + "/100 • Pasif: " + passive.name + "</small><br>" : "") +
         (evo ? "<small>Evrim: " + evo.to.name + " • Sv. " + evo.level + "</small><br>" : "") +
         "<button data-team-active='" + i + "'>Aktif Yap</button>" +
         (evo && evo.ready ? "<button data-team-evolve='" + i + "' class='primary'>Evrimle</button>" : "") +
+        "<button data-team-tree='" + i + "'>Evrim Agaci</button>" +
         "<button data-team-moves='" + i + "'>Yetenekler</button>" +
         "<button data-team-up='" + i + "'>Yukarı</button><button data-team-down='" + i + "'>Aşağı</button>" +
         "<button data-team-heal='" + i + "'>İksir Kullan</button>" +
@@ -309,6 +317,96 @@
     html += "<div class='item-row'><strong>Gizemli Luma Yumurtası</strong><br><small>420 Luma • yürüyerek çatlar</small><br><button data-egg-buy='1'>Yumurta Al</button></div>";
     html += "</div>";
     this.showPanel("Pazar", html, "market", "world");
+  };
+
+  L.UiController.prototype.showCrafting = function () {
+    var state = this.game.state;
+    if (!L.Progression) return;
+    L.Progression.ensureState(state);
+    var html = "<div class='panel-row resource-bank'>";
+    Object.keys(L.Progression.resources).forEach(function (id) {
+      var info = L.Progression.resources[id];
+      html += "<span class='resource-chip' style='--chip:" + info.color + "'>" + info.name + ": " + (state.resources[id] || 0) + "</span>";
+    });
+    html += "<br><button class='primary' data-gather='1'>Burada Topla</button><small>Konuma gore ot, cevher, dal ya da kristal bulursun.</small></div>";
+    html += "<div class='panel-grid'>";
+    L.Progression.recipes.forEach(function (recipe) {
+      var cost = Object.keys(recipe.cost).map(function (id) {
+        return L.Progression.resourceName(id) + " x" + recipe.cost[id];
+      }).join(", ");
+      var canCraft = Object.keys(recipe.cost).every(function (id) {
+        return (state.resources[id] || 0) >= recipe.cost[id];
+      });
+      html += "<div class='item-row'><strong>" + recipe.name + "</strong><br><small>" + recipe.description + "</small><br>" +
+        "<small>Gerekli: " + cost + "</small><br><button data-craft='" + recipe.id + "'" + (!canCraft ? " disabled" : "") + ">Uret</button></div>";
+    });
+    html += "</div>";
+    this.showPanel("Atolye", html, "crafting", "world");
+  };
+
+  L.UiController.prototype.showMinigames = function () {
+    var state = this.game.state;
+    if (!L.Progression) return;
+    L.Progression.ensureState(state);
+    var games = [
+      { id: "race", name: "Ruzgar Kosusu", desc: "Aktif Luma ile refleks skoru. Ruzgar pasifi bonus verir." },
+      { id: "garden", name: "Bahce Ritmi", desc: "Dogru zamanda hasat; ot ve dal kazandirir." },
+      { id: "mining", name: "Kristal Madeni", desc: "Cevher ve kristal bulma mini isi." }
+    ];
+    var html = "<div class='panel-row'><strong>Oynanan:</strong> " + state.minigames.played + " • <strong>Galibiyet:</strong> " + state.minigames.wins +
+      " • <strong>En iyi:</strong> " + state.minigames.bestScore + "</div><div class='panel-grid'>";
+    games.forEach(function (game) {
+      html += "<div class='item-row'><strong>" + game.name + "</strong><br><small>" + game.desc + "</small><br>" +
+        "<button data-minigame='" + game.id + "'>Oyna</button></div>";
+    });
+    html += "</div>";
+    this.showPanel("Mini Oyunlar", html, "minigames", "world");
+  };
+
+  L.UiController.prototype.showWeather = function () {
+    var state = this.game.state;
+    if (!L.Progression) return;
+    L.Progression.ensureState(state);
+    var creature = state.team[state.activeIndex] || state.team[0];
+    var passive = creature ? L.Progression.passiveFor(creature) : null;
+    var html = "<div class='panel-row'><strong>" + L.Progression.weatherLabel(state) + "</strong><br><small>Hava savasta element pasiflerini, gece/gunduz da Gölge ve Işık bonuslarini etkiler.</small></div>";
+    if (creature && passive) {
+      html += "<div class='panel-row'><strong>" + creature.displayName + "</strong><br><small>Dostluk: " + L.Progression.friendship(state, creature) + "/100</small><br>" +
+        "<strong>" + passive.name + "</strong><br><small>" + passive.description + "</small></div>";
+    }
+    html += "<div class='panel-grid'>";
+    L.Progression.weatherTypes.forEach(function (w) {
+      html += "<div class='item-row'><strong>" + w.name + "</strong><br><small>Farkli Luma elementleri bu havada ufak savas bonuslari alir.</small></div>";
+    });
+    html += "</div>";
+    this.showPanel("Hava ve Pasifler", html, "weather", "world");
+  };
+
+  L.UiController.prototype.showBosses = function () {
+    var state = this.game.state;
+    if (!L.Progression) return;
+    L.Progression.ensureState(state);
+    var html = "<div class='panel-row'><strong>Dev Boss Hikayesi</strong><br><small>Cusseli bosslar tek Luma ile gelir; kazandiginda para, malzeme ve boss yumurtasi verir.</small></div><div class='panel-grid'>";
+    L.Progression.storyBosses.forEach(function (boss) {
+      var defeated = !!state.storyBosses.defeated[boss.id];
+      var map = window.LUMA_DATA.maps[boss.map];
+      html += "<div class='item-row boss-card'><strong>" + boss.title + "</strong><br><small>" + boss.element + " • Sv. " + boss.level + " • " + (map ? map.name : boss.map) + "</small><br>" +
+        "<small>" + boss.subtitle + "</small><br><span class='status-pill " + (defeated ? "done" : "") + "'>" + (defeated ? "Yenildi" : "Hazir") + "</span><br>" +
+        "<button data-boss-story='" + boss.id + "'" + (defeated ? "" : " class='primary'") + ">" + (defeated ? "Tekrar Savas" : "Meydan Oku") + "</button></div>";
+    });
+    html += "</div>";
+    this.showPanel("Dev Bosslar", html, "bosses", "world");
+  };
+
+  L.UiController.prototype.showEvolutionTree = function (index) {
+    var creature = this.game.state.team[index];
+    if (!creature || !L.Progression) return this.showTeam();
+    var passive = L.Progression.passiveFor(creature);
+    var html = "<div class='panel-row'><strong>" + creature.displayName + "</strong><br><small>" + creature.element + " • Sv. " + creature.level +
+      " • Dostluk " + L.Progression.friendship(this.game.state, creature) + "/100</small><br><strong>" + passive.name + "</strong><br><small>" + passive.description + "</small></div>";
+    html += L.Progression.evolutionTreeHtml(creature);
+    html += "<button data-move-back='1'>Takima Don</button>";
+    this.showPanel("Evrim Agaci", html, "evolutionTree", "world");
   };
 
   L.UiController.prototype.showMoveTutor = function (index) {
@@ -477,6 +575,13 @@
     var html = "<div class='panel-row'><strong>Mevcut ev:</strong> " + current + "<br><strong>Para:</strong> " + state.money + " Luma</div>";
     if (state.housing.status !== "none") {
       html += "<div class='panel-row'><button class='primary' data-home-visit='1'>Evime Git</button><br><small>Evde yatakla iyileşebilir, dekor masasıyla düzenleme yapabilirsin.</small></div>";
+      if (L.Progression) {
+        L.Progression.ensureState(state);
+        var growth = Math.min(100, Math.floor((state.farm.growth || 0) / 80 * 100));
+        html += "<div class='panel-row farm-row'><strong>Bahce</strong><br><small>Dikili: " + state.farm.planted + " • Hazir hasat: " + state.farm.harvestReady + " • Toplam hasat: " + state.farm.harvests + "</small>" +
+          "<div class='progress-shell'><span style='width:" + growth + "%'></span></div>" +
+          "<button data-farm-plant='1'>Fide Dik</button><button data-farm-harvest='1'" + (!state.farm.harvestReady ? " disabled" : "") + ">Hasat Al</button></div>";
+      }
       html += "<div class='panel-grid'>";
       L.Economy.furniture.forEach(function (item) {
         var owned = !!state.housing.furniture[item.id];
@@ -518,7 +623,11 @@
           html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + ":</strong> " + escapeHtml(remote.invite.label || "İstek") + " isteği gönderdi." +
             (remote.invite.kind === "pvp" ? "<br><button class='primary' data-mp-accept-pvp='" + escapeHtml(id) + "'>PvP Kabul Et</button>" : "") + "</div>";
         } else if (remote) {
-          html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + "</strong><br><small>" + escapeHtml(remote.creature || "Takım hazır") + " • " + (remote.ready ? "Hazır" : "Beklemede") + "</small></div>";
+          var preview = (remote.team || []).slice(0, 3).map(function (entry) {
+            return escapeHtml((entry.displayName || entry.id || "Luma") + " Sv. " + (entry.level || 1));
+          }).join("<br>");
+          html += "<div class='panel-row'><strong>" + escapeHtml(remote.name || "Oyuncu") + "</strong><br><small>" + escapeHtml(remote.creature || "Takım hazır") + " • " + (remote.ready ? "Hazır" : "Beklemede") + "</small>" +
+            (preview ? "<div class='mp-team-preview'>" + preview + "</div>" : "") + "</div>";
         }
       });
       html += "<button data-mp-leave='1' class='danger'>Odadan Çık</button>";
@@ -582,6 +691,10 @@
       if (pause === "bag") this.showInventory();
       if (pause === "quests") this.showQuests();
       if (pause === "daily") this.showDaily();
+      if (pause === "crafting") this.showCrafting();
+      if (pause === "minigames") this.showMinigames();
+      if (pause === "weather") this.showWeather();
+      if (pause === "bosses") this.showBosses();
       if (pause === "map") this.showMap();
       if (pause === "dex") this.showLumadex();
       if (pause === "badges") this.showBadges();
@@ -623,6 +736,53 @@
         if (L.Audio) L.Audio.play("error");
       }
       this.showDaily();
+      return;
+    }
+    if (button.hasAttribute("data-gather")) {
+      if (L.Progression) this.notify(L.Progression.gather(this.game));
+      if (L.Audio) L.Audio.play("pickup");
+      this.showCrafting();
+      return;
+    }
+    var craftId = button.getAttribute("data-craft");
+    if (craftId) {
+      var craftResult = L.Progression ? L.Progression.craft(this.game, craftId) : { ok: false, message: "Atolye hazir degil." };
+      this.notify(craftResult.message);
+      if (craftResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!craftResult.ok && L.Audio) L.Audio.play("error");
+      this.showCrafting();
+      return;
+    }
+    var minigame = button.getAttribute("data-minigame");
+    if (minigame) {
+      if (L.Progression) this.notify(L.Progression.playMinigame(this.game, minigame));
+      if (L.Audio) L.Audio.play("confirm");
+      this.showMinigames();
+      return;
+    }
+    var storyBoss = button.getAttribute("data-boss-story");
+    if (storyBoss) {
+      var bossResult = L.Progression ? L.Progression.challengeStoryBoss(this.game, storyBoss) : { ok: false, message: "Boss sistemi hazir degil." };
+      if (!bossResult.ok) {
+        this.notify(bossResult.message);
+        if (L.Audio) L.Audio.play("error");
+      }
+      return;
+    }
+    if (button.hasAttribute("data-farm-plant")) {
+      var plantResult = L.Progression ? L.Progression.plant(this.game) : { ok: false, message: "Bahce hazir degil." };
+      this.notify(plantResult.message);
+      if (plantResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!plantResult.ok && L.Audio) L.Audio.play("error");
+      this.showHousing();
+      return;
+    }
+    if (button.hasAttribute("data-farm-harvest")) {
+      var harvestResult = L.Progression ? L.Progression.harvest(this.game) : { ok: false, message: "Hasat hazir degil." };
+      this.notify(harvestResult.message);
+      if (harvestResult.ok && L.Audio) L.Audio.play("pickup");
+      if (!harvestResult.ok && L.Audio) L.Audio.play("error");
+      this.showHousing();
       return;
     }
     var bossArena = button.getAttribute("data-boss-arena");
@@ -790,6 +950,11 @@
       var evoCreature = this.game.state.team[Number(evolve)];
       if (L.Evolution && L.Evolution.evolveNow(this.game, evoCreature)) this.showTeam();
       else this.notify("Bu Luma henüz evrimleşemiyor.");
+      return;
+    }
+    var teamTree = button.getAttribute("data-team-tree");
+    if (teamTree != null) {
+      this.showEvolutionTree(Number(teamTree));
       return;
     }
     var moveTeamIndex = button.getAttribute("data-team-moves");

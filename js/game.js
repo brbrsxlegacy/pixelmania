@@ -24,6 +24,13 @@
       pvp: { wins: 0, losses: 0 },
       daily: { date: null, claimed: false, tasks: {}, streak: 0 },
       eggs: { inventory: [], hatched: 0 },
+      friendship: { values: {}, total: 0 },
+      resources: { herb: 0, ore: 0, wood: 0, crystal: 0 },
+      crafting: { crafted: 0 },
+      weather: { type: "clear", timer: 0, day: 1, phase: "day", season: "Bahar" },
+      farm: { planted: 0, growth: 0, harvestReady: 0, harvests: 0 },
+      minigames: { played: 0, wins: 0, bestScore: 0 },
+      storyBosses: { defeated: {} },
       story: { introSeen: false, starterChosen: false, rivalFirstDone: false },
       defeatedTrainers: {},
       collectedItems: {},
@@ -94,6 +101,7 @@
 
   L.Game.prototype.newGame = function () {
     this.state = defaultState(L.Save.loadSettings());
+    if (L.Progression) L.Progression.ensureState(this.state);
     L.Audio.applySettings(this.state.settings);
     this.loadMap("isikpinar");
     this.player.x = this.state.player.x;
@@ -158,6 +166,7 @@
     if (L.WorldMap) L.WorldMap.ensureState(this.state);
     if (L.Daily) L.Daily.ensureState(this.state);
     if (L.Eggs) L.Eggs.ensureState(this.state);
+    if (L.Progression) L.Progression.ensureState(this.state);
     L.Creatures.serializeFix(this.state);
     L.Audio.applySettings(this.state.settings);
     this.loadMap(this.state.mapId || "isikpinar");
@@ -839,6 +848,7 @@
     if (!this.state) return;
     this.multiplayer.update(dt);
     this.state.playTime += this.mode === "world" ? dt : 0;
+    if (this.mode === "world" && L.Progression) L.Progression.update(this, dt);
     this.transitionCooldown = Math.max(0, this.transitionCooldown - dt);
     this.encounterCooldown = Math.max(0, this.encounterCooldown - dt);
     if (this.evolutionFx) {
@@ -859,6 +869,7 @@
         var moved = Math.sqrt(Math.pow(this.player.x - beforeX, 2) + Math.pow(this.player.y - beforeY, 2));
         this.updateFollower(moved);
         if (L.Eggs) L.Eggs.progress(this, moved / 16);
+        if (L.Progression) L.Progression.walk(this, moved / 16);
         if (this.mode !== "world") return;
         if (this.roamers) this.roamers.update(dt, this.map);
         this.camera.follow(this.player, this.map, dt);
@@ -888,6 +899,7 @@
       return;
     }
     this.mapSystem.draw(this.ctx, this);
+    if (L.Progression) L.Progression.drawWeather(this, this.ctx);
     this.drawTargetArrow();
     this.drawMiniMap();
     if (this.state && this.state.settings.showControls && this.mode === "world") {

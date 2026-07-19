@@ -72,10 +72,12 @@
   L.Battle.prototype.startCommon = function (message) {
     this.active = true;
     this.busy = false;
+    var bossMode = !!(this.trainer && (this.trainer.boss || this.trainer.giant || this.trainer.storyBossId));
     document.body.classList.add("battle-active");
+    document.body.classList.toggle("boss-battle", bossMode);
     this.screen.classList.remove("hidden");
     this.game.mode = "battle";
-    this.setMessage(message);
+    this.setMessage(bossMode ? "Gorkemli " + message : message);
     if (L.Audio) L.Audio.play("encounter");
     this.renderMainMenu();
     this.updateBars();
@@ -86,6 +88,7 @@
     this.active = false;
     this.busy = false;
     document.body.classList.remove("battle-active");
+    document.body.classList.remove("boss-battle");
     this.screen.classList.add("hidden");
     this.game.mode = "world";
     this.game.encounterCooldown = 4;
@@ -214,16 +217,21 @@
       await delay(620);
       return;
     }
-    var atk = user.attack * stageMultiplier(user.statStages.attack || 0);
-    var def = target.defense * stageMultiplier(target.statStages.defense || 0);
+    var passiveMult = L.Progression ? L.Progression.damageMultiplier(this.game, user, move, target) : 1;
+    var guardMult = L.Progression ? L.Progression.defenseMultiplier(this.game, target, move, user) : 1;
+    var atk = user.attack * stageMultiplier(user.statStages.attack || 0) * passiveMult;
+    var def = target.defense * stageMultiplier(target.statStages.defense || 0) * guardMult;
     var mult = L.Abilities.effectiveness(move.element, target.element);
-    var crit = Math.random() < .08 ? 1.65 : 1;
+    var critChance = .08 + (L.Progression ? L.Progression.critBonus(this.game, user, move) : 0);
+    var crit = Math.random() < critChance ? 1.65 : 1;
     var rand = .88 + Math.random() * .18;
     var damage = Math.max(1, Math.floor((((2 * user.level / 5 + 2) * move.power * atk / Math.max(1, def)) / 12 + 2) * mult * crit * rand));
     target.hp = Math.max(0, target.hp - damage);
     var msg = user.displayName + " " + move.name + " kullandı. " + damage + " hasar!";
     var eff = L.Abilities.effectivenessText(mult);
     if (eff) msg += " " + eff;
+    if (passiveMult > 1.04) msg += " Pasif parladi!";
+    if (guardMult > 1.04) msg += " Hedef dayandi!";
     if (crit > 1) msg += " Kritik vuruş!";
     this.setMessage(msg);
     this.popDamage(turn.side === "player" ? "enemy" : "player", damage);
@@ -337,6 +345,11 @@
         }
       }
     }
+    var progressionMessage = L.Progression ? L.Progression.afterBattleWin(this.game, active, this) : null;
+    if (progressionMessage) {
+      this.setMessage(progressionMessage);
+      await delay(900);
+    }
     if (L.Audio) L.Audio.play("victory");
     this.end();
     if (L.Evolution && active && active.hp > 0) {
@@ -345,6 +358,7 @@
   };
 
   L.Battle.prototype.lose = async function () {
+    if (L.Progression) L.Progression.addFriendship(this.game, this.playerCreature(), 1);
     if (this.type === "trainer" && this.trainer && this.trainer.pvp) {
       this.setMessage("PvP maçını kaybettin. Ekip maç sonrası iyileştiriliyor...");
       await delay(900);
@@ -412,6 +426,7 @@
       if (roll.success) {
         this.setMessage(this.enemy.displayName + " yakalandı!");
         var where = L.Creatures.addToCollection(state, this.enemy);
+        if (L.Progression) L.Progression.afterCapture(this.game, this.enemy);
         if (L.WorldMap) L.WorldMap.recordCaught(state, this.enemy.id);
         L.Quests.progress(state, "catchAny", 1);
         if (L.Daily) L.Daily.progress(state, "catchAny", 1);
@@ -544,7 +559,25 @@
     ctx.fillRect(304, 80, 120, 3);
     var player = this.playerCreature();
     if (player) L.Asset.drawCreature(ctx, player, 78 + (this.flashSide === "player" ? 8 : 0), 73, 2.2, false, t);
-    if (this.enemy) L.Asset.drawCreature(ctx, this.enemy, 320 - (this.flashSide === "enemy" ? 8 : 0), 32, 2, true, t);
+    if (this.enemy) {
+      var bossMode = !!(this.trainer && (this.trainer.boss || this.trainer.giant || this.trainer.storyBossId));
+      if (bossMode) {
+        ctx.save();
+        ctx.globalAlpha = .75 + Math.sin(t * 5) * .12;
+        ctx.fillStyle = "rgba(242, 185, 75, .28)";
+        ctx.beginPath();
+        ctx.ellipse(364, 72, 72, 34, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = .9;
+        ctx.strokeStyle = "#fff4d2";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(294, 49, 140, 42);
+        ctx.restore();
+        L.Asset.drawCreature(ctx, this.enemy, 322 - (this.flashSide === "enemy" ? 10 : 0), 18, 2.85, true, t);
+      } else {
+        L.Asset.drawCreature(ctx, this.enemy, 320 - (this.flashSide === "enemy" ? 8 : 0), 32, 2, true, t);
+      }
+    }
   };
 
   L.Battle.prototype.update = function () {

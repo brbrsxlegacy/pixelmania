@@ -4,8 +4,20 @@
   place-items: center;
   overflow: hidden;
   background:
+    linear-gradient(180deg, rgba(9, 17, 31, .18), rgba(9, 17, 31, .36)),
+    url("../assets/menu-poster.png") center / cover no-repeat,
     linear-gradient(180deg, #79c8f2 0%, #f6d879 58%, #5fb95f 59%, #2f8548 100%);
   color: #172033;
+}
+
+.main-menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 244, 210, .18), transparent 30%),
+    linear-gradient(0deg, rgba(5, 9, 18, .52), transparent 48%);
+  pointer-events: none;
 }
 
 .main-menu::after {
@@ -18,7 +30,7 @@
   background:
     linear-gradient(135deg, transparent 12px, rgba(255, 255, 255, .18) 12px 15px, transparent 15px) 0 0 / 32px 18px,
     linear-gradient(180deg, transparent 0 18px, rgba(20, 77, 48, .45) 18px 20px) 0 0 / 28px 22px;
-  opacity: .75;
+  opacity: .32;
 }
 
 .menu-sky {
@@ -35,6 +47,7 @@
   box-shadow: 14px -8px 0 #fff6d7, 34px -2px 0 #fff6d7, 46px -10px 0 #fff6d7;
   border: 2px solid rgba(23, 32, 51, .28);
   animation: drift 18s linear infinite;
+  opacity: .28;
 }
 
 .cloud-a { top: 32px; left: -80px; }
@@ -51,7 +64,7 @@
   z-index: 2;
   grid-row: 2;
   text-align: center;
-  text-shadow: 0 3px 0 rgba(255, 255, 255, .48);
+  text-shadow: 0 2px 0 rgba(255, 244, 210, .8), 0 5px 0 rgba(16, 21, 33, .2);
 }
 
 .title-block h1 {
@@ -64,14 +77,16 @@
 .subtitle {
   margin: 0;
   font-size: clamp(15px, 3vw, 24px);
-  color: #7d351f;
+  color: #fff4d2;
+  text-shadow: 0 2px 0 #172033;
 }
 
 .eyebrow {
   margin: 0;
-  color: #2f6d4c;
+  color: #fff4d2;
   font-size: 12px;
   text-transform: uppercase;
+  text-shadow: 0 2px 0 #172033;
 }
 
 .menu-stack {
@@ -90,7 +105,9 @@
   padding: 7px 12px 7px 32px;
   background:
     linear-gradient(90deg, #f2b94b 0 18px, transparent 18px),
-    linear-gradient(180deg, #fff7d8, #efd58d);
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(239,213,141,.94)),
+    #fff4d2;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .28);
 }
 
 .menu-stack button:hover {
@@ -198,6 +215,80 @@
   display: block;
   height: 100%;
   background: linear-gradient(90deg, #58b568, #f2b94b);
+}
+
+.resource-bank {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.resource-chip,
+.status-pill {
+  display: inline-block;
+  padding: 4px 7px;
+  border: 2px solid #101521;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,244,210,.18)),
+    var(--chip, #dbe8d2);
+  color: #172033;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .16);
+}
+
+.status-pill {
+  margin: 6px 0 2px;
+  background: #f2b94b;
+}
+
+.status-pill.done {
+  background: #7ed17a;
+}
+
+.boss-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(242,185,75,.22)),
+    #fff4d2;
+}
+
+.evo-tree {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: stretch;
+  margin: 8px 0;
+}
+
+.evo-node {
+  min-width: 104px;
+  border: 2px solid #101521;
+  background: #fff8df;
+  padding: 8px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .14);
+}
+
+.evo-node.current {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.5), rgba(84,184,107,.22)),
+    #dff2cf;
+}
+
+.evo-node small,
+.mp-team-preview {
+  display: block;
+  margin-top: 4px;
+  color: #44506a;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.mp-team-preview {
+  padding-top: 5px;
+  border-top: 1px solid rgba(16, 21, 33, .32);
+}
+
+.farm-row .progress-shell {
+  max-width: 260px;
 }
 
 .avatar-card {

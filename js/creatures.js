@@ -18,6 +18,10 @@
   }
 
   L.Creatures = {
+    list: Object.keys(data).map(function (id) {
+      return data[id];
+    }),
+
     getBase: function (id) {
       return data[id];
     },
