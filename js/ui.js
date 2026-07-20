@@ -217,6 +217,7 @@
       "<button class='panel-row' data-pause='legendary'>Efsane Avı</button>" +
       "<button class='panel-row' data-pause='map'>Harita</button>" +
       "<button class='panel-row' data-pause='dex'>Lumadex</button>" +
+      "<button class='panel-row' data-pause='prime'>Prime</button>" +
       "<button class='panel-row' data-pause='badges'>Rozetler</button>" +
       "<button class='panel-row' data-pause='multiplayer'>Çok Oyunculu</button>" +
       "<button class='panel-row' data-pause='jobs'>Meslekler</button>" +
@@ -655,6 +656,44 @@
     this.renderPanelCreatureArt();
   };
 
+  L.UiController.prototype.showPrimeDex = function () {
+    var state = this.game.state;
+    if (L.Underground) L.Underground.ensureState(state);
+    var active = state.team[state.activeIndex] || state.team[0];
+    var primeIds = Object.keys(window.LUMA_DATA.creatures).filter(function (id) {
+      return !!window.LUMA_DATA.creatures[id].prime;
+    });
+    var unlocked = primeIds.filter(function (id) {
+      return !window.LUMA_DATA.creatures[id].prime.unlockKey || state.prime.unlockedSpecies[id];
+    }).length;
+    var html = "<div class='panel-row'><strong>Prime Kilitleri:</strong> " + unlocked + "/" + primeIds.length +
+      "<br><strong>Prime Taşı:</strong> " + (state.inventory.primeTasi || 0) +
+      "<br><small>Bosslar, biyom puzzle'ları ve Prime Taşı yeni Prime formlarını açar.</small></div>";
+    if (active) {
+      var base = window.LUMA_DATA.creatures[active.id];
+      var canUnlock = base && base.prime && base.prime.unlockKey && !state.prime.unlockedSpecies[active.id] && (state.inventory.primeTasi || 0) > 0;
+      html += "<div class='panel-row'><strong>Aktif:</strong> " + escapeHtml(active.displayName) +
+        "<br><small>" + (base && base.prime ? (state.prime.unlockedSpecies[active.id] || !base.prime.unlockKey ? "Prime açık" : "Prime kilitli") : "Prime formu yok") + "</small>" +
+        (canUnlock ? "<br><button class='primary' data-prime-unlock='1'>Prime Taşı Kullan</button>" : "") + "</div>";
+    }
+    html += "<div class='panel-grid dex-grid'>";
+    primeIds.forEach(function (id) {
+      var base = window.LUMA_DATA.creatures[id];
+      var info = base.prime || {};
+      var locked = !!info.unlockKey && !state.prime.unlockedSpecies[id];
+      html += "<div class='dex-card " + (locked ? "unknown" : "caught") + "'>" +
+        "<span class='dex-dot' style='background:linear-gradient(135deg," + base.sprite.colors[0] + "," + (info.aura || base.sprite.colors[1]) + "," + base.sprite.colors[2] + ")'></span>" +
+        "<canvas class='dex-art' width='104' height='72' data-dex-art='" + id + "'></canvas>" +
+        "<strong>" + escapeHtml(info.name || ("Prime " + base.name)) + "</strong><br>" +
+        "<small>" + base.element + " • Sv. " + (info.minLevel || 20) + "+</small><br>" +
+        "<small>" + (locked ? "Kilit: " + escapeHtml(info.unlockKey) : "Açık") + "</small>" +
+        "</div>";
+    });
+    html += "</div>";
+    this.showPanel("Prime", html, "prime", "world");
+    this.renderPanelCreatureArt();
+  };
+
   L.UiController.prototype.showBadges = function () {
     var state = this.game.state;
     L.WorldMap.ensureState(state);
@@ -871,6 +910,7 @@
       if (pause === "legendary") this.showLegendary();
       if (pause === "map") this.showMap();
       if (pause === "dex") this.showLumadex();
+      if (pause === "prime") this.showPrimeDex();
       if (pause === "badges") this.showBadges();
       if (pause === "multiplayer") this.showMultiplayer("world");
       if (pause === "jobs") this.showJobs();
@@ -1013,6 +1053,14 @@
     var bossArena = button.getAttribute("data-boss-arena");
     if (bossArena) {
       this.game.enterBossArena(bossArena);
+      return;
+    }
+    if (button.hasAttribute("data-prime-unlock")) {
+      var primeResult = L.Underground ? L.Underground.usePrimeStone(this.game) : { ok: false, message: "Prime sistemi hazir degil." };
+      this.notify(primeResult.message);
+      if (primeResult.ok && L.Audio) L.Audio.play("victory");
+      if (!primeResult.ok && L.Audio) L.Audio.play("error");
+      this.showPrimeDex();
       return;
     }
     var marketBuy = button.getAttribute("data-market-buy");

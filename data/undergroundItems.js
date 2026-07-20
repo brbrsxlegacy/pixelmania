@@ -4,11 +4,11 @@
 
   Object.assign(items, {
     kraliyetHaritasi: {
-      id: "kraliyetHaritasi", name: "Kraliyet Haritasi", category: "Gorev", price: 0, sell: 0, protected: true,
+      id: "kraliyetHaritasi", name: "Kraliyet Haritasi", category: "Görev", price: 0, sell: 0, protected: true,
       description: "Yeraltindaki yeni biyom yollarini gosteren eski tas levha."
     },
     biyomPusulasi: {
-      id: "biyomPusulasi", name: "Biyom Pusulasi", category: "Gorev", price: 0, sell: 0, protected: true,
+      id: "biyomPusulasi", name: "Biyom Pusulasi", category: "Görev", price: 0, sell: 0, protected: true,
       description: "Lav, mantar, kristal ve buz damarlarina gore yon degistiren bir pusula."
     },
     obsidyenMuhur: {
@@ -24,7 +24,7 @@
       description: "Kristal Nehir kiyisinda bulunan kraliyet yadigari."
     },
     kemikAnahtar: {
-      id: "kemikAnahtar", name: "Kemik Anahtar", category: "Gorev", price: 0, sell: 0, protected: true,
+      id: "kemikAnahtar", name: "Kemik Anahtar", category: "Görev", price: 0, sell: 0, protected: true,
       description: "Kemik Kumlari'ndaki mahzen kilitlerine uyan agir anahtar."
     },
     primeKivilcimi: {

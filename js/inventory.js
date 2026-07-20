@@ -24,7 +24,20 @@
         lavPusulasi: 0,
         obsidyenDefine: 0,
         korTac: 0,
-        antikSikke: 0
+        antikSikke: 0,
+        kraliyetHaritasi: 0,
+        biyomPusulasi: 0,
+        obsidyenMuhur: 0,
+        mantarIncisi: 0,
+        kristalYadigar: 0,
+        kemikAnahtar: 0,
+        primeKivilcimi: 0,
+        tahtTaci: 0,
+        primeTasi: 0,
+        haritaParcasi: 0,
+        mantarAnahtari: 0,
+        kristalMuhur: 0,
+        kralinGolgesi: 0
       };
     },
 

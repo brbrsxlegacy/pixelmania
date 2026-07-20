@@ -30,6 +30,9 @@
     if (creature.primeActive) return { ok: false, message: creature.displayName + " zaten Prime formunda." };
     if ((creature.level || 1) < info.minLevel) return { ok: false, message: "Prime için Sv. " + info.minLevel + " gerekiyor." };
     if (!hasPrimeKey(game)) return { ok: false, message: "Prime Çekirdeği gerekiyor." };
+    if (info.unlockKey && L.Underground && !L.Underground.hasPrimeSpecies(game.state, creature.id)) {
+      return { ok: false, message: "Bu Prime formu henuz kilitli. Boss, puzzle veya Prime Tasi gerekiyor." };
+    }
     if (game && game.battle && game.battle.primeUsed) return { ok: false, message: "Bu savaşta Prime hakkını kullandın." };
     return { ok: true, info: info };
   }

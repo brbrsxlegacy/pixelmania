@@ -423,6 +423,11 @@
       this.setMessage(progressionMessage);
       await delay(900);
     }
+    var undergroundMessage = L.Underground ? L.Underground.afterBattleWin(this.game, this) : null;
+    if (undergroundMessage) {
+      this.setMessage(undergroundMessage);
+      await delay(900);
+    }
     if (L.Audio) L.Audio.play("victory");
     this.end();
     if (L.Evolution && active && active.hp > 0) {
@@ -592,6 +597,14 @@
     var el = document.createElement("div");
     el.className = "prime-burst " + side;
     el.textContent = creature && creature.primeName ? creature.primeName : "PRIME";
+    var aura = creature && creature.primeAura || "#f2b94b";
+    el.style.setProperty("--prime-aura", aura);
+    for (var i = 0; i < 9; i += 1) {
+      var shard = document.createElement("span");
+      shard.className = "prime-shard s" + i;
+      shard.style.background = i % 2 ? aura : "#fff4d2";
+      el.appendChild(shard);
+    }
     this.screen.appendChild(el);
     setTimeout(function () { el.remove(); }, 900);
   };

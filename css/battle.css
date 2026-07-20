@@ -146,13 +146,32 @@ body.battle-active .touch-controls {
   border: 2px solid #101521;
   color: #fff4d2;
   background:
-    linear-gradient(90deg, rgba(242, 185, 75, .92), rgba(228, 109, 69, .86)),
+    linear-gradient(90deg, color-mix(in srgb, var(--prime-aura, #f2b94b) 82%, #fff4d2), rgba(228, 109, 69, .86)),
     #7d351f;
   text-align: center;
   text-shadow: 0 2px 0 #101521;
   pointer-events: none;
   animation: prime-burst .82s steps(8) forwards;
 }
+
+.prime-shard {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border: 1px solid #101521;
+  box-shadow: 0 0 0 1px rgba(255, 244, 210, .18);
+  animation: prime-shard .82s steps(7) forwards;
+}
+
+.prime-shard.s0 { left: 12px; top: -8px; --sx: -18px; --sy: -16px; }
+.prime-shard.s1 { left: 38px; top: -10px; --sx: -8px; --sy: -22px; }
+.prime-shard.s2 { left: 72px; top: -7px; --sx: 0; --sy: -20px; }
+.prime-shard.s3 { left: 112px; top: -9px; --sx: 12px; --sy: -21px; }
+.prime-shard.s4 { right: 12px; top: -6px; --sx: 18px; --sy: -16px; }
+.prime-shard.s5 { left: 8px; bottom: -8px; --sx: -20px; --sy: 18px; }
+.prime-shard.s6 { left: 52px; bottom: -10px; --sx: -6px; --sy: 20px; }
+.prime-shard.s7 { right: 42px; bottom: -9px; --sx: 8px; --sy: 20px; }
+.prime-shard.s8 { right: 8px; bottom: -8px; --sx: 20px; --sy: 18px; }
 
 .prime-burst.player {
   left: 48px;
@@ -211,6 +230,12 @@ body.battle-active .touch-controls {
   18% { opacity: 1; transform: scale(1.05); }
   72% { opacity: 1; transform: scale(1); }
   100% { opacity: 0; transform: scale(1.12); }
+}
+
+@keyframes prime-shard {
+  0% { opacity: 0; transform: translate(0, 0) scale(.8); }
+  22% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(1.3); }
 }
 
 .battle-screen.shake {
