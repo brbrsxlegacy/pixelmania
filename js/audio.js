@@ -72,6 +72,13 @@
       bass: [0, null, 0, null, 5, null, 5, null, 3, null, 3, null, 5, null, 0, null],
       chords: [[0, 2, 4], [5, 7, 9], [3, 5, 7], [0, 4, 6]]
     },
+    underworld: {
+      bpm: 104, root: C3 * Math.pow(2, -7 / 12), lead: "sawtooth", bassWave: "triangle", drum: "low",
+      scale: [0, 1, 4, 5, 7, 8, 11, 12],
+      melody: [7, null, 8, 11, null, 8, 5, null, 4, null, 7, 8, 11, null, 12, null],
+      bass: [0, null, 0, null, -2, null, -2, null, 5, null, 5, null, 4, null, 0, null],
+      chords: [[0, 2, 4], [-2, 1, 4], [5, 7, 9], [4, 6, 8]]
+    },
     snow: {
       bpm: 82, root: C3 * Math.pow(2, 9 / 12), lead: "sine", bassWave: "triangle", drum: "none",
       scale: [0, 2, 5, 7, 9, 12],
@@ -113,6 +120,20 @@
       melody: [7, 10, 12, 15, 14, 12, 10, 7, 5, 7, 10, 12, 15, 14, 12, 10],
       bass: [0, 0, 0, null, 5, 5, 5, null, 3, 3, 3, null, 6, 6, 5, null],
       chords: [[0, 2, 4], [5, 7, 9], [3, 5, 7], [6, 8, 10]]
+    },
+    underworldBattle: {
+      bpm: 142, root: C3 * Math.pow(2, -8 / 12), lead: "sawtooth", bassWave: "square", drum: "battle",
+      scale: [0, 1, 4, 5, 7, 8, 11, 12],
+      melody: [7, 8, 11, 12, 11, 8, 7, 5, 4, 7, 8, 11, 12, 15, 12, 11],
+      bass: [0, 0, null, 0, -2, -2, null, -2, 5, 5, null, 5, 4, 4, 0, 0],
+      chords: [[0, 2, 4], [-2, 1, 4], [5, 7, 9], [4, 6, 8]]
+    },
+    underworldBoss: {
+      bpm: 172, root: C3 * Math.pow(2, -10 / 12), lead: "sawtooth", bassWave: "square", drum: "battle",
+      scale: [0, 1, 3, 4, 6, 7, 10, 12],
+      melody: [10, 12, 15, 16, 15, 12, 10, 7, 6, 10, 12, 15, 18, 16, 15, 12],
+      bass: [0, 0, 0, null, -3, -3, -3, null, 6, 6, 6, null, 4, 4, 0, null],
+      chords: [[0, 2, 4], [-3, 0, 3], [6, 8, 10], [4, 6, 9]]
     }
   };
 
@@ -125,6 +146,7 @@
     if (/yesilova|fisilti|botanik|rengarenk|geceKorusu|sisBatakligi/i.test(id)) return "forest";
     if (/kutup|buzul/i.test(id)) return "snow";
     if (/kristalGol|liman|sahil/i.test(id)) return "water";
+    if (/kor|obsidyen|magma|lavKanyonu/i.test(id)) return "underworld";
     if (/lav|meteor|kumru/i.test(id)) return "ember";
     if (/magara|maden|zindan|Labirenti|Mahzen/i.test(id)) return "cave";
     if (/antika|gece/i.test(id)) return "ruin";
@@ -304,7 +326,8 @@
     },
 
     playBattleMusic: function (boss) {
-      this.setMusic(boss ? "boss" : "battle");
+      var underworld = this.music.lastMapTrack === "underworld";
+      this.setMusic(boss ? (underworld ? "underworldBoss" : "boss") : (underworld ? "underworldBattle" : "battle"));
     },
 
     tone: function (freq, duration, type, gain, slide) {

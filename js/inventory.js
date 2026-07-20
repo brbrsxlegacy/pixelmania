@@ -17,9 +17,14 @@
         gucluLumaKuresi: 1,
         kristalLumaKuresi: 0,
         kacisTasi: 1,
+        primeCekirdegi: 1,
         parlakKristal: 0,
         ormanAnahtari: 0,
-        magaraFeneri: 0
+        magaraFeneri: 0,
+        lavPusulasi: 0,
+        obsidyenDefine: 0,
+        korTac: 0,
+        antikSikke: 0
       };
     },
 
@@ -28,7 +33,7 @@
     },
 
     categories: function () {
-      return ["İyileştirme", "Yakalama", "Görev", "Özel"];
+      return ["İyileştirme", "Yakalama", "Görev", "Define", "Özel"];
     },
 
     entries: function (inventory, category) {

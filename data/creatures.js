@@ -100,7 +100,7 @@
     var creatures = window.LUMA_DATA.creatures;
     var elementMoves = {
       "Yaprak": ["yaprakDarbesi", "kokKapani", "camKalkan", "polenUykusu"],
-      "Alev": ["kozSicramasi", "alevPencesi", "korPerdesi", "firinNefesi"],
+      "Alev": ["kozSicramasi", "magmaYumrugu", "lavAkisi", "korFirtinasi"],
       "Su": ["kopukAtisi", "dalgaCarpmasi", "yagmurNabzi", "inciAkimi"],
       "Kaya": ["tasYumruk", "kristalSavunma", "magaraCokusu", "tasYumruk"],
       "Rüzgar": ["ruzgarKesisi", "hizKanadi", "firtinaDonusu", "ruzgarKesisi"],
@@ -200,7 +200,125 @@
         description: "Bıyık tüyleri statik kıvılcımla kabaran çevik bir Luma. Neşeli görünür ama kuyruğu şarj olunca yaklaşanı zıplatır.",
         evolution: null,
         sprite: { body: "mouse", colors: ["#d79531", "#ffe66b", "#2e3959"], variant: 5, mark: "tail" }
+      },
+      alevpati: {
+        id: "alevpati", name: "Alevpati", element: "Alev", rarity: "Nadir", captureDifficulty: 58,
+        baseStats: { hp: 52, attack: 19, defense: 13, speed: 19 },
+        abilities: ["alevPencesi", "magmaYumrugu", "korPerdesi", "lavAkisi"],
+        description: "Patilerindeki köz artık adım attığı taşı kısa süre kızdıracak kadar güçlüdür.",
+        evolution: { level: 32, into: "korleopar" },
+        prime: { name: "Prime Alevpati", minLevel: 16, boosts: { attack: 1.3, defense: 1.12, speed: 1.2 }, aura: "#f2b94b" },
+        sprite: { body: "cat", colors: ["#8f3428", "#f28c45", "#ffd28a"], variant: 2, mark: "stripes" }
+      },
+      korleopar: {
+        id: "korleopar", name: "Korleopar", element: "Alev", rarity: "Çok Nadir", captureDifficulty: 72,
+        baseStats: { hp: 66, attack: 25, defense: 18, speed: 24 },
+        abilities: ["magmaYumrugu", "lavAkisi", "korFirtinasi", "volkanKukremesi"],
+        description: "Kor Dağı'nın sıcak taşlarında iz bırakmadan koşan efsanevi bir avcı.",
+        evolution: null,
+        prime: { name: "Prime Korleopar", minLevel: 28, boosts: { attack: 1.42, defense: 1.16, speed: 1.28 }, aura: "#ffdd67" },
+        sprite: { body: "wolf", colors: ["#7b261f", "#e46d45", "#ffdd67"], variant: 7, mark: "crest" }
+      },
+      iskurdu: {
+        id: "iskurdu", name: "İskurdu", element: "Alev", rarity: "Yaygın", captureDifficulty: 42,
+        baseStats: { hp: 38, attack: 14, defense: 10, speed: 13 },
+        abilities: ["kozSicramasi", "alevPencesi", "korPerdesi", "magmaYumrugu"],
+        description: "Kül tabakasının altında yuvarlanıp sıcaklığını saklayan minik bir kurtçuk.",
+        evolution: { level: 18, into: "lavakurt" },
+        sprite: { body: "lizard", colors: ["#6d2a22", "#f06b34", "#ffd28a"], variant: 3, mark: "spots" }
+      },
+      lavakurt: {
+        id: "lavakurt", name: "Lavakurt", element: "Alev", rarity: "Nadir", captureDifficulty: 58,
+        baseStats: { hp: 52, attack: 19, defense: 15, speed: 17 },
+        abilities: ["magmaYumrugu", "lavAkisi", "korPerdesi", "korFirtinasi"],
+        description: "Sırtındaki çatlaklardan lav çizgileri akar; tünel duvarlarını kokusundan tanır.",
+        evolution: { level: 34, into: "obsidikurt" },
+        prime: { name: "Prime Lavakurt", minLevel: 16, boosts: { attack: 1.34, defense: 1.2, speed: 1.15 }, aura: "#e46d45" },
+        sprite: { body: "wolf", colors: ["#4b2a2a", "#e46d45", "#f2b94b"], variant: 9, mark: "tail" }
+      },
+      obsidikurt: {
+        id: "obsidikurt", name: "Obsidikurt", element: "Alev", rarity: "Çok Nadir", captureDifficulty: 76,
+        baseStats: { hp: 72, attack: 27, defense: 22, speed: 19 },
+        abilities: ["lavAkisi", "magmaYumrugu", "korFirtinasi", "volkanKukremesi"],
+        description: "Obsidyen zırhı soğumuş gibi görünür; içindeki lav en zor anda parlar.",
+        evolution: null,
+        prime: { name: "Prime Obsidikurt", minLevel: 30, boosts: { attack: 1.38, defense: 1.28, speed: 1.12 }, aura: "#f06b34" },
+        sprite: { body: "wolf", colors: ["#272432", "#7d351f", "#ffdd67"], variant: 11, mark: "gem" }
+      },
+      kulkerten: {
+        id: "kulkerten", name: "Külkerten", element: "Alev", rarity: "Yaygın", captureDifficulty: 45,
+        baseStats: { hp: 42, attack: 13, defense: 13, speed: 11 },
+        abilities: ["kozSicramasi", "korPerdesi", "magmaYumrugu", "lavAkisi"],
+        description: "Kül rengine bürünerek sıcak taşların arasında görünmez olan bir kertenkele.",
+        evolution: { level: 22, into: "magmerten" },
+        sprite: { body: "lizard", colors: ["#4d3d3d", "#c65642", "#f8a05f"], variant: 4, mark: "mask" }
+      },
+      magmerten: {
+        id: "magmerten", name: "Magmerten", element: "Alev", rarity: "Nadir", captureDifficulty: 62,
+        baseStats: { hp: 58, attack: 20, defense: 17, speed: 16 },
+        abilities: ["magmaYumrugu", "lavAkisi", "korFirtinasi", "volkanKukremesi"],
+        description: "Kuyruğundaki magma kıvrımı mağara duvarlarını aydınlatan canlı bir meşaledir.",
+        evolution: null,
+        prime: { name: "Prime Magmerten", minLevel: 20, boosts: { attack: 1.3, defense: 1.22, speed: 1.16 }, aura: "#f2b94b" },
+        sprite: { body: "serpent", colors: ["#5c1f21", "#e46d45", "#ffd28a"], variant: 8, mark: "tail" }
+      },
+      tutsukanat: {
+        id: "tutsukanat", name: "Tutuşkanat", element: "Alev", rarity: "Yaygın", captureDifficulty: 44,
+        baseStats: { hp: 36, attack: 14, defense: 9, speed: 18 },
+        abilities: ["kozSicramasi", "alevPencesi", "hizKanadi", "korFirtinasi"],
+        description: "Kısa uçuşlarında ardında turuncu kıvılcım izleri bırakır.",
+        evolution: { level: 24, into: "alevanka" },
+        sprite: { body: "bird", colors: ["#8f3428", "#f06b34", "#ffe0a3"], variant: 6, mark: "wings" }
+      },
+      alevanka: {
+        id: "alevanka", name: "Alevanka", element: "Alev", rarity: "Çok Nadir", captureDifficulty: 78,
+        baseStats: { hp: 61, attack: 23, defense: 15, speed: 27 },
+        abilities: ["hizKanadi", "lavAkisi", "korFirtinasi", "volkanKukremesi"],
+        description: "Volkan bacasından yükselen sıcak rüzgarları okuyarak kaçış yollarını bulur.",
+        evolution: null,
+        prime: { name: "Prime Alevanka", minLevel: 22, boosts: { attack: 1.28, defense: 1.12, speed: 1.42 }, aura: "#ffdd67" },
+        sprite: { body: "bird", colors: ["#b94b31", "#ff9d45", "#fff4d2"], variant: 10, mark: "crest" }
+      },
+      korsinek: {
+        id: "korsinek", name: "Korsinek", element: "Alev", rarity: "Yaygın", captureDifficulty: 46,
+        baseStats: { hp: 34, attack: 13, defense: 9, speed: 20 },
+        abilities: ["kozSicramasi", "korPerdesi", "magmaYumrugu", "korFirtinasi"],
+        description: "Lav kabarcıklarının üstünde sekerek yaşayan kıvılcım kanatlı bir Luma.",
+        evolution: null,
+        sprite: { body: "moth", colors: ["#5c1f21", "#f2b94b", "#ffd28a"], variant: 1, mark: "spots" }
+      },
+      magmantar: {
+        id: "magmantar", name: "Magmantar", element: "Alev", rarity: "Nadir", captureDifficulty: 60,
+        baseStats: { hp: 56, attack: 16, defense: 22, speed: 8 },
+        abilities: ["korPerdesi", "magmaYumrugu", "lavAkisi", "firinNefesi"],
+        description: "Isı çatlaklarında büyür; şapkası değerli kül minerallerini saklar.",
+        evolution: null,
+        prime: { name: "Prime Magmantar", minLevel: 18, boosts: { attack: 1.22, defense: 1.38, speed: 1.08 }, aura: "#f06b34" },
+        sprite: { body: "mushroom", colors: ["#7d351f", "#e46d45", "#fff4d2"], variant: 2, mark: "gem" }
+      },
+      lavagon: {
+        id: "lavagon", name: "Lavagon", element: "Alev", rarity: "Nadir", captureDifficulty: 64,
+        baseStats: { hp: 64, attack: 22, defense: 20, speed: 11 },
+        abilities: ["tasYumruk", "magmaYumrugu", "lavAkisi", "korFirtinasi"],
+        description: "Sırtındaki kaya plakaları lav basıncıyla ileri geri oynayan ağır bir koruma sağlar.",
+        evolution: null,
+        prime: { name: "Prime Lavagon", minLevel: 21, boosts: { attack: 1.32, defense: 1.34, speed: 1.04 }, aura: "#ff8b45" },
+        sprite: { body: "golem", colors: ["#3d3334", "#9f3d2e", "#f2b94b"], variant: 5, mark: "horn" }
+      },
+      volkobra: {
+        id: "volkobra", name: "Volkobra", element: "Alev", rarity: "Çok Nadir", captureDifficulty: 80,
+        baseStats: { hp: 62, attack: 24, defense: 17, speed: 25 },
+        abilities: ["lavAkisi", "korFirtinasi", "gecePerdesi", "volkanKukremesi"],
+        description: "Magma Kalbi'nde define kapılarının çevresine sarılan eski bir koruyucu.",
+        evolution: null,
+        prime: { name: "Prime Volkobra", minLevel: 24, boosts: { attack: 1.36, defense: 1.18, speed: 1.32 }, aura: "#f2b94b" },
+        sprite: { body: "serpent", colors: ["#2b2028", "#e46d45", "#ffdd67"], variant: 12, mark: "crest" }
       }
     });
+    creatures.kozpati.evolution = { level: 16, into: "alevpati" };
+    creatures.filizik.prime = { name: "Prime Filizik", minLevel: 5, boosts: { attack: 1.18, defense: 1.24, speed: 1.12 }, aura: "#8ed35f" };
+    creatures.kozpati.prime = { name: "Prime Közpati", minLevel: 5, boosts: { attack: 1.25, defense: 1.08, speed: 1.18 }, aura: "#f2b94b" };
+    creatures.kopukcu.prime = { name: "Prime Köpükçü", minLevel: 5, boosts: { attack: 1.16, defense: 1.18, speed: 1.22 }, aura: "#81d7f0" };
+    creatures.korcik.prime = { name: "Prime Korcik", minLevel: 12, boosts: { attack: 1.28, defense: 1.08, speed: 1.22 }, aura: "#f06b34" };
   })();
 })();

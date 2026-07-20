@@ -357,7 +357,7 @@
     m.interactions.push({ x: 46, y: 32, type: "itemChest", itemId: "magaraFeneri", qty: 1, objective: "findLantern", text: "Sandığın içinde Mağara Feneri var." });
     m.items.push({ id: "cavePotion", x: 12, y: 11, itemId: "tamIksir", qty: 1 });
     setRect(m, "ground", 52, 18, 6, 5, "caveFloor");
-    setRect(m, "collision", 56, 18, 2, 5, 0);
+    setRect(m, "collision", 52, 18, 6, 5, 0);
     m.exits.push(
       { x: 4, y: 18, w: 2, h: 5, to: "kristalGol", spawnX: 49, spawnY: 24 },
       { x: 56, y: 18, w: 2, h: 5, to: "kristalMaden", spawnX: 31, spawnY: 38 }
@@ -527,6 +527,119 @@
     m.items.push({ id: spec.id + "_relic", x: 22, y: 6, itemId: spec.relic || "kristalLumaKuresi", qty: 1 });
     m.encounters = encounterPool(spec.elements, spec.min, spec.max, spec.salt || 33);
     m.roamerCount = 5;
+    return m;
+  }
+
+  function volcanoEncounters(min, max, salt) {
+    var ids = ["iskurdu", "kulkerten", "tutsukanat", "korsinek", "magmantar", "lavakurt", "lavagon", "volkobra"];
+    return ids.map(function (id, index) {
+      return {
+        id: id,
+        min: min + Math.floor(index / 3),
+        max: max + Math.floor(index / 3),
+        weight: Math.max(1, 8 - index + (salt || 0) % 2)
+      };
+    });
+  }
+
+  function makeVolcanoCamp() {
+    var m = makeMap("korKampi", "Kor Dağı Kampı", 58, 40, "ash");
+    setRect(m, "ground", 24, 0, 8, 40, "obsidian");
+    setRect(m, "ground", 5, 22, 47, 6, "obsidian");
+    setRect(m, "collision", 24, 0, 8, 40, 0);
+    setRect(m, "collision", 5, 22, 47, 6, 0);
+    setRect(m, "ground", 38, 7, 14, 9, "lava");
+    setRect(m, "collision", 38, 7, 14, 9, 1);
+    setRect(m, "ground", 7, 8, 14, 8, "emberPatch");
+    setRect(m, "encounter", 7, 8, 14, 8, 1);
+    setRect(m, "ground", 35, 28, 14, 7, "emberPatch");
+    setRect(m, "encounter", 35, 28, 14, 7, 1);
+    put(m, 15, 22, "healingStation", 4, 3);
+    put(m, 36, 22, "shop", 5, 4);
+    put(m, 28, 18, "primeAltar", 2, 2);
+    put(m, 26, 26, "campfire", 1, 1);
+    put(m, 32, 26, "campfire", 1, 1);
+    put(m, 10, 27, "guildBoard", 2, 2);
+    patternedScatter(m, "lavaRock", 34, { x: 3, y: 4, w: 51, h: 31 }, 31);
+    m.items.push({ id: "camp_lav_pusulasi", x: 30, y: 20, itemId: "lavPusulasi", qty: 1, questObjective: "findLavaCompass" });
+    m.items.push({ id: "camp_hidden_coin", x: 8, y: 31, itemId: "antikSikke", qty: 2, hidden: true, questObjective: "collectVolcanoTreasure" });
+    m.interactions.push(
+      { x: 16, y: 25, type: "heal", text: "Kor kampındaki şifa cihazı ekibini serinletir." },
+      { x: 38, y: 25, type: "shop", text: "Kamp sandığında kaçış malzemeleri var." },
+      { x: 29, y: 20, type: "note", text: "Prime Sunağı sıcak bir ritim yayıyor. Uygun Luma savaşta Prime formuna geçebilir." },
+      { x: 10, y: 28, type: "sign", text: "Kor Dağı iç rotası: Kuzey boğaza, güney eski Lav Kanyonu'na gider." }
+    );
+    m.exits.push(
+      { x: 24, y: 0, w: 8, h: 2, to: "korBogazi", spawnX: 29, spawnY: 38 },
+      { x: 24, y: 38, w: 8, h: 2, to: "lavKanyonu", spawnX: 31, spawnY: 3 }
+    );
+    m.encounters = volcanoEncounters(6, 9, 1);
+    m.roamerCount = 5;
+    return m;
+  }
+
+  function makeVolcanoChamber(spec) {
+    var m = makeMap(spec.id, spec.name, 62, 42, spec.ground || "ash");
+    setRect(m, "ground", 3, 3, 56, 36, spec.floor || "caveFloor");
+    setRect(m, "ground", 27, 0, 8, 42, "obsidian");
+    setRect(m, "ground", 0, 18, 62, 6, "obsidian");
+    setRect(m, "collision", 27, 0, 8, 42, 0);
+    setRect(m, "collision", 0, 18, 62, 6, 0);
+    setRect(m, "ground", 5, 10, 20, 6, "emberPatch");
+    setRect(m, "encounter", 5, 10, 20, 6, 1);
+    setRect(m, "ground", 39, 25, 16, 8, "emberPatch");
+    setRect(m, "encounter", 39, 25, 16, 8, 1);
+    setRect(m, "ground", 6, 28, 19, 5, "emberPatch");
+    setRect(m, "encounter", 6, 28, 19, 5, 1);
+    setRect(m, "ground", 7, 16, 48, 3, "lava");
+    setRect(m, "collision", 7, 16, 48, 3, 1);
+    setRect(m, "ground", 29, 16, 5, 3, "bridge");
+    setRect(m, "collision", 29, 16, 5, 3, 0);
+    setRect(m, "ground", 41, 5, 4, 28, "lava");
+    setRect(m, "collision", 41, 5, 4, 28, 1);
+    setRect(m, "ground", 41, 20, 4, 4, "bridge");
+    setRect(m, "collision", 41, 20, 4, 4, 0);
+    patternedScatter(m, "lavaRock", 26, { x: 4, y: 4, w: 53, h: 33 }, spec.salt || 5);
+    put(m, 30, 9, spec.altar || "primeAltar", 2, 2);
+    put(m, 12, 13, "crystalPink", 1, 1);
+    put(m, 50, 30, "crystalBlue", 1, 1);
+    m.items.push({ id: spec.id + "_coin_cache", x: 11, y: 29, itemId: "antikSikke", qty: 3, hidden: true, questObjective: "collectVolcanoTreasure" });
+    m.items.push({ id: spec.id + "_obsidian", x: 49, y: 12, itemId: "obsidyenDefine", qty: 1, questObjective: "collectVolcanoTreasure" });
+    if (spec.relic) m.items.push({ id: spec.id + "_relic", x: 36, y: 11, itemId: spec.relic, qty: 1, questObjective: "collectVolcanoTreasure" });
+    m.interactions.push({ x: 31, y: 10, type: "note", text: spec.name + " içindeki sıcaklık dalgaları Prime Çekirdeği'ni titreştiriyor." });
+    if (spec.south) m.exits.push({ x: 27, y: 40, w: 8, h: 2, to: spec.south, spawnX: spec.southX || 29, spawnY: spec.southY || 3 });
+    if (spec.north) m.exits.push({ x: 27, y: 0, w: 8, h: 2, to: spec.north, spawnX: spec.northX || 29, spawnY: spec.northY || 38 });
+    if (spec.west) m.exits.push({ x: 0, y: 18, w: 2, h: 6, to: spec.west, spawnX: spec.westX || 58, spawnY: spec.westY || 20 });
+    if (spec.east) m.exits.push({ x: 60, y: 18, w: 2, h: 6, to: spec.east, spawnX: spec.eastX || 3, spawnY: spec.eastY || 20 });
+    m.encounters = volcanoEncounters(spec.min || 10, spec.max || 14, spec.salt || 3);
+    m.roamerCount = spec.roamerCount || 6;
+    return m;
+  }
+
+  function makeVolcanoExit() {
+    var m = makeMap("korZirveCikisi", "Kor Zirve Çıkışı", 56, 36, "ash");
+    setRect(m, "ground", 0, 17, 56, 6, "obsidian");
+    setRect(m, "ground", 25, 0, 7, 36, "obsidian");
+    setRect(m, "collision", 0, 17, 56, 6, 0);
+    setRect(m, "collision", 25, 0, 7, 36, 0);
+    setRect(m, "ground", 5, 5, 17, 8, "emberPatch");
+    setRect(m, "encounter", 5, 5, 17, 8, 1);
+    setRect(m, "ground", 35, 24, 13, 7, "lava");
+    setRect(m, "collision", 35, 24, 13, 7, 1);
+    put(m, 26, 13, "ruinGate", 4, 4);
+    put(m, 18, 22, "chest", 1, 1);
+    patternedScatter(m, "lavaRock", 18, { x: 4, y: 4, w: 48, h: 27 }, 19);
+    m.items.push({ id: "kor_exit_crown", x: 18, y: 22, itemId: "korTac", qty: 1, questObjective: "collectVolcanoTreasure" });
+    m.interactions.push(
+      { x: 28, y: 17, type: "sign", text: "Temiz hava yakında. Kor Dağı'nın define kayıtları burada tamamlanır." },
+      { x: 45, y: 18, type: "note", text: "Kaya duvarındaki eski yazı: Prime gücü aceleyle değil, bağ ile açılır." }
+    );
+    m.exits.push(
+      { x: 25, y: 34, w: 7, h: 2, to: "magmaKalbi", spawnX: 31, spawnY: 4 },
+      { x: 54, y: 17, w: 2, h: 6, to: "lavKanyonu", spawnX: 31, spawnY: 3 }
+    );
+    m.encounters = volcanoEncounters(18, 24, 9);
+    m.roamerCount = 4;
     return m;
   }
 
@@ -722,6 +835,20 @@
     returnMap: "sahilRotasi", returnX: 55, returnY: 23, elements: ["Su", "Gölge", "Kaya"], min: 19, max: 25, salt: 43,
     itemA: "gucluLumaKuresi", itemB: "panzehir", qtyB: 3, relic: "kristalLumaKuresi"
   });
+  window.LUMA_DATA.maps.korKampi = makeVolcanoCamp();
+  window.LUMA_DATA.maps.korBogazi = makeVolcanoChamber({
+    id: "korBogazi", name: "Kor Boğazı", south: "korKampi", north: "obsidyenTunel", min: 8, max: 12, salt: 44,
+    relic: "gucluLumaKuresi"
+  });
+  window.LUMA_DATA.maps.obsidyenTunel = makeVolcanoChamber({
+    id: "obsidyenTunel", name: "Obsidyen Tünel", south: "korBogazi", east: "magmaKalbi", eastX: 4, eastY: 20, min: 12, max: 17, salt: 45,
+    relic: "obsidyenDefine"
+  });
+  window.LUMA_DATA.maps.magmaKalbi = makeVolcanoChamber({
+    id: "magmaKalbi", name: "Magma Kalbi", west: "obsidyenTunel", north: "korZirveCikisi", northX: 28, northY: 33, min: 16, max: 22, salt: 46,
+    relic: "korTac", altar: "ruinGate", roamerCount: 7
+  });
+  window.LUMA_DATA.maps.korZirveCikisi = makeVolcanoExit();
 
   put(window.LUMA_DATA.maps.botanikBahce, 56, 27, "ruinGate", 4, 4);
   setRect(window.LUMA_DATA.maps.botanikBahce, "collision", 57, 29, 2, 2, 0);
@@ -734,6 +861,10 @@
   put(window.LUMA_DATA.maps.sahilRotasi, 54, 21, "caveMouth", 4, 3);
   setRect(window.LUMA_DATA.maps.sahilRotasi, "collision", 55, 23, 2, 2, 0);
   window.LUMA_DATA.maps.sahilRotasi.exits.push({ x: 55, y: 23, w: 2, h: 2, to: "batikMahzen", spawnX: 22, spawnY: 34 });
+
+  setRect(window.LUMA_DATA.maps.lavKanyonu, "ground", 29, 0, 6, 5, "caveFloor");
+  setRect(window.LUMA_DATA.maps.lavKanyonu, "collision", 29, 0, 6, 2, 0);
+  window.LUMA_DATA.maps.lavKanyonu.exits.push({ x: 29, y: 0, w: 6, h: 2, to: "korKampi", spawnX: 29, spawnY: 36 });
 
   window.LUMA_DATA.maps.yesilova.interactions.push({
     x: 12, y: 9, type: "worldAbility", id: "root_gate_yesilova", element: "Yaprak", label: "Kök Kapısı",

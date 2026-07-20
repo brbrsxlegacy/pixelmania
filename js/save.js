@@ -1,7 +1,7 @@
 (function () {
   var L = window.LUMA = window.LUMA || {};
-  var SETTINGS_KEY = "lumaQuest.settings.v1";
-  var SLOT_PREFIX = "lumaQuest.slot.";
+  var SETTINGS_KEY = "yerAltiKralligi.settings.v1";
+  var SLOT_PREFIX = "yerAltiKralligi.slot.";
   var QUICK_SLOT = 1;
 
   function clone(obj) {
@@ -83,7 +83,7 @@
       return {
         slot: slot,
         exists: true,
-        mapId: state.mapId || "isikpinar",
+        mapId: state.mapId || "korKampi",
         mapName: window.LUMA_DATA.maps[state.mapId] ? window.LUMA_DATA.maps[state.mapId].name : "Bilinmeyen",
         playerName: state.playerName || "Oyuncu",
         starter: first ? first.name : "Yok",

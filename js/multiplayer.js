@@ -5,6 +5,8 @@
     apiKey: "AIzaSyABqkhpL1SMRzRJ9GQLjjZE2IryqpAvMPw",
     databaseURL: "https://pixelroom-ae218-default-rtdb.europe-west1.firebasedatabase.app"
   };
+  var STORAGE_PREFIX = "yerAltiKralligi.mp.";
+  var ROOM_PATH = "/yerAltiKralligiRooms";
 
   function cleanRoomCode(code) {
     return String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
@@ -50,15 +52,15 @@
   L.Multiplayer = function (game) {
     this.game = game;
     this.roomCode = null;
-    this.playerId = localStorage.getItem("lumaQuest.mp.playerId") || ("p_" + Math.random().toString(36).slice(2, 10));
-    this.playerName = localStorage.getItem("lumaQuest.mp.name") || "Oyuncu";
+    this.playerId = localStorage.getItem(STORAGE_PREFIX + "playerId") || ("p_" + Math.random().toString(36).slice(2, 10));
+    this.playerName = localStorage.getItem(STORAGE_PREFIX + "name") || "Oyuncu";
     this.remotePlayers = {};
     this.enabled = false;
     this.pushTimer = 0;
     this.pollTimer = 0;
     this.errorShown = false;
     this.handledPvpResponses = {};
-    localStorage.setItem("lumaQuest.mp.playerId", this.playerId);
+    localStorage.setItem(STORAGE_PREFIX + "playerId", this.playerId);
     this.bindUnload();
   };
 
@@ -67,14 +69,14 @@
     window.addEventListener("beforeunload", function () {
       if (!self.roomCode) return;
       try {
-        fetch(self.url("/rooms/" + self.roomCode + "/players/" + self.playerId), { method: "DELETE", keepalive: true });
+        fetch(self.url(ROOM_PATH + "/" + self.roomCode + "/players/" + self.playerId), { method: "DELETE", keepalive: true });
       } catch (err) {}
     });
   };
 
   L.Multiplayer.prototype.ensureAuth = async function () {
     var cached = null;
-    try { cached = JSON.parse(localStorage.getItem("lumaQuest.mp.auth") || "null"); } catch (err) {}
+    try { cached = JSON.parse(localStorage.getItem(STORAGE_PREFIX + "auth") || "null"); } catch (err) {}
     if (cached && cached.idToken && cached.expiresAt > now() + 60000) return cached.idToken;
     try {
       var response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + encodeURIComponent(FIREBASE.apiKey), {
@@ -85,7 +87,7 @@
       if (!response.ok) return null;
       var data = await response.json();
       if (!data.idToken) return null;
-      localStorage.setItem("lumaQuest.mp.auth", JSON.stringify({
+      localStorage.setItem(STORAGE_PREFIX + "auth", JSON.stringify({
         idToken: data.idToken,
         expiresAt: now() + Math.max(60, Number(data.expiresIn || 3600) - 60) * 1000
       }));
@@ -146,10 +148,10 @@
   L.Multiplayer.prototype.createRoom = async function (name) {
     if (!this.game.state) throw new Error("Önce oyuna başla veya kayıt yükle.");
     this.playerName = String(name || this.playerName || "Oyuncu").slice(0, 16);
-    localStorage.setItem("lumaQuest.mp.name", this.playerName);
+    localStorage.setItem(STORAGE_PREFIX + "name", this.playerName);
     var code = randomCode();
     this.idToken = await this.ensureAuth();
-    await this.request("PUT", "/rooms/" + code, {
+    await this.request("PUT", ROOM_PATH + "/" + code, {
       code: code,
       hostId: this.playerId,
       createdAt: now(),
@@ -166,8 +168,8 @@
     code = cleanRoomCode(code);
     if (!code) throw new Error("Oda kodu boş.");
     this.playerName = String(name || this.playerName || "Oyuncu").slice(0, 16);
-    localStorage.setItem("lumaQuest.mp.name", this.playerName);
-    var room = await this.request("GET", "/rooms/" + code);
+    localStorage.setItem(STORAGE_PREFIX + "name", this.playerName);
+    var room = await this.request("GET", ROOM_PATH + "/" + code);
     if (!room) throw new Error("Oda bulunamadı.");
     this.roomCode = code;
     this.enabled = true;
@@ -182,13 +184,13 @@
     this.roomCode = null;
     this.remotePlayers = {};
     try {
-      await this.request("DELETE", "/rooms/" + code + "/players/" + this.playerId);
+      await this.request("DELETE", ROOM_PATH + "/" + code + "/players/" + this.playerId);
     } catch (err) {}
   };
 
   L.Multiplayer.prototype.pushNow = async function () {
     if (!this.roomCode || !this.game.state) return;
-    await this.request("PATCH", "/rooms/" + this.roomCode + "/players/" + this.playerId, this.payload());
+    await this.request("PATCH", ROOM_PATH + "/" + this.roomCode + "/players/" + this.playerId, this.payload());
   };
 
   L.Multiplayer.prototype.sendEmote = function (text) {
@@ -306,7 +308,7 @@
 
   L.Multiplayer.prototype.pollNow = async function () {
     if (!this.roomCode) return;
-    var players = await this.request("GET", "/rooms/" + this.roomCode + "/players");
+    var players = await this.request("GET", ROOM_PATH + "/" + this.roomCode + "/players");
     var fresh = {};
     Object.keys(players || {}).forEach(function (id) {
       var player = players[id];

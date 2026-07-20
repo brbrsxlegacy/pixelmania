@@ -33,6 +33,29 @@
       description: "Eski Taş Mağarası'ndaki kristal titreşimlerini incele.",
       objectives: [{ id: "enterCave", text: "Eski Taş Mağarası'na gir", target: 1 }, { id: "findLantern", text: "Mağara Feneri'ni al", target: 1 }],
       rewards: [{ type: "money", amount: 360 }, { type: "item", itemId: "gucluLumaKuresi", qty: 3 }]
+    },
+    korDagindanKacis: {
+      id: "korDagindanKacis", title: "Kor Dağı'ndan Kaçış", giver: "Jeolog Serin",
+      description: "Kor Dağı'nın iç basıncı yükseldi. Lav Pusulası'nı izleyip tünellerden çıkışı bul.",
+      objectives: [
+        { id: "findLavaCompass", text: "Kor kampında Lav Pusulası'nı al", target: 1 },
+        { id: "visit_korBogazi", text: "Kor Boğazı'na gir", target: 1 },
+        { id: "beatPrimeTrainer", text: "Prime kullanan volkan antrenörünü yen", target: 1 },
+        { id: "visit_korZirveCikisi", text: "Kor Zirve Çıkışı'na ulaş", target: 1 }
+      ],
+      rewards: [{ type: "money", amount: 680 }, { type: "item", itemId: "kristalLumaKuresi", qty: 2 }]
+    },
+    primeSirriniAc: {
+      id: "primeSirriniAc", title: "Prime Sırrı", giver: "Prime Sunağı",
+      description: "Prime Çekirdeği, güçlü bağ kurmuş Luma'ların savaş içinde geçici bir üst forma yükselmesini sağlar.",
+      objectives: [{ id: "usePrime", text: "Savaşta bir Luma'yı Prime formuna geçir", target: 1 }],
+      rewards: [{ type: "money", amount: 360 }, { type: "item", itemId: "gucluLumaKuresi", qty: 2 }]
+    },
+    volkanDefineleri: {
+      id: "volkanDefineleri", title: "Volkan Defineleri", giver: "Kaşif Mira",
+      description: "Kor Dağı'nın sıcak tünellerinde saklanan obsidyen define ve antik sikkeleri topla.",
+      objectives: [{ id: "collectVolcanoTreasure", text: "Kor Dağı içinde define bul", target: 6 }],
+      rewards: [{ type: "money", amount: 920 }, { type: "item", itemId: "tamIksir", qty: 2 }]
     }
   };
 

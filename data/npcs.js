@@ -258,4 +258,49 @@
       });
     });
   })();
+
+  (function addVolcanoNpcs() {
+    var npcs = window.LUMA_DATA.npcs;
+    npcs.korKampi = [
+      { id: "volkan_serin", name: "Jeolog Serin", type: "explorer", x: 28, y: 23, dir: "down", action: "talk", sprite: "explorer",
+        dialogue: ["Kor Dağı'nın iç basıncı yükseldi. Çıkışı bulmak için Lav Pusulası'nı ve defineleri takip edeceğiz.", "Prime Çekirdeği sende. Savaşta hazır bir Luma için Prime düğmesini kullan."] },
+      { id: "kor_healer", name: "Kamp Şifacısı Elif", type: "healer", x: 17, y: 27, dir: "down", action: "heal", sprite: "healer",
+        dialogue: ["Sıcak tünellere girmeden ekibini serinletelim."] },
+      { id: "kor_shop", name: "Malzemeci Kadir", type: "shopkeeper", x: 39, y: 27, dir: "down", action: "shop", sprite: "merchant",
+        dialogue: ["Lav rotasına çıkmadan küre ve iksir stokla. İçeride her parıltı define olmayabilir."] },
+      { id: "trainer_kor_kampi", name: "Kampçı Aylin", type: "trainer", x: 23, y: 16, dir: "right", action: "trainer", sprite: "trainer",
+        team: [{ creatureId: "iskurdu", level: 7 }, { creatureId: "korsinek", level: 8 }], money: 140,
+        dialogue: ["Kor Dağı'na giren herkes önce sıcak ritme alışmalı!"], afterDialogue: ["Tamam, adımların kül zemine uydu."] }
+    ];
+    npcs.korBogazi = [
+      { id: "trainer_kor_bogazi", name: "Kor Gözcüsü Rauf", type: "trainer", x: 34, y: 21, dir: "left", action: "trainer", sprite: "guard",
+        team: [{ creatureId: "kulkerten", level: 10 }, { creatureId: "tutsukanat", level: 11 }], money: 180,
+        dialogue: ["Boğazdan geçmek isteyen önce kızgın taşların dilini bilmeli."], afterDialogue: ["Geçebilirsin. Köprülerin gölgesinden ayrılma."] },
+      { id: "kor_bogazi_sign", name: "Isı Uyarısı", type: "sign", x: 31, y: 25, dir: "down", action: "talk", sprite: "sign",
+        dialogue: ["Kor Boğazı: Köz yamalarında vahşi Alev Luma'ları sık görülür."] }
+    ];
+    npcs.obsidyenTunel = [
+      { id: "trainer_obsidyen_defineci", name: "Defineci Bora", type: "trainer", x: 43, y: 20, dir: "left", action: "trainer", sprite: "collector",
+        prime: true, primeIndex: 1,
+        team: [{ creatureId: "lavakurt", level: 15 }, { creatureId: "magmantar", level: 18 }], money: 260, questObjective: "beatPrimeTrainer",
+        dialogue: ["Obsidyen Tünel'de define arıyorsan Prime ışığını da göze alacaksın!"], afterDialogue: ["Prime gücünü tanıdın. Sandıkları bulmak artık sana kaldı."] },
+      { id: "obsidyen_mira", name: "Kaşif Mira", type: "explorer", x: 16, y: 23, dir: "right", action: "talk", sprite: "explorer",
+        dialogue: ["Duvarlardaki sıcak çizgiler eski define odalarını gösteriyor. Gizli sandıkları E ile yokla."] }
+    ];
+    npcs.magmaKalbi = [
+      { id: "trainer_magma_kalbi", name: "Kor Ustası İdil", type: "trainer", x: 31, y: 20, dir: "down", action: "trainer", sprite: "trainer2",
+        prime: true, primeIndex: 2, boss: true,
+        team: [{ creatureId: "tutsukanat", level: 19 }, { creatureId: "lavagon", level: 21 }, { creatureId: "volkobra", level: 24 }], money: 520, questObjective: "beatPrimeTrainer",
+        dialogue: ["Magma Kalbi tek bir şey sorar: Sıcaklık artınca bağın da artıyor mu?"], afterDialogue: ["Prime ışığın sarsılmadı. Zirve çıkışı açıldı."] },
+      { id: "magma_note_keeper", name: "Eski Yazıt", type: "sign", x: 31, y: 12, dir: "down", action: "talk", sprite: "sign",
+        dialogue: ["Yazıt: Definenin en değerlisi çıkışı bulacak cesarettir. Ama Kor Tacı da fena değildir."] }
+    ];
+    npcs.korZirveCikisi = [
+      { id: "zirve_serin", name: "Jeolog Serin", type: "explorer", x: 29, y: 24, dir: "up", action: "talk", sprite: "explorer",
+        dialogue: ["Temiz hava! Kor Dağı'nın içinden çıktık. Defineler tamam değilse geri dönüp tünelleri yoklayabilirsin."] },
+      { id: "trainer_zirve", name: "Zirveci Cem", type: "trainer", x: 42, y: 17, dir: "left", action: "trainer", sprite: "trainer",
+        team: [{ creatureId: "alevanka", level: 23 }, { creatureId: "obsidikurt", level: 24 }], money: 420,
+        dialogue: ["Çıkışa bu kadar yaklaşmışken son bir sıcak maç yakışır."], afterDialogue: ["Zirve yolun açık."] }
+    ];
+  })();
 })();

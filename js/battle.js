@@ -25,6 +25,8 @@
     this.enemy = null;
     this.trainer = null;
     this.effects = [];
+    this.primeUsed = false;
+    this.enemyPrimeUsed = false;
     this.bind();
   };
 
@@ -74,6 +76,8 @@
     this.active = true;
     this.busy = false;
     this.effects = [];
+    this.primeUsed = false;
+    this.enemyPrimeUsed = false;
     var bossMode = !!(this.trainer && (this.trainer.boss || this.trainer.giant || this.trainer.storyBossId));
     document.body.classList.add("battle-active");
     document.body.classList.toggle("boss-battle", bossMode);
@@ -91,6 +95,10 @@
   L.Battle.prototype.end = function () {
     this.active = false;
     this.busy = false;
+    if (L.Prime && this.game && this.game.state) {
+      L.Prime.restoreBattle(this.game.state.team || []);
+      L.Prime.restoreBattle(this.enemyParty || []);
+    }
     document.body.classList.remove("battle-active");
     document.body.classList.remove("boss-battle");
     this.screen.classList.add("hidden");
@@ -123,7 +131,13 @@
   };
 
   L.Battle.prototype.renderMainMenu = function () {
+    var creature = this.playerCreature();
+    var primeCheck = L.Prime && L.Prime.canPrime(this.game, creature);
+    var primeButton = L.Prime && L.Prime.info(creature)
+      ? "<button data-battle-action='prime'" + (!primeCheck.ok ? " disabled" : "") + ">Prime</button>"
+      : "";
     this.menu.innerHTML = [
+      primeButton,
       "<button data-battle-action='attack'>Saldır</button>",
       "<button data-battle-action='team'>Yaratıklar</button>",
       "<button data-battle-action='bag'>Çanta</button>",
@@ -132,11 +146,45 @@
   };
 
   L.Battle.prototype.handleAction = function (action) {
+    if (action === "prime") return this.activatePrime();
     if (action === "attack") return this.renderMoves();
     if (action === "team") return this.renderTeam();
     if (action === "bag") return this.renderBag();
     if (action === "run") return this.tryRun();
     if (action === "back") return this.renderMainMenu();
+  };
+
+  L.Battle.prototype.activatePrime = function () {
+    if (!L.Prime || this.busy) return;
+    var creature = this.playerCreature();
+    var check = L.Prime.canPrime(this.game, creature);
+    if (!check.ok) {
+      this.setMessage(check.message);
+      if (L.Audio) L.Audio.play("error");
+      return;
+    }
+    var result = L.Prime.activate(this.game, creature);
+    this.setMessage(result.message);
+    this.animatePrime("player", creature);
+    this.updateBars();
+    this.draw();
+    this.renderMainMenu();
+    if (L.Audio) L.Audio.play("quest");
+  };
+
+  L.Battle.prototype.maybePrimeEnemy = function () {
+    if (!L.Prime || this.enemyPrimeUsed || !this.trainer || !this.trainer.prime) return false;
+    var primeIndex = this.trainer.primeIndex != null ? this.trainer.primeIndex : this.enemyParty.length - 1;
+    if (this.enemyIndex !== primeIndex) return false;
+    var result = L.Prime.activate(this.game, this.enemy, { enemy: true, trainer: this.trainer });
+    if (!result.ok) return false;
+    this.enemyPrimeUsed = true;
+    this.setMessage(this.enemy.displayName + " açığa çıktı!");
+    this.animatePrime("enemy", this.enemy);
+    this.updateBars();
+    this.draw();
+    if (L.Audio) L.Audio.play("quest");
+    return true;
   };
 
   L.Battle.prototype.renderMoves = function () {
@@ -193,6 +241,7 @@
     }
     this.busy = true;
     this.menu.innerHTML = "";
+    if (this.maybePrimeEnemy()) await delay(620);
     var enemyMove = this.enemyMove();
     var firstPlayer = (player.speed * stageMultiplier(player.statStages.speed)) >= (this.enemy.speed * stageMultiplier(this.enemy.statStages.speed));
     var turns = firstPlayer ? [
@@ -305,6 +354,7 @@
         this.setMessage(this.trainer.name + " " + this.enemy.displayName + " gönderdi!");
         this.updateBars();
         await delay(650);
+        if (this.maybePrimeEnemy()) await delay(650);
         return false;
       }
       await this.win();
@@ -538,6 +588,14 @@
     setTimeout(function () { el.remove(); }, 800);
   };
 
+  L.Battle.prototype.animatePrime = function (side, creature) {
+    var el = document.createElement("div");
+    el.className = "prime-burst " + side;
+    el.textContent = creature && creature.primeName ? creature.primeName : "PRIME";
+    this.screen.appendChild(el);
+    setTimeout(function () { el.remove(); }, 900);
+  };
+
   L.Battle.prototype.updateBars = function () {
     var player = this.playerCreature();
     var enemy = this.enemy;
@@ -641,34 +699,57 @@
     var ctx = this.ctx;
     var t = this.game.time;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    ctx.fillStyle = "#83d2ee";
-    ctx.fillRect(0, 0, 480, 170);
-    ctx.fillStyle = "#bdefff";
-    ctx.fillRect(0, 0, 480, 2);
-    ctx.fillStyle = "#78c27f";
-    for (var hill = 0; hill < 5; hill += 1) {
-      ctx.fillRect(hill * 104 - 20, 72 + (hill % 2) * 9, 96, 24);
-      ctx.fillRect(hill * 104 + 7, 61 + (hill % 2) * 8, 42, 12);
-    }
-    ctx.fillStyle = "#5fb95f";
-    ctx.fillRect(0, 93, 480, 77);
-    ctx.fillStyle = "#79cf65";
-    ctx.fillRect(0, 93, 480, 4);
-    ctx.fillStyle = "#4fa44f";
-    for (var grass = 0; grass < 28; grass += 1) {
-      ctx.fillRect((grass * 19 + Math.floor(t * 9)) % 500 - 20, 106 + grass % 5 * 11, 8, 2);
-    }
-    ctx.fillStyle = "#4aa8d8";
-    for (var i = 0; i < 16; i += 1) {
-      ctx.fillRect((i * 35 + Math.floor(t * 18)) % 520 - 40, 118 + (i % 3) * 7, 18, 2);
+    var volcanoBattle = this.game.map && ["korKampi", "korBogazi", "obsidyenTunel", "magmaKalbi", "korZirveCikisi", "lavKanyonu"].indexOf(this.game.map.id) >= 0;
+    if (volcanoBattle) {
+      ctx.fillStyle = "#3b3140";
+      ctx.fillRect(0, 0, 480, 170);
+      ctx.fillStyle = "#6d4029";
+      for (var ridge = 0; ridge < 5; ridge += 1) {
+        ctx.fillRect(ridge * 108 - 25, 68 + ridge % 2 * 11, 104, 28);
+        ctx.fillRect(ridge * 108 + 18, 54 + ridge % 2 * 9, 36, 16);
+      }
+      ctx.fillStyle = "#34313a";
+      ctx.fillRect(0, 93, 480, 77);
+      ctx.fillStyle = "#5c1f21";
+      ctx.fillRect(0, 116, 480, 14);
+      ctx.fillStyle = "#e46d45";
+      for (var lava = 0; lava < 18; lava += 1) {
+        ctx.fillRect((lava * 31 + Math.floor(t * 22)) % 520 - 40, 120 + lava % 3 * 3, 19, 2);
+      }
+      ctx.fillStyle = "#f2b94b";
+      for (var ember = 0; ember < 24; ember += 1) {
+        ctx.fillRect((ember * 23 + Math.floor(t * 13)) % 500 - 20, 101 + ember % 6 * 9, 3, 2);
+      }
+    } else {
+      ctx.fillStyle = "#83d2ee";
+      ctx.fillRect(0, 0, 480, 170);
+      ctx.fillStyle = "#bdefff";
+      ctx.fillRect(0, 0, 480, 2);
+      ctx.fillStyle = "#78c27f";
+      for (var hill = 0; hill < 5; hill += 1) {
+        ctx.fillRect(hill * 104 - 20, 72 + (hill % 2) * 9, 96, 24);
+        ctx.fillRect(hill * 104 + 7, 61 + (hill % 2) * 8, 42, 12);
+      }
+      ctx.fillStyle = "#5fb95f";
+      ctx.fillRect(0, 93, 480, 77);
+      ctx.fillStyle = "#79cf65";
+      ctx.fillRect(0, 93, 480, 4);
+      ctx.fillStyle = "#4fa44f";
+      for (var grass = 0; grass < 28; grass += 1) {
+        ctx.fillRect((grass * 19 + Math.floor(t * 9)) % 500 - 20, 106 + grass % 5 * 11, 8, 2);
+      }
+      ctx.fillStyle = "#4aa8d8";
+      for (var i = 0; i < 16; i += 1) {
+        ctx.fillRect((i * 35 + Math.floor(t * 18)) % 520 - 40, 118 + (i % 3) * 7, 18, 2);
+      }
     }
     ctx.fillStyle = "rgba(13, 27, 33, .22)";
     ctx.fillRect(54, 126, 132, 12);
     ctx.fillRect(298, 78, 132, 12);
-    ctx.fillStyle = "#76c66b";
+    ctx.fillStyle = volcanoBattle ? "#5d5961" : "#76c66b";
     ctx.fillRect(58, 120, 124, 10);
     ctx.fillRect(302, 72, 124, 10);
-    ctx.fillStyle = "#4f9d55";
+    ctx.fillStyle = volcanoBattle ? "#2a2630" : "#4f9d55";
     ctx.fillRect(60, 128, 120, 3);
     ctx.fillRect(304, 80, 120, 3);
     this.drawBattleEffects(ctx, t);

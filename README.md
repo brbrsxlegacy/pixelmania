@@ -1,6 +1,8 @@
-# Işık Muhafızları: Luma Yolu
+# Yeraltı Krallığı
 
 Özgün yaratıklar, Türkçe arayüz, HTML5 Canvas ve vanilla JavaScript ile hazırlanmış 2D pixel-art yaratık toplama RPG'si.
+
+Bu ikinci bölüm Kor Dağı'nın içinden kaçışa odaklanır: daha fazla Alev Luma'sı, Prime formları, volkan antrenörleri, lavlı AI ana menü arka planı ve tünellere saklanmış defineler oyuna eklendi. Kayıt anahtarları ve müzik kimliği ilk oyundan ayrıdır.
 
 ## Çalıştırma
 

@@ -198,6 +198,25 @@
           rect(ctx, x + 6, y + 10, 7, 2, "#f2b94b");
           rect(ctx, x + 1 + Math.floor((time || 0) * 5) % 5, y + 8, 4, 1, "#ffdd67");
           break;
+        case "ash":
+          shadeTile(ctx, x, y, "#4a4850", "#2f313b", time, "#66636b");
+          tilePebbles(ctx, x, y, "#262833", "#777078");
+          rect(ctx, x + 2, y + 13, 9, 1, "rgba(255,244,210,.16)");
+          break;
+        case "obsidian":
+          shadeTile(ctx, x, y, "#2a2630", "#171923", time, "#504858");
+          rect(ctx, x + 1, y + 1, 6, 2, "#5c5365");
+          rect(ctx, x + 9, y + 10, 5, 2, "#0f1118");
+          break;
+        case "emberPatch":
+          rect(ctx, x, y, TILE, TILE, "#3a2d30");
+          rect(ctx, x, y, TILE, 1, "#6d4029");
+          for (var e = 0; e < 7; e += 1) {
+            var glow = Math.sin((time || 0) * 5 + e) > 0 ? "#f2b94b" : "#e46d45";
+            rect(ctx, x + 1 + e * 2, y + 5 + e % 4 * 2, 2, 2, glow);
+          }
+          rect(ctx, x + 1, y + 14, 14, 1, "rgba(0,0,0,.22)");
+          break;
         case "swamp":
           shadeTile(ctx, x, y, "#587748", "#324b38", time, "#6f9158");
           rect(ctx, x + 3, y + 11, 9, 2, "#6d8f54");
@@ -518,6 +537,21 @@
           rect(ctx, x + 3, y + 5, 12, 10, "#4b2a2a");
           rect(ctx, x + 6, y + 9, 6, 2, "#e46d45");
           break;
+        case "campfire":
+          blobShadow(ctx, x + 2, y + 14, 14, 3);
+          rect(ctx, x + 3, y + 12, 12, 3, "#5c3a2a");
+          rect(ctx, x + 5, y + 9, 8, 5, "#e46d45");
+          rect(ctx, x + 7, y + 6, 4, 6, "#f2b94b");
+          rect(ctx, x + 8, y + 4 + Math.floor((time || 0) * 4) % 2, 2, 4, "#fff4d2");
+          break;
+        case "primeAltar":
+          blobShadow(ctx, x + 3, y + 27, 26, 5);
+          rect(ctx, x + 4, y + 18, 24, 12, "#172033");
+          rect(ctx, x + 6, y + 16, 20, 12, "#4a4850");
+          rect(ctx, x + 10, y + 8, 12, 12, "#e46d45");
+          rect(ctx, x + 13, y + 5, 6, 15, "#f2b94b");
+          drawTinySpark(ctx, x + 24, y + 7, "#fff4d2", time);
+          break;
         case "palm":
           rect(ctx, x + 8, y + 10, 4, 21, "#9a663b");
           rect(ctx, x + 2, y + 5, 14, 5, "#3f944f");
@@ -535,7 +569,8 @@
         shopCounter: 32, shelfGoods: 32, cityTower: 80, mayorHall: 74,
         styleShop: 62, realEstate: 62, stall: 42, fountain: 32, factory: 64,
         station: 60, arena: 70, apartment: 73, ruinGate: 60, palm: 32,
-        jobBoard: 32, guildBoard: 32, cityLamp: 31
+        jobBoard: 32, guildBoard: 32, cityLamp: 31, campfire: 16,
+        primeAltar: 32
       };
       return tileY * TILE + (heights[code] || 16);
     },
@@ -637,6 +672,15 @@
       ctx.translate(x, y + Math.sin((time || 0) * 3) * 1.5);
       ctx.scale(flip ? -scale : scale, scale);
       if (flip) ctx.translate(-32, 0);
+      if (creatureOrBase.primeActive) {
+        var aura = creatureOrBase.primeAura || "#f2b94b";
+        ctx.save();
+        ctx.globalAlpha = .38 + Math.sin((time || 0) * 9) * .08;
+        rect(ctx, 5, 5, 22, 22, aura);
+        rect(ctx, 9, 1, 14, 30, "#fff4d2");
+        ctx.restore();
+        colors = [colors[0], aura, colors[2] || "#fff4d2"];
+      }
       var body = base.sprite.body;
       blobShadow(ctx, 7, 24, 18, 5);
       function eye(ex, ey) {
