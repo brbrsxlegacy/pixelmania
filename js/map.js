@@ -96,7 +96,7 @@
       var it = map.interactions[i];
       if (it.x === tx && it.y === ty) return it;
       var radius = it.type === "lab" ? 4 : (it.type === "door" ? 2 : 1);
-      if (Math.abs(it.x - tx) <= radius && Math.abs(it.y - ty) <= radius && ["heal", "shop", "lab", "cave", "well", "door"].indexOf(it.type) >= 0) return it;
+      if (Math.abs(it.x - tx) <= radius && Math.abs(it.y - ty) <= radius && ["heal", "shop", "lab", "cave", "well", "door", "worldAbility"].indexOf(it.type) >= 0) return it;
     }
     return null;
   };

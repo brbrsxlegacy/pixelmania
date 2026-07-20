@@ -245,10 +245,47 @@
   background: #7ed17a;
 }
 
+.mood-pill {
+  margin-right: 6px;
+  background: #dbe8d2;
+}
+
+.mood-happy,
+.mood-excited,
+.ability-card.ready {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(84,184,107,.18)),
+    #e7ffd0;
+}
+
+.mood-hungry,
+.mood-tired {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(228,109,69,.18)),
+    #ffe3c9;
+}
+
+.quest-row.tracked,
+.chapter-card.done,
+.legendary-card.done,
+.home-upgrade-card.owned {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.45), rgba(84,184,107,.18)),
+    #e7ffd0;
+}
+
 .boss-card {
   background:
     linear-gradient(180deg, rgba(255,255,255,.45), rgba(242,185,75,.22)),
     #fff4d2;
+}
+
+.chapter-card,
+.ability-card,
+.tournament-card,
+.legendary-card,
+.home-upgrade-card {
+  min-height: 112px;
 }
 
 .evo-tree {

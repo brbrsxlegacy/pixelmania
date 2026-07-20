@@ -138,6 +138,43 @@ body.battle-active .touch-controls {
   animation: damage-pop .7s steps(8) forwards;
 }
 
+.boss-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 55;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  text-align: center;
+  color: #fff4d2;
+  background:
+    linear-gradient(180deg, rgba(16, 21, 33, .84), rgba(16, 21, 33, .36)),
+    repeating-linear-gradient(90deg, rgba(242, 185, 75, .18) 0 12px, transparent 12px 24px);
+  text-shadow: 0 3px 0 #101521;
+  pointer-events: none;
+  animation: boss-intro .95s steps(7) forwards;
+}
+
+.boss-intro span {
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.boss-intro strong {
+  display: block;
+  max-width: min(92vw, 430px);
+  font-size: clamp(22px, 6vw, 42px);
+  line-height: 1;
+}
+
+@keyframes boss-intro {
+  0% { opacity: 0; transform: scale(1.08); }
+  18% { opacity: 1; transform: scale(1); }
+  82% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(.98); }
+}
+
 @keyframes damage-pop {
   from { transform: translateY(0); opacity: 1; }
   to { transform: translateY(-28px); opacity: 0; }

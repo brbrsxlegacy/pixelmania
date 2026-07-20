@@ -735,6 +735,37 @@
   setRect(window.LUMA_DATA.maps.sahilRotasi, "collision", 55, 23, 2, 2, 0);
   window.LUMA_DATA.maps.sahilRotasi.exits.push({ x: 55, y: 23, w: 2, h: 2, to: "batikMahzen", spawnX: 22, spawnY: 34 });
 
+  window.LUMA_DATA.maps.yesilova.interactions.push({
+    x: 12, y: 9, type: "worldAbility", id: "root_gate_yesilova", element: "Yaprak", label: "Kök Kapısı",
+    success: "Kökler yana çekildi. Gizli malzeme buldun.",
+    reward: { resources: { herb: 3, wood: 2 }, money: 80 }
+  });
+  window.LUMA_DATA.maps.kristalGol.interactions.push({
+    x: 50, y: 24, type: "worldAbility", id: "lake_current_gate", element: "Su", label: "Akış Mührü",
+    success: "Su yolu sakinleşti.",
+    reward: { resources: { crystal: 2 }, item: "lumaKuresi", qty: 2 }
+  });
+  window.LUMA_DATA.maps.magara.interactions.push({
+    x: 46, y: 32, type: "worldAbility", id: "cracked_wall_magara", element: "Kaya", label: "Çatlak Duvar",
+    success: "Duvar kırıldı.",
+    reward: { resources: { ore: 3, crystal: 1 }, money: 90 }
+  });
+  window.LUMA_DATA.maps.trenIstasyonu.interactions.push({
+    x: 18, y: 11, type: "worldAbility", id: "station_terminal", element: "Elektrik", label: "Enerji Terminali",
+    success: "Terminal yeniden çalıştı.",
+    reward: { resources: { crystal: 1 }, money: 160 }
+  });
+  window.LUMA_DATA.maps.geceKorusu.interactions.push({
+    x: 30, y: 20, type: "worldAbility", id: "shadow_veil", element: "Gölge", label: "Gölge Perdesi",
+    success: "Perde sessizce açıldı.",
+    reward: { resources: { crystal: 1 }, lure: 1 }
+  });
+  window.LUMA_DATA.maps.derinKristalZindan.interactions.push({
+    x: 23, y: 5, type: "worldAbility", id: "light_altar_deep", element: "Işık", label: "Şafak Altarı",
+    success: "Altar efsane izini parlattı.",
+    reward: { resources: { crystal: 2 }, lure: 1 }
+  });
+
   Object.keys(extraMaps).forEach(function (id) {
     window.LUMA_DATA.maps[id] = extraMaps[id];
   });

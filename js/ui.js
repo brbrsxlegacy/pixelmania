@@ -156,7 +156,9 @@
     if (!this.game.state || !this.game.map) return;
     document.getElementById("hudMap").textContent = this.game.map.name;
     document.getElementById("hudMoney").textContent = this.game.state.money + " Luma";
-    var active = L.Quests.active(this.game.state)[0];
+    var activeList = L.Quests.active(this.game.state);
+    var trackedId = this.game.state.questTrack && this.game.state.questTrack.activeId;
+    var active = activeList.filter(function (quest) { return quest.id === trackedId; })[0] || activeList[0];
     document.getElementById("hudQuest").textContent = active ? active.title + ": " + active.state.objectives.filter(function (o) { return !o.done; }).map(function (o) { return o.text; })[0] : "Görev yok";
     var fps = document.getElementById("hudFps");
     fps.textContent = Math.round(this.game.fps || 60) + " FPS";
@@ -204,11 +206,15 @@
       "<button class='panel-row' data-pause='team'>Yaratıklar</button>" +
       "<button class='panel-row' data-pause='bag'>Çanta</button>" +
       "<button class='panel-row' data-pause='quests'>Görevler</button>" +
+      "<button class='panel-row' data-pause='story'>Hikaye</button>" +
       "<button class='panel-row' data-pause='daily'>Günlük</button>" +
       "<button class='panel-row' data-pause='crafting'>Atolye</button>" +
+      "<button class='panel-row' data-pause='worldAbilities'>Dünya Yetenekleri</button>" +
       "<button class='panel-row' data-pause='minigames'>Mini Oyunlar</button>" +
       "<button class='panel-row' data-pause='weather'>Hava ve Pasifler</button>" +
       "<button class='panel-row' data-pause='bosses'>Dev Bosslar</button>" +
+      "<button class='panel-row' data-pause='tournament'>Turnuva</button>" +
+      "<button class='panel-row' data-pause='legendary'>Efsane Avı</button>" +
       "<button class='panel-row' data-pause='map'>Harita</button>" +
       "<button class='panel-row' data-pause='dex'>Lumadex</button>" +
       "<button class='panel-row' data-pause='badges'>Rozetler</button>" +
@@ -266,14 +272,17 @@
       var evo = L.Evolution && L.Evolution.nextInfo(c);
       var friend = L.Progression ? L.Progression.friendship(state, c) : 0;
       var passive = L.Progression ? L.Progression.passiveFor(c) : null;
+      var mood = L.Progression && L.Progression.moodFor ? L.Progression.moodFor(state, c) : null;
       html += "<div class='team-card'><strong>" + (i === state.activeIndex ? "▶ " : "") + c.displayName + "</strong><br>" +
         "<canvas class='creature-card-art' width='96' height='66' data-team-art='" + i + "'></canvas>" +
         "<small>" + c.element + " • Sv. " + c.level + " • HP " + c.hp + "/" + c.maxHp + " • EXP " + c.exp + "/" + c.expToNext + "</small><br>" +
         "<small>Güç " + c.attack + " • Savunma " + c.defense + " • Hız " + c.speed + "</small><br>" +
         "<small>" + c.abilities.map(function (a) { return a.name; }).join(", ") + "</small><br>" +
         (passive ? "<small>Dostluk " + friend + "/100 • Pasif: " + passive.name + "</small><br>" : "") +
+        (mood ? "<span class='status-pill mood-pill mood-" + mood.id + "'>" + mood.label + "</span><small>" + mood.bonus + "</small><br>" : "") +
         (evo ? "<small>Evrim: " + evo.to.name + " • Sv. " + evo.level + "</small><br>" : "") +
         "<button data-team-active='" + i + "'>Aktif Yap</button>" +
+        "<button data-feed-luma='" + i + "'>Besle</button>" +
         (evo && evo.ready ? "<button data-team-evolve='" + i + "' class='primary'>Evrimle</button>" : "") +
         "<button data-team-tree='" + i + "'>Evrim Agaci</button>" +
         "<button data-team-moves='" + i + "'>Yetenekler</button>" +
@@ -313,14 +322,25 @@
   };
 
   L.UiController.prototype.showQuests = function () {
-    var html = "<div class='panel-grid'>";
-    L.Quests.allForJournal(this.game.state).forEach(function (q) {
+    var state = this.game.state;
+    if (L.Progression) L.Progression.ensureState(state);
+    var trackedId = state.questTrack && state.questTrack.activeId;
+    var trackedQuest = trackedId && state.quests[trackedId] && L.Quests.get(trackedId);
+    var html = "<div class='panel-row'><strong>Takip:</strong> " + (trackedQuest ? escapeHtml(trackedQuest.title) : "Yok") +
+      "<br><small>Takip edilen görev harita okunda öncelik alır.</small>" +
+      (trackedId ? "<br><button data-quest-clear='1'>Takibi Bırak</button>" : "") + "</div><div class='panel-grid'>";
+    L.Quests.allForJournal(state).forEach(function (q) {
       var status = q.state ? (q.state.status === "completed" ? "Tamamlandı" : "Aktif") : "Başlamadı";
-      html += "<div class='quest-row'><strong>" + q.title + "</strong><br><small>" + status + " • " + q.giver + "</small><p>" + q.description + "</p>";
+      var total = q.state ? q.state.objectives.reduce(function (sum, o) { return sum + o.target; }, 0) : 0;
+      var done = q.state ? q.state.objectives.reduce(function (sum, o) { return sum + Math.min(o.count, o.target); }, 0) : 0;
+      var percent = total ? Math.round(done / total * 100) : 0;
+      html += "<div class='quest-row " + (trackedId === q.id ? "tracked" : "") + "'><strong>" + q.title + "</strong><br><small>" + status + " • " + q.giver + "</small><p>" + q.description + "</p>";
       if (q.state) {
+        html += "<div class='progress-shell'><span style='width:" + percent + "%'></span></div>";
         q.state.objectives.forEach(function (o) {
           html += "<small>" + (o.done ? "✓ " : "□ ") + o.text + " (" + o.count + "/" + o.target + ")</small><br>";
         });
+        if (q.state.status !== "completed") html += "<button data-quest-track='" + q.id + "'" + (trackedId === q.id ? " class='primary'" : "") + ">" + (trackedId === q.id ? "Takipte" : "Takip Et") + "</button>";
       }
       html += "</div>";
     });
@@ -456,6 +476,73 @@
     });
     html += "</div>";
     this.showPanel("Dev Bosslar", html, "bosses", "world");
+  };
+
+  L.UiController.prototype.showStory = function () {
+    var state = this.game.state;
+    if (!L.Progression) return;
+    var status = L.Progression.chapterStatus(state);
+    var html = "<div class='panel-row'><strong>Sıradaki:</strong> " + status.current.title + "<br><small>" + status.current.objective + "</small><div class='progress-shell'><span style='width:" + Math.round(status.completed / status.chapters.length * 100) + "%'></span></div></div>";
+    html += "<div class='panel-grid'>";
+    status.chapters.forEach(function (chapter) {
+      html += "<div class='item-row chapter-card " + (chapter.done ? "done" : "") + "'><strong>" + chapter.title + "</strong><br><small>" + chapter.objective + "</small><br>" +
+        "<span class='status-pill " + (chapter.done ? "done" : "") + "'>" + (chapter.done ? "Tamam" : "Sırada") + "</span></div>";
+    });
+    html += "</div>";
+    this.showPanel("Hikaye", html, "story", "world");
+  };
+
+  L.UiController.prototype.showWorldAbilities = function () {
+    var state = this.game.state;
+    if (!L.Progression) return;
+    L.Progression.ensureState(state);
+    var teamElements = {};
+    (state.team || []).forEach(function (creature) {
+      if (creature && creature.hp > 0) teamElements[creature.element] = true;
+    });
+    var used = state.worldAbilities && state.worldAbilities.used || {};
+    var html = "<div class='panel-row'><strong>Aktif ekip elementleri:</strong> " + (Object.keys(teamElements).join(", ") || "Yok") + "<br><small>Haritadaki özel noktalarda doğru elementli sağlıklı Luma ile A/E bas.</small></div><div class='panel-grid'>";
+    L.Progression.worldAbilities.forEach(function (ability) {
+      var solved = Object.keys(used).filter(function (id) { return used[id] && used[id].element === ability.element; }).length;
+      var ready = !!teamElements[ability.element];
+      html += "<div class='item-row ability-card " + (ready ? "ready" : "") + "'><strong>" + ability.name + "</strong><br><small>" + ability.element + " • " + ability.description + "</small><br>" +
+        "<small>Çözülen nokta: " + solved + "</small><br><span class='status-pill " + (ready ? "done" : "") + "'>" + (ready ? "Hazır" : "Ekipte yok") + "</span></div>";
+    });
+    html += "</div>";
+    this.showPanel("Dünya Yetenekleri", html, "worldAbilities", "world");
+  };
+
+  L.UiController.prototype.showTournament = function () {
+    var state = this.game.state;
+    if (!L.Progression) return;
+    L.Progression.ensureState(state);
+    var t = state.tournament;
+    var html = "<div class='panel-row'><strong>Durum:</strong> " + (t.champion ? "Şampiyon" : (t.active ? "Turnuva sürüyor" : "Hazır")) +
+      "<br><small>Galibiyet: " + t.wins + " • En iyi seri: " + t.bestStreak + " • Tur: " + t.round + "/" + L.Progression.tournamentRounds.length + "</small><br>" +
+      (t.active && (t.pendingRound || t.round < L.Progression.tournamentRounds.length) ? "<button data-tournament-resume='1'>Kaldığın Turdan Devam</button>" : "") +
+      "<button class='primary' data-tournament-start='1'>" + (t.active ? "Turnuvayı Yeniden Başlat" : "Turnuvaya Gir") + "</button></div><div class='panel-grid'>";
+    L.Progression.tournamentRounds.forEach(function (round, index) {
+      html += "<div class='item-row tournament-card'><strong>" + (index + 1) + ". Tur: " + round.name + "</strong><br><small>" + round.element + " • Sv. " + round.level + (round.boss ? " • Dev final" : "") + "</small><br><small>Ödül: " + round.reward + "+ Luma</small></div>";
+    });
+    html += "</div>";
+    this.showPanel("Turnuva", html, "tournament", "world");
+  };
+
+  L.UiController.prototype.showLegendary = function () {
+    var state = this.game.state;
+    if (!L.Progression) return;
+    L.Progression.ensureState(state);
+    var html = "<div class='panel-row'><strong>Efsane Yemi:</strong> " + state.legendaryHunts.lures + "<br><small>Zindan bossları, özel altarlar ve üretimle yem kazanabilirsin.</small></div><div class='panel-grid'>";
+    L.Progression.legendaryHunts.forEach(function (hunt) {
+      var available = L.Progression.legendaryAvailable(state, hunt);
+      var caught = !!state.legendaryHunts.caught[hunt.id];
+      var defeated = !!state.legendaryHunts.defeated[hunt.id];
+      html += "<div class='item-row legendary-card " + (caught ? "done" : "") + "'><strong>" + hunt.name + "</strong><br><small>" + hunt.element + " • Sv. " + hunt.level + "</small><br>" +
+        "<small>Şart: " + hunt.condition + "</small><br><span class='status-pill " + (caught || defeated ? "done" : "") + "'>" + (caught ? "Yakalandı" : (defeated ? "Yenildi" : (available ? "İz hazır" : "Kilitli"))) + "</span><br>" +
+        "<button data-legendary-hunt='" + hunt.id + "'" + (!available ? " disabled" : "") + ">" + (caught || defeated ? "Tekrar Çağır" : "İz Sür") + "</button></div>";
+    });
+    html += "</div>";
+    this.showPanel("Efsane Avı", html, "legendary", "world");
   };
 
   L.UiController.prototype.showEvolutionTree = function (index) {
@@ -646,10 +733,21 @@
       html += "<div class='panel-row'><button class='primary' data-home-visit='1'>Evime Git</button><br><small>Evde yatakla iyileşebilir, dekor masasıyla düzenleme yapabilirsin.</small></div>";
       if (L.Progression) {
         L.Progression.ensureState(state);
+        var farmLimit = L.Progression.farmLimit ? L.Progression.farmLimit(state) : 3;
         var growth = Math.min(100, Math.floor((state.farm.growth || 0) / 80 * 100));
-        html += "<div class='panel-row farm-row'><strong>Bahce</strong><br><small>Dikili: " + state.farm.planted + " • Hazir hasat: " + state.farm.harvestReady + " • Toplam hasat: " + state.farm.harvests + "</small>" +
+        html += "<div class='panel-row farm-row'><strong>Bahce</strong><br><small>Dikili: " + state.farm.planted + "/" + farmLimit + " • Hazir hasat: " + state.farm.harvestReady + " • Toplam hasat: " + state.farm.harvests + "</small>" +
           "<div class='progress-shell'><span style='width:" + growth + "%'></span></div>" +
           "<button data-farm-plant='1'>Fide Dik</button><button data-farm-harvest='1'" + (!state.farm.harvestReady ? " disabled" : "") + ">Hasat Al</button></div>";
+        html += "<div class='panel-grid'>";
+        L.Progression.homeUpgrades.forEach(function (upgrade) {
+          var owned = !!(state.homeUpgrades && state.homeUpgrades.owned && state.homeUpgrades.owned[upgrade.id]);
+          var cost = Object.keys(upgrade.cost).map(function (id) {
+            return L.Progression.resourceName(id) + " x" + upgrade.cost[id];
+          }).join(", ");
+          html += "<div class='item-row home-upgrade-card " + (owned ? "owned" : "") + "'><strong>" + upgrade.name + "</strong><br><small>" + upgrade.description + "</small><br>" +
+            "<small>" + upgrade.money + " Luma • " + cost + "</small><br><button data-home-upgrade='" + upgrade.id + "'" + (owned ? " disabled" : "") + ">" + (owned ? "Kurulu" : "Kur") + "</button></div>";
+        });
+        html += "</div>";
       }
       html += "<div class='panel-grid'>";
       L.Economy.furniture.forEach(function (item) {
@@ -685,7 +783,7 @@
       html += "<div class='panel-row'><strong>Oda: " + mp.roomCode + "</strong><br><small>Bu kodu arkadaşına ver. Aynı haritadaysanız birbirinizi görebilirsiniz.</small></div>";
       html += "<div class='panel-row'><strong>Adın:</strong> " + escapeHtml(mp.playerName) + "<br><strong>Bağlı oyuncu:</strong> " + (Object.keys(mp.remotePlayers).length + 1) +
         "<br><small>PvP: " + (this.game.state.pvp && this.game.state.pvp.wins || 0) + "G / " + (this.game.state.pvp && this.game.state.pvp.losses || 0) + "M • " + (meta.ready ? "Hazır" : "Beklemede") + "</small></div>";
-      html += "<div class='panel-grid mp-actions'><button data-mp-emote='Selam!'>Selam</button><button data-mp-ready='1'" + (meta.ready ? " class='primary'" : "") + ">" + (meta.ready ? "Hazır Değilim" : "Hazırım") + "</button><button data-mp-invite='trade'>Takas İste</button><button data-mp-invite='pvp'>PvP İste</button></div>";
+      html += "<div class='panel-grid mp-actions'><button data-mp-emote='Selam!'>Selam</button><button data-mp-ready='1'" + (meta.ready ? " class='primary'" : "") + ">" + (meta.ready ? "Hazır Değilim" : "Hazırım") + "</button><button data-mp-invite='trade'>Takas İste</button><button data-mp-invite='pvp'>PvP İste</button><button data-coop-dungeon='1'>Co-op Zindan</button><button data-coop-boss='1'>Co-op Boss</button></div>";
       Object.keys(mp.remotePlayers).forEach(function (id) {
         var remote = mp.remotePlayers[id];
         if (remote && remote.invite) {
@@ -759,11 +857,15 @@
       if (pause === "team") this.showTeam();
       if (pause === "bag") this.showInventory();
       if (pause === "quests") this.showQuests();
+      if (pause === "story") this.showStory();
       if (pause === "daily") this.showDaily();
       if (pause === "crafting") this.showCrafting();
+      if (pause === "worldAbilities") this.showWorldAbilities();
       if (pause === "minigames") this.showMinigames();
       if (pause === "weather") this.showWeather();
       if (pause === "bosses") this.showBosses();
+      if (pause === "tournament") this.showTournament();
+      if (pause === "legendary") this.showLegendary();
       if (pause === "map") this.showMap();
       if (pause === "dex") this.showLumadex();
       if (pause === "badges") this.showBadges();
@@ -794,6 +896,23 @@
     var mapTravel = button.getAttribute("data-map-travel");
     if (mapTravel) {
       if (this.game.fastTravelTo(mapTravel)) this.closePanel();
+      return;
+    }
+    var questTrack = button.getAttribute("data-quest-track");
+    if (questTrack) {
+      if (L.Progression) L.Progression.ensureState(this.game.state);
+      this.game.state.questTrack.activeId = questTrack;
+      this.game.autosaveSoon();
+      this.notify("Görev takip ediliyor.");
+      this.showQuests();
+      return;
+    }
+    if (button.hasAttribute("data-quest-clear")) {
+      if (L.Progression) L.Progression.ensureState(this.game.state);
+      this.game.state.questTrack.activeId = null;
+      this.game.autosaveSoon();
+      this.notify("Görev takibi kapandı.");
+      this.showQuests();
       return;
     }
     if (button.hasAttribute("data-daily-claim")) {
@@ -835,6 +954,40 @@
       if (!bossResult.ok) {
         this.notify(bossResult.message);
         if (L.Audio) L.Audio.play("error");
+      }
+      return;
+    }
+    if (button.hasAttribute("data-tournament-start")) {
+      var tournamentResult = L.Progression ? L.Progression.startTournament(this.game) : { ok: false, message: "Turnuva sistemi hazir degil." };
+      if (!tournamentResult.ok) {
+        this.notify(tournamentResult.message);
+        if (L.Audio) L.Audio.play("error");
+        this.showTournament();
+      } else if (L.Audio) {
+        L.Audio.play("confirm");
+      }
+      return;
+    }
+    if (button.hasAttribute("data-tournament-resume")) {
+      var resumeResult = L.Progression ? L.Progression.resumeTournament(this.game) : { ok: false, message: "Turnuva sistemi hazir degil." };
+      if (!resumeResult.ok) {
+        this.notify(resumeResult.message);
+        if (L.Audio) L.Audio.play("error");
+        this.showTournament();
+      } else if (L.Audio) {
+        L.Audio.play("confirm");
+      }
+      return;
+    }
+    var legendaryHunt = button.getAttribute("data-legendary-hunt");
+    if (legendaryHunt) {
+      var huntResult = L.Progression ? L.Progression.startLegendaryHunt(this.game, legendaryHunt) : { ok: false, message: "Efsane sistemi hazir degil." };
+      if (!huntResult.ok) {
+        this.notify(huntResult.message);
+        if (L.Audio) L.Audio.play("error");
+        this.showLegendary();
+      } else if (L.Audio) {
+        L.Audio.play("confirm");
       }
       return;
     }
@@ -946,6 +1099,22 @@
       if (!acceptResult.ok) this.showMultiplayer("world");
       return;
     }
+    if (button.hasAttribute("data-coop-dungeon")) {
+      var dungeonResult = L.Progression ? L.Progression.startCoopDungeon(this.game) : { ok: false, message: "Co-op sistemi hazir degil." };
+      this.notify(dungeonResult.message);
+      if (dungeonResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!dungeonResult.ok && L.Audio) L.Audio.play("error");
+      if (!dungeonResult.ok) this.showMultiplayer("world");
+      return;
+    }
+    if (button.hasAttribute("data-coop-boss")) {
+      var coopBossResult = L.Progression ? L.Progression.startCoopBoss(this.game) : { ok: false, message: "Co-op sistemi hazir degil." };
+      this.notify(coopBossResult.message);
+      if (coopBossResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!coopBossResult.ok && L.Audio) L.Audio.play("error");
+      if (!coopBossResult.ok) this.showMultiplayer("world");
+      return;
+    }
     var outfit = button.getAttribute("data-avatar-outfit");
     if (outfit) {
       var avatarResult = L.Economy.setAvatar(this.game, outfit);
@@ -987,6 +1156,15 @@
       this.showHousing();
       return;
     }
+    var homeUpgrade = button.getAttribute("data-home-upgrade");
+    if (homeUpgrade) {
+      var upgradeResult = L.Progression ? L.Progression.buyHomeUpgrade(this.game, homeUpgrade) : { ok: false, message: "Ev yukseltmesi hazir degil." };
+      this.notify(upgradeResult.message);
+      if (upgradeResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!upgradeResult.ok && L.Audio) L.Audio.play("error");
+      this.showHousing();
+      return;
+    }
     var rent = button.getAttribute("data-home-rent");
     if (rent) {
       if (!this.game.state.quests.ilkEvAnahtari) L.Quests.start(this.game.state, "ilkEvAnahtari");
@@ -1011,6 +1189,16 @@
     if (active != null) {
       this.game.state.activeIndex = Number(active);
       this.notify("Aktif yaratık değişti.");
+      this.showTeam();
+      return;
+    }
+    var feed = button.getAttribute("data-feed-luma");
+    if (feed != null) {
+      this.game.state.activeIndex = Number(feed);
+      var feedResult = L.Progression ? L.Progression.feedActive(this.game) : { ok: false, message: "Besleme sistemi hazir degil." };
+      this.notify(feedResult.message);
+      if (feedResult.ok && L.Audio) L.Audio.play("confirm");
+      if (!feedResult.ok && L.Audio) L.Audio.play("error");
       this.showTeam();
       return;
     }

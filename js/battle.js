@@ -82,6 +82,7 @@
     this.setMessage(bossMode ? "Gorkemli " + message : message);
     if (L.Audio) L.Audio.playBattleMusic(bossMode);
     if (L.Audio) L.Audio.play("encounter");
+    if (bossMode) this.showBossIntro(this.trainer && this.trainer.name ? this.trainer.name : "Boss");
     this.renderMainMenu();
     this.updateBars();
     this.draw();
@@ -97,10 +98,28 @@
     this.game.encounterCooldown = 4;
     this.game.autosaveSoon();
     if (L.Audio) L.Audio.playMapMusic(this.game.map);
+    if (L.Progression && L.Progression.afterBattleEnd) L.Progression.afterBattleEnd(this.game);
   };
 
   L.Battle.prototype.setMessage = function (message) {
     this.messageEl.textContent = message;
+  };
+
+  L.Battle.prototype.showBossIntro = function (name) {
+    var old = this.screen.querySelector(".boss-intro");
+    if (old) old.remove();
+    var el = document.createElement("div");
+    el.className = "boss-intro";
+    var label = document.createElement("span");
+    var title = document.createElement("strong");
+    label.textContent = "Dev Karsilasma";
+    title.textContent = name;
+    el.appendChild(label);
+    el.appendChild(title);
+    this.screen.appendChild(el);
+    setTimeout(function () {
+      if (el.parentNode) el.remove();
+    }, 1450);
   };
 
   L.Battle.prototype.renderMainMenu = function () {

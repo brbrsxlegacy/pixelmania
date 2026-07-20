@@ -280,7 +280,8 @@
   function plant(game) {
     var state = ensureState(game.state);
     if (!state.housing || state.housing.status === "none") return { ok: false, message: "Once ev kirala ya da satin al." };
-    if (state.farm.planted >= 3) return { ok: false, message: "Bahcede zaten 3 fide var." };
+    var limit = L.Progression && L.Progression.farmLimit ? L.Progression.farmLimit(state) : 3;
+    if (state.farm.planted >= limit) return { ok: false, message: "Bahcede zaten " + limit + " fide var." };
     if (state.resources.herb > 0) state.resources.herb -= 1;
     else if (state.money >= 40) state.money -= 40;
     else return { ok: false, message: "Fide icin 1 Sifa Otu veya 40 Luma gerekiyor." };

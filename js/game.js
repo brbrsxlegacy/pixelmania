@@ -540,6 +540,12 @@
       this.changeMap({ to: interaction.to, spawnX: interaction.spawnX, spawnY: interaction.spawnY });
       return;
     }
+    if (interaction.type === "worldAbility") {
+      var abilityResult = L.Progression ? L.Progression.useWorldAbility(this, interaction) : { ok: false, message: "Yetenek sistemi hazir degil." };
+      this.dialogue.show(interaction.label || "Luma Yeteneği", [abilityResult.message]);
+      if (L.Audio) L.Audio.play(abilityResult.ok ? "quest" : "error");
+      return;
+    }
     if (interaction.type === "lab") {
       if (!this.state.story.starterChosen) this.dialogue.show("Laboratuvar", [interaction.text, "Üç yoldaş ışık masasında seni bekliyor."], function () { self.ui.openStarter(); });
       else this.dialogue.show("Laboratuvar", ["Liora'nın notları masada. Farklı elementleri dengelemek ekibi güçlendirir."]);
@@ -869,7 +875,8 @@
         this.player.update(dt, this.input, this.map, this.npcs.current);
         var moved = Math.sqrt(Math.pow(this.player.x - beforeX, 2) + Math.pow(this.player.y - beforeY, 2));
         this.updateFollower(moved);
-        if (L.Eggs) L.Eggs.progress(this, moved / 16);
+        var eggMultiplier = L.Progression && L.Progression.eggProgressMultiplier ? L.Progression.eggProgressMultiplier(this.state) : 1;
+        if (L.Eggs) L.Eggs.progress(this, moved / 16 * eggMultiplier);
         if (L.Progression) L.Progression.walk(this, moved / 16);
         if (this.mode !== "world") return;
         if (this.roamers) this.roamers.update(dt, this.map);

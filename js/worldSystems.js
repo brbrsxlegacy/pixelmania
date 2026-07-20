@@ -25,6 +25,7 @@
     state.badges = Object.assign({}, state.badges || {});
     state.pvp = Object.assign({ wins: 0, losses: 0 }, state.pvp || {});
     state.multiplayerMeta = Object.assign({ emote: "", ready: false, lastInvite: null, inviteResponse: null }, state.multiplayerMeta || {});
+    state.questTrack = Object.assign({ activeId: null }, state.questTrack || {});
   }
 
   function mapName(id) {
@@ -67,7 +68,9 @@
   }
 
   function questTarget(state) {
-    var active = L.Quests.active(state)[0];
+    var activeList = L.Quests.active(state);
+    var trackedId = state.questTrack && state.questTrack.activeId;
+    var active = activeList.filter(function (quest) { return quest.id === trackedId; })[0] || activeList[0];
     if (!active || !active.state) return null;
     var open = active.state.objectives.filter(function (o) { return !o.done; })[0];
     if (!open) return null;
