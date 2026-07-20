@@ -2,24 +2,27 @@
   var L = window.LUMA = window.LUMA || {};
 
   var nodePositions = {
-    isikpinar: [18, 74], yesilova: [30, 72], fisilti: [42, 66], kristalGol: [40, 82], magara: [50, 86],
-    lumaSehir: [48, 48], pazarMeydani: [36, 48], belediyeBahcesi: [48, 31], lumaAkademi: [61, 48],
-    trenIstasyonu: [36, 30], liman: [23, 48], sanayi: [36, 64], arenaMeydan: [73, 50],
-    botanikBahce: [63, 31], rengarenkCayir: [77, 28], geceKorusu: [79, 15], sisBatakligi: [92, 17],
-    meteorTepesi: [62, 16], lavKanyonu: [75, 12], kumruCukuru: [75, 27], kristalMaden: [90, 10],
-    sahilRotasi: [62, 66], buzulKiyi: [78, 72], gokKulesi: [47, 12], antikaHarabe: [31, 18], kutupPatikasi: [35, 13],
-    kokLabirenti: [69, 24], derinKristalZindan: [94, 6], batikMahzen: [70, 78],
-    korKampi: [75, 4], korBogazi: [82, 4], obsidyenTunel: [88, 4], magmaKalbi: [94, 4], korZirveCikisi: [98, 12]
+    kraliyetKapisi: [47, 56],
+    lavDenizi: [48, 30],
+    mantarOrmani: [24, 55],
+    kristalNehir: [30, 31],
+    obsidyenCarsisi: [70, 55],
+    kulBahcesi: [47, 78],
+    kemikKumlari: [24, 78],
+    buzulMagara: [30, 12],
+    primeOcagi: [70, 28],
+    defineMahzeni: [70, 78],
+    tahtSalonu: [89, 42]
   };
 
   var cityStations = {
-    lumaSehir: true, pazarMeydani: true, trenIstasyonu: true, liman: true, sanayi: true,
-    arenaMeydan: true, lumaAkademi: true, belediyeBahcesi: true
+    kraliyetKapisi: true,
+    obsidyenCarsisi: true
   };
 
   function ensureState(state) {
-    state.world = Object.assign({ targetMapId: null, discovered: { isikpinar: true, korKampi: true } }, state.world || {});
-    state.world.discovered = Object.assign({ isikpinar: true, korKampi: true }, state.world.discovered || {});
+    state.world = Object.assign({ targetMapId: null, discovered: { kraliyetKapisi: true } }, state.world || {});
+    state.world.discovered = Object.assign({ kraliyetKapisi: true }, state.world.discovered || {});
     state.dex = Object.assign({ seen: {}, caught: {} }, state.dex || {});
     state.dex.seen = Object.assign({}, state.dex.seen || {});
     state.dex.caught = Object.assign({}, state.dex.caught || {});
@@ -78,15 +81,11 @@
     var id = open.id || "";
     if (id.indexOf("visit_") === 0) return { mapId: id.replace("visit_", ""), label: open.text };
     var direct = {
-      reachLake: "kristalGol",
-      enterCave: "magara",
-      findCrystal: "yesilova",
-      findLantern: "magara",
-      talkMayor: "belediyeBahcesi",
-      findLavaCompass: "korKampi",
-      beatPrimeTrainer: "obsidyenTunel",
-      collectVolcanoTreasure: "korBogazi",
-      usePrime: "korBogazi"
+      findRoyalMap: "kraliyetKapisi",
+      beatPrimeWarden: "primeOcagi",
+      beatUnderworldCrown: "tahtSalonu",
+      collectRoyalRelic: "defineMahzeni",
+      usePrime: "primeOcagi"
     };
     if (direct[id]) return { mapId: direct[id], label: open.text };
     if (id.indexOf("catch_") === 0) {

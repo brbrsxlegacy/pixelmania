@@ -659,14 +659,15 @@
     var state = this.game.state;
     L.WorldMap.ensureState(state);
     var badges = [
-      ["leaf", "Yaprak Rozeti", "Botanik Bahçe"],
-      ["ember", "Köz Rozeti", "Lav Kanyonu"],
-      ["tide", "Dalga Rozeti", "Sahil Rotası"],
-      ["stone", "Kristal Rozeti", "Kristal Maden"],
-      ["wind", "Gök Rozeti", "Gök Kulesi"],
-      ["spark", "Volt Rozeti", "Meteor Tepesi"],
-      ["shadow", "Gece Rozeti", "Gece Korusu"],
-      ["light", "Şafak Rozeti", "Arena Meydanı"]
+      ["lava", "Lav Rozeti", "Lav Denizi"],
+      ["fungus", "Fosfor Rozeti", "Mantar Ormani"],
+      ["crystal", "Nehir Rozeti", "Kristal Nehir"],
+      ["market", "Obsidyen Rozeti", "Obsidyen Carsisi"],
+      ["ash", "Kul Rozeti", "Kul Bahcesi"],
+      ["bone", "Kemik Rozeti", "Kemik Kumlari"],
+      ["frost", "Buzul Rozeti", "Soguk Derinlik"],
+      ["prime", "Prime Rozeti", "Prime Ocagi"],
+      ["crown", "Taht Rozeti", "Taht Salonu"]
     ];
     var count = badges.filter(function (b) { return state.badges[b[0]]; }).length;
     var html = "<div class='panel-row'><strong>Rozetler:</strong> " + count + "/" + badges.length + "<br><small>Arena liderlerini yenerek açılır.</small></div><div class='panel-grid'>";

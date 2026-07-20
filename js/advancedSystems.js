@@ -151,13 +151,13 @@
     var titanCount = Object.keys(state.storyBosses.defeated || {}).length;
     var legendaryCount = Object.keys(state.legendaryHunts.caught || {}).length + Object.keys(state.legendaryHunts.defeated || {}).length;
     var chapters = [
-      { id: "starter", title: "Bölüm 1: İlk Yoldaş", done: !!(state.story && state.story.starterChosen), objective: "Laboratuvardan başlangıç Luma'sını seç." },
-      { id: "city", title: "Bölüm 2: Şehir Kapısı", done: !!(state.world && state.world.discovered && state.world.discovered.lumaSehir), objective: "Luma Şehri Merkez'e ulaş." },
-      { id: "badges", title: "Bölüm 3: Lider Ritmi", done: badgeCount >= 3, objective: "En az 3 arena rozeti kazan. Şu an: " + badgeCount + "/3" },
-      { id: "dungeons", title: "Bölüm 4: Zindan Anahtarları", done: dungeonCount >= 3, objective: "3 özel zindanın bossunu yen. Şu an: " + dungeonCount + "/3" },
-      { id: "tournament", title: "Bölüm 5: Şehir Turnuvası", done: !!state.tournament.champion, objective: "Arena turnuvasında 3 maçı üst üste kazan." },
-      { id: "titans", title: "Bölüm 6: Titanlar", done: titanCount >= 4, objective: "4 dev story bossu yen. Şu an: " + titanCount + "/4" },
-      { id: "legend", title: "Final: Efsane Avı", done: legendaryCount >= 1, objective: "En az 1 efsanevi Luma'yı yakala veya yen." }
+      { id: "starter", title: "Bölüm 1: İlk Yoldaş", done: !!(state.story && state.story.starterChosen), objective: "Kraliyet Kapısı'nda başlangıç Luma'sını seç." },
+      { id: "map", title: "Bölüm 2: Kraliyet Haritası", done: !!(state.quests && state.quests.krallikHaritasi && state.quests.krallikHaritasi.status === "completed"), objective: "Kraliyet Haritası'nı bul ve Obsidyen Çarşısı'na ulaş." },
+      { id: "biomes", title: "Bölüm 3: Biyom Zinciri", done: !!(state.quests && state.quests.biyomKesfi && state.quests.biyomKesfi.status === "completed"), objective: "Lav, mantar, kristal, kül, buz ve kemik biyomlarını keşfet." },
+      { id: "badges", title: "Bölüm 4: Yeraltı Liderleri", done: badgeCount >= 4, objective: "En az 4 yeraltı rozeti kazan. Şu an: " + badgeCount + "/4" },
+      { id: "prime", title: "Bölüm 5: Prime Ocağı", done: !!(state.quests && state.quests.primeOcagiGorevi && state.quests.primeOcagiGorevi.status === "completed"), objective: "Prime Muhafızı'nı yen ve Prime formunu kullan." },
+      { id: "treasure", title: "Bölüm 6: Taht Defineleri", done: !!(state.quests && state.quests.tahtDefineleri && state.quests.tahtDefineleri.status === "completed"), objective: "Kraliyet definelerini topla ve Taht Salonu'nu geç." },
+      { id: "titans", title: "Final: Yeraltı Devleri", done: titanCount >= 4 || legendaryCount >= 1, objective: "4 dev story bossu yen ya da efsanevi Luma avını tamamla. Şu an: " + titanCount + "/4" }
     ];
     var current = chapters.filter(function (chapter) { return !chapter.done; })[0] || chapters[chapters.length - 1];
     return { chapters: chapters, current: current, completed: chapters.filter(function (c) { return c.done; }).length };

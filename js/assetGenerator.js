@@ -174,6 +174,36 @@
           rect(ctx, x + 2, y + 2, 5, 5, "#f2b94b");
           rect(ctx, x + 9, y + 9, 5, 5, "#fff4d2");
           break;
+        case "royalStone":
+          shadeTile(ctx, x, y, "#6c6472", "#3b3744", time, "#b99d5b");
+          rect(ctx, x, y + 7, TILE, 1, "#272633");
+          rect(ctx, x + 7, y, 1, TILE, "#8e7d5e");
+          rect(ctx, x + 2, y + 2, 3, 2, "#d7b96a");
+          rect(ctx, x + 11, y + 11, 3, 2, "#24232d");
+          break;
+        case "crystalFloor":
+          shadeTile(ctx, x, y, "#31576b", "#213749", time, "#93d4e8");
+          rect(ctx, x + 2, y + 10, 12, 1, "#5db9d8");
+          rect(ctx, x + 6, y + 2, 2, 10, "rgba(255,255,255,.28)");
+          rect(ctx, x + 10, y + 5, 3, 2, "#f08bb0");
+          break;
+        case "fungusFloor":
+          shadeTile(ctx, x, y, "#314739", "#202d2f", time, "#8ad46f");
+          rect(ctx, x + 3, y + 4, 2, 2, "#f08bb0");
+          rect(ctx, x + 11, y + 8, 2, 2, "#93d4e8");
+          rect(ctx, x + 5, y + 12, 7, 1, "#182426");
+          break;
+        case "sulfur":
+          shadeTile(ctx, x, y, "#777348", "#4c4a35", time, "#d6cb62");
+          rect(ctx, x + 2, y + 5, 6, 2, "#9e9a4f");
+          rect(ctx, x + 10, y + 12, 4, 1, "#38372b");
+          break;
+        case "boneSand":
+          shadeTile(ctx, x, y, "#c7c0a5", "#958d7b", time, "#eee4bf");
+          rect(ctx, x + 3, y + 10, 8, 1, "#80796c");
+          rect(ctx, x + 9, y + 3, 4, 1, "#f2ead0");
+          rect(ctx, x + 5, y + 6, 1, 1, "#6e685f");
+          break;
         case "gardenTile":
           shadeTile(ctx, x, y, "#66bf5d", "#3f944f", time, "#91dc6d");
           rect(ctx, x + 3, y + 4, 3, 3, "#f08bb0");
@@ -552,6 +582,37 @@
           rect(ctx, x + 13, y + 5, 6, 15, "#f2b94b");
           drawTinySpark(ctx, x + 24, y + 7, "#fff4d2", time);
           break;
+        case "royalBanner":
+          rect(ctx, x + 7, y + 2, 3, 30, "#172033");
+          rect(ctx, x + 8, y + 3, 1, 29, "#d7b96a");
+          rect(ctx, x + 10, y + 5, 16, 18, "#7d2d35");
+          rect(ctx, x + 12, y + 7, 12, 2, "#f2b94b");
+          rect(ctx, x + 15, y + 12, 6, 6, "#172033");
+          rect(ctx, x + 13, y + 23, 10, 3, "#4a2630");
+          break;
+        case "basaltPillar":
+          blobShadow(ctx, x + 2, y + 27, 17, 4);
+          rect(ctx, x + 3, y + 5, 14, 27, "#172033");
+          rect(ctx, x + 5, y + 3, 10, 27, "#34313b");
+          rect(ctx, x + 6, y + 4, 8, 3, "#5b5361");
+          rect(ctx, x + 5, y + 17, 10, 2, "#22222d");
+          rect(ctx, x + 9, y + 8, 2, 19, "#6d5960");
+          break;
+        case "glowFungus":
+          blobShadow(ctx, x + 2, y + 15, 14, 3);
+          rect(ctx, x + 7, y + 9, 3, 6, "#e6d8b7");
+          rect(ctx, x + 4, y + 5, 10, 5, "#8ad46f");
+          rect(ctx, x + 5, y + 6, 8, 1, "#d9ffd1");
+          rect(ctx, x + 10, y + 2 + Math.floor((time || 0) * 3) % 2, 2, 2, "#93d4e8");
+          break;
+        case "bonePile":
+          blobShadow(ctx, x + 1, y + 13, 15, 3);
+          rect(ctx, x + 2, y + 10, 13, 5, "#172033");
+          rect(ctx, x + 3, y + 9, 10, 4, "#d8cfb4");
+          rect(ctx, x + 6, y + 6, 9, 3, "#eee4bf");
+          rect(ctx, x + 4, y + 12, 3, 1, "#8d8575");
+          rect(ctx, x + 12, y + 11, 2, 2, "#8d8575");
+          break;
         case "palm":
           rect(ctx, x + 8, y + 10, 4, 21, "#9a663b");
           rect(ctx, x + 2, y + 5, 14, 5, "#3f944f");
@@ -570,7 +631,8 @@
         styleShop: 62, realEstate: 62, stall: 42, fountain: 32, factory: 64,
         station: 60, arena: 70, apartment: 73, ruinGate: 60, palm: 32,
         jobBoard: 32, guildBoard: 32, cityLamp: 31, campfire: 16,
-        primeAltar: 32
+        primeAltar: 32, royalBanner: 32, basaltPillar: 32, glowFungus: 16,
+        bonePile: 16
       };
       return tileY * TILE + (heights[code] || 16);
     },

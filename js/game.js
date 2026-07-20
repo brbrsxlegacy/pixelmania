@@ -1,13 +1,16 @@
 (function () {
   var L = window.LUMA = window.LUMA || {};
+  var START_MAP = "kraliyetKapisi";
+  var START_TILE = { x: 32, y: 34 };
+  var START_PLAYER = { x: START_TILE.x * 16 + 1, y: START_TILE.y * 16 - 2, dir: "up" };
 
   function defaultState(settings) {
     return {
       version: 1,
       playerName: "Oyuncu",
-      mapId: "korKampi",
-      player: { x: 29 * 16 + 1, y: 31 * 16 - 2, dir: "up" },
-      checkpoint: { mapId: "korKampi", x: 17, y: 27 },
+      mapId: START_MAP,
+      player: Object.assign({}, START_PLAYER),
+      checkpoint: { mapId: START_MAP, x: START_TILE.x, y: START_TILE.y },
       team: [],
       storage: [],
       activeIndex: 0,
@@ -18,7 +21,7 @@
       jobs: { shifts: 0, earned: 0, completed: {}, active: null },
       housing: { status: "none", homeId: null, furniture: {} },
       city: { mayorMet: false },
-      world: { targetMapId: null, discovered: { korKampi: true } },
+      world: { targetMapId: null, discovered: { kraliyetKapisi: true } },
       dex: { seen: {}, caught: {} },
       badges: {},
       pvp: { wins: 0, losses: 0 },
@@ -43,14 +46,15 @@
   }
 
   var bossArenaMaps = {
-    leaf: "bossArena_leaf",
-    ember: "bossArena_ember",
-    tide: "bossArena_tide",
-    stone: "bossArena_stone",
-    wind: "bossArena_wind",
-    spark: "bossArena_spark",
-    shadow: "bossArena_shadow",
-    light: "bossArena_light"
+    lava: "lavDenizi",
+    fungus: "mantarOrmani",
+    crystal: "kristalNehir",
+    market: "obsidyenCarsisi",
+    ash: "kulBahcesi",
+    bone: "kemikKumlari",
+    frost: "buzulMagara",
+    prime: "primeOcagi",
+    crown: "tahtSalonu"
   };
 
   L.Game = function () {
@@ -105,21 +109,24 @@
     this.state.story.volcanoEpisode = true;
     if (L.Progression) L.Progression.ensureState(this.state);
     L.Audio.applySettings(this.state.settings);
-    this.loadMap("korKampi");
+    this.loadMap(START_MAP);
     this.player.x = this.state.player.x;
     this.player.y = this.state.player.y;
     this.player.dir = "up";
     this.resetFollower();
     this.ui.hideMain();
-    L.Quests.start(this.state, "korDagindanKacis", true);
+    L.Quests.start(this.state, "krallikHaritasi", true);
+    L.Quests.start(this.state, "biyomKesfi", true);
     L.Quests.start(this.state, "primeSirriniAc", true);
-    L.Quests.start(this.state, "volkanDefineleri", true);
+    L.Quests.start(this.state, "primeOcagiGorevi", true);
+    L.Quests.start(this.state, "tahtDefineleri", true);
+    L.Quests.start(this.state, "kacisRotasi", true);
     this.state.story.introSeen = true;
     var self = this;
-    this.dialogue.show("Jeolog Serin", [
-      "Kor Dağı uyandı. İçerideki lav yolları kapanmadan kuzey tünellerinden çıkmamız gerekiyor.",
+    this.dialogue.show("Haritaci Nira", [
+      "Yeraltı Krallığı eski haritadan cok daha buyuk. Artik lav, mantar, kristal, kul, buz ve kemik biyomlari tek dunyada birbirine bagli.",
       "Prime Çekirdeği sende; uygun Luma savaşta kısa süreli Prime formuna geçebilir.",
-      "Önce yanına bir Luma seç. Sonra Lav Pusulası'nı alıp Kor Boğazı'na ilerle."
+      "Önce yanına bir Luma seç. Sonra Kraliyet Haritasi'ni alip Obsidyen Carsisi'na ilerle."
     ], function () {
       self.ui.openStarter();
       self.autosaveSoon();
@@ -148,16 +155,23 @@
   L.Game.prototype.loadState = function (state) {
     state = state && typeof state === "object" ? state : {};
     var base = defaultState(L.Save.loadSettings());
-    this.state = Object.assign(base, state);
-    if (!this.mapSystem.get(this.state.mapId)) this.state.mapId = "korKampi";
+    this.state = Object.assign({}, base, state);
+    if (!this.mapSystem.get(this.state.mapId)) this.state.mapId = START_MAP;
     this.state.player = Object.assign({}, base.player, state.player || {});
     this.state.checkpoint = Object.assign({}, base.checkpoint, state.checkpoint || {});
     this.state.team = Array.isArray(state.team) ? state.team : [];
     this.state.storage = Array.isArray(state.storage) ? state.storage : [];
     this.state.inventory = Object.assign(L.Inventory.createInitial(), state.inventory || {});
     this.state.quests = state.quests && typeof state.quests === "object" ? state.quests : L.Quests.createState();
+    Object.keys(this.state.quests).forEach(function (id) {
+      if (!L.Quests.get(id)) delete this.state.quests[id];
+    }, this);
     this.state.defeatedTrainers = Object.assign({}, state.defeatedTrainers || {});
     this.state.collectedItems = Object.assign({}, state.collectedItems || {});
+    this.state.badges = Object.keys(state.badges || {}).reduce(function (acc, id) {
+      if (bossArenaMaps[id]) acc[id] = state.badges[id];
+      return acc;
+    }, {});
     this.state.story = Object.assign({}, base.story, state.story || {});
     this.state.prime = Object.assign({}, base.prime, state.prime || {});
     this.state.settings = Object.assign(L.Save.defaultSettings(), L.Save.loadSettings(), this.state.settings || {});
@@ -175,9 +189,9 @@
     if (L.Progression) L.Progression.ensureState(this.state);
     L.Creatures.serializeFix(this.state);
     L.Audio.applySettings(this.state.settings);
-    this.loadMap(this.state.mapId || "korKampi");
-    this.player.x = this.state.player.x || 29 * 16 + 1;
-    this.player.y = this.state.player.y || 31 * 16 - 2;
+    this.loadMap(this.state.mapId || START_MAP);
+    this.player.x = this.state.player.x || START_PLAYER.x;
+    this.player.y = this.state.player.y || START_PLAYER.y;
     this.player.dir = this.state.player.dir || "up";
     this.ensurePlayerSafe("load");
     this.resetFollower();
@@ -265,7 +279,7 @@
 
   L.Game.prototype.findSafeCheckpoint = function (mapId, tileX, tileY) {
     var map = this.mapSystem.get(mapId);
-    if (!map) return { mapId: "isikpinar", x: 25, y: 30 };
+    if (!map) return { mapId: START_MAP, x: START_TILE.x, y: START_TILE.y };
     for (var radius = 0; radius <= 14; radius += 1) {
       for (var yy = tileY - radius; yy <= tileY + radius; yy += 1) {
         for (var xx = tileX - radius; xx <= tileX + radius; xx += 1) {
@@ -327,7 +341,7 @@
 
   L.Game.prototype.findSafeMoveTile = function (mapId, tileX, tileY) {
     var map = this.mapSystem.get(mapId);
-    if (!map) return { mapId: "isikpinar", x: 25, y: 30 };
+    if (!map) return { mapId: START_MAP, x: START_TILE.x, y: START_TILE.y };
     for (var radius = 0; radius <= 16; radius += 1) {
       for (var yy = tileY - radius; yy <= tileY + radius; yy += 1) {
         for (var xx = tileX - radius; xx <= tileX + radius; xx += 1) {
@@ -355,14 +369,11 @@
   };
 
   L.Game.prototype.healingCheckpoint = function () {
-    if (this.map && ["korKampi", "korBogazi", "obsidyenTunel", "magmaKalbi", "korZirveCikisi"].indexOf(this.map.id) >= 0) {
-      return this.findSafeCheckpoint("korKampi", 17, 27);
-    }
-    return this.findSafeCheckpoint("isikpinar", 17, 31);
+    return this.findSafeCheckpoint(START_MAP, START_TILE.x, START_TILE.y);
   };
 
   L.Game.prototype.returnToCheckpoint = function () {
-    var cp = this.state.checkpoint || { mapId: "isikpinar", x: 25, y: 30 };
+    var cp = this.state.checkpoint || { mapId: START_MAP, x: START_TILE.x, y: START_TILE.y };
     var safe = this.findSafeCheckpoint(cp.mapId, cp.x, cp.y);
     this.loadMap(safe.mapId);
     this.player.setTile(safe.x, safe.y);
@@ -387,8 +398,8 @@
     this.ui.closeStarter();
     var self = this;
     if (this.state.story.volcanoEpisode) {
-      this.dialogue.show("Jeolog Serin", [
-        starter.displayName + " yanında. Güzel, şimdi sıcaklık yükselmeden Lav Pusulası'nı al.",
+      this.dialogue.show("Haritaci Nira", [
+        starter.displayName + " yanında. Güzel, şimdi Kraliyet Haritasi'ni al ve ilk biyom rotani sec.",
         "Savaşta Prime düğmesi görünürse çekirdeği kullanabilirsin. Her savaşta yalnızca bir kez."
       ], function () {
         self.autosaveSoon();
@@ -410,7 +421,7 @@
       name: "Arven",
       money: 120,
       questObjective: "beatRival",
-      afterDialogue: ["Tamam tamam, masaları ben toplarım. Sen de yola çık; Yeşilova seni bekliyor."]
+      afterDialogue: ["Tamam tamam, masaları ben toplarım. Sen de yola çık; Yeraltı Krallığı seni bekliyor."]
     };
     this.battle.startTrainer(trainer, [L.Creatures.create(rivalStarter, 5)]);
   };

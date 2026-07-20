@@ -13,19 +13,19 @@
   ];
 
   var jobs = [
-    { id: "kurye", name: "Şehir Kuryesi", place: "Luma Şehri", pay: 95, objective: "work_kurye" },
-    { id: "akademi", name: "Akademi Asistanı", place: "Luma Akademisi", pay: 130, objective: "work_akademi" },
-    { id: "liman", name: "Liman İşçisi", place: "Kristal Liman", pay: 150, objective: "work_liman" },
-    { id: "sanayi", name: "Atölye Ustası", place: "Sanayi Bölgesi", pay: 170, objective: "work_sanayi" },
-    { id: "arena", name: "Arena Hakemi", place: "Arena Meydanı", pay: 190, objective: "work_arena" },
-    { id: "emlak", name: "Emlak Stajyeri", place: "Pazar Meydanı", pay: 115, objective: "work_emlak" }
+    { id: "kurye", name: "Krallık Kuryesi", place: "Kraliyet Kapısı", pay: 95, objective: "work_kurye" },
+    { id: "akademi", name: "Biyom Yazmanı", place: "Obsidyen Çarşısı", pay: 130, objective: "work_akademi" },
+    { id: "liman", name: "Kristal Taşıyıcısı", place: "Kristal Nehir", pay: 150, objective: "work_liman" },
+    { id: "sanayi", name: "Ocak Ustası", place: "Prime Ocağı", pay: 170, objective: "work_sanayi" },
+    { id: "arena", name: "Muhafız Hakemi", place: "Taht Salonu", pay: 190, objective: "work_arena" },
+    { id: "emlak", name: "Mahzen Emlakçısı", place: "Define Mahzeni", pay: 115, objective: "work_emlak" }
   ];
 
   var homes = [
-    { id: "studio", name: "Pazar Stüdyosu", district: "Pazar Meydanı", rent: 350, buy: 2400 },
-    { id: "gardenFlat", name: "Bahçe Dairesi", district: "Belediye Bahçesi", rent: 520, buy: 4200 },
-    { id: "harborRoom", name: "Liman Odası", district: "Kristal Liman", rent: 460, buy: 3600 },
-    { id: "academyLoft", name: "Akademi Loftu", district: "Luma Akademisi", rent: 680, buy: 6200 }
+    { id: "studio", name: "Kapı Odası", district: "Kraliyet Kapısı", rent: 350, buy: 2400 },
+    { id: "gardenFlat", name: "Mantar Terası", district: "Fosfor Mantar Ormanı", rent: 520, buy: 4200 },
+    { id: "harborRoom", name: "Kristal Oda", district: "Kristal Nehir", rent: 460, buy: 3600 },
+    { id: "academyLoft", name: "Obsidyen Loftu", district: "Obsidyen Çarşısı", rent: 680, buy: 6200 }
   ];
 
   var furniture = [
@@ -37,17 +37,17 @@
   ];
 
   var tradeGoods = [
-    { id: "limanTuzu", name: "Liman Tuzu", base: 70, cheap: ["liman", "sahilRotasi"], expensive: ["sanayi", "gokKulesi"] },
-    { id: "kristalCevheri", name: "Kristal Cevheri", base: 125, cheap: ["kristalMaden", "magara"], expensive: ["pazarMeydani", "lumaAkademi"] },
-    { id: "akademiNotu", name: "Akademi Notu", base: 95, cheap: ["lumaAkademi"], expensive: ["belediyeBahcesi", "arenaMeydan"] },
-    { id: "lavCamuru", name: "Lav Camuru", base: 110, cheap: ["lavKanyonu"], expensive: ["botanikBahce", "buzulKiyi"] },
-    { id: "bahceTohumu", name: "Bahçe Tohumu", base: 82, cheap: ["botanikBahce", "belediyeBahcesi"], expensive: ["liman", "sanayi"] }
+    { id: "lavTuzu", name: "Lav Tuzu", base: 70, cheap: ["lavDenizi", "kulBahcesi"], expensive: ["buzulMagara", "kristalNehir"] },
+    { id: "kristalCevheri", name: "Kristal Cevheri", base: 125, cheap: ["kristalNehir", "buzulMagara"], expensive: ["obsidyenCarsisi", "primeOcagi"] },
+    { id: "carsiKaydi", name: "Çarşı Kaydı", base: 95, cheap: ["obsidyenCarsisi"], expensive: ["tahtSalonu", "defineMahzeni"] },
+    { id: "lavCamuru", name: "Lav Çamuru", base: 110, cheap: ["lavDenizi", "primeOcagi"], expensive: ["mantarOrmani", "buzulMagara"] },
+    { id: "sporTozu", name: "Fosfor Spor Tozu", base: 82, cheap: ["mantarOrmani", "kulBahcesi"], expensive: ["lavDenizi", "kemikKumlari"] }
   ];
 
   var jobChallenges = {
     kurye: [
-      { question: "Paket etiketi: batı pazar, mavi çatı. Nereye götürürsün?", choices: ["Pazar Meydanı", "Meteor Tepesi", "Gece Korusu"], answer: 0 },
-      { question: "Kurye rotasında en hızlı bağlantı hangisi?", choices: ["Merkez > Pazar", "Merkez > Mağara", "Liman > Buzul"], answer: 0 }
+      { question: "Paket etiketi: batı mantar, yeşil ışık. Nereye götürürsün?", choices: ["Mantar Ormanı", "Lav Denizi", "Taht Salonu"], answer: 0 },
+      { question: "Kurye rotasında en hızlı bağlantı hangisi?", choices: ["Kapı > Çarşı", "Kapı > Mahzen", "Buzul > Lav"], answer: 0 }
     ],
     akademi: [
       { question: "Alev elementi genelde hangi elemente baskı kurar?", choices: ["Yaprak", "Su", "Kaya"], answer: 0 },
@@ -55,7 +55,7 @@
     ],
     liman: [
       { question: "Kırılgan kristal sandığı nasıl taşınır?", choices: ["Yavaş ve dengeli", "Koşarak", "Suya atarak"], answer: 0 },
-      { question: "Liman vardiyasında önce ne kontrol edilir?", choices: ["Etiket", "Rozet", "Kıyafet"], answer: 0 }
+      { question: "Kristal Nehir vardiyasında önce ne kontrol edilir?", choices: ["Etiket", "Rozet", "Kıyafet"], answer: 0 }
     ],
     sanayi: [
       { question: "Atölyede kıvılcım görünce ilk hamle?", choices: ["Şalteri kapat", "Daha hızlı çalış", "Kapıyı kilitle"], answer: 0 },
@@ -280,12 +280,7 @@
 
     homeInteriorId: function (state) {
       ensureState(state);
-      return {
-        studio: "homeStudioInterior",
-        gardenFlat: "homeGardenFlatInterior",
-        harborRoom: "homeHarborRoomInterior",
-        academyLoft: "homeAcademyLoftInterior"
-      }[state.housing.homeId] || "homeStudioInterior";
+      return "kraliyetEvi";
     }
   };
 })();

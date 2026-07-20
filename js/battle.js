@@ -699,7 +699,7 @@
     var ctx = this.ctx;
     var t = this.game.time;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    var volcanoBattle = this.game.map && ["korKampi", "korBogazi", "obsidyenTunel", "magmaKalbi", "korZirveCikisi", "lavKanyonu"].indexOf(this.game.map.id) >= 0;
+    var volcanoBattle = this.game.map && (this.game.map.region === "underground" || ["korKampi", "korBogazi", "obsidyenTunel", "magmaKalbi", "korZirveCikisi", "lavKanyonu"].indexOf(this.game.map.id) >= 0);
     if (volcanoBattle) {
       ctx.fillStyle = "#3b3140";
       ctx.fillRect(0, 0, 480, 170);

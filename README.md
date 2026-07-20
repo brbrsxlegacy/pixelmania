@@ -2,7 +2,7 @@
 
 Özgün yaratıklar, Türkçe arayüz, HTML5 Canvas ve vanilla JavaScript ile hazırlanmış 2D pixel-art yaratık toplama RPG'si.
 
-Bu ikinci bölüm Kor Dağı'nın içinden kaçışa odaklanır: daha fazla Alev Luma'sı, Prime formları, volkan antrenörleri, lavlı AI ana menü arka planı ve tünellere saklanmış defineler oyuna eklendi. Kayıt anahtarları ve müzik kimliği ilk oyundan ayrıdır.
+Bu ikinci bölüm Yeraltı Krallığı'nda geçer: Kraliyet Kapısı'ndan başlayan yepyeni harita, Lav Denizi, Fosfor Mantar Ormanı, Kristal Nehir, Obsidyen Çarşısı, Kül Bahçesi, Kemik Kumları, Soğuk Derinlik, Prime Ocağı, Define Mahzeni ve Taht Salonu biyomlarını içerir. Prime formları, yeni trainer zinciri, kraliyet defineleri, lavlı AI ana menü arka planı, ayrı kayıt anahtarları ve farklı müzik kimliği ilk oyundan ayrıdır.
 
 ## Çalıştırma
 
