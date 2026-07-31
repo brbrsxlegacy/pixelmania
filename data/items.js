@@ -9,13 +9,8 @@
     gucluLumaKuresi: { id: "gucluLumaKuresi", name: "Güçlü Luma Küresi", category: "Yakalama", price: 280, sell: 110, capturePower: 1.55, description: "Zor yakalanan yaratıklar için kuvvetli küre." },
     kristalLumaKuresi: { id: "kristalLumaKuresi", name: "Kristal Luma Küresi", category: "Yakalama", price: 620, sell: 250, capturePower: 2.25, description: "Kristal çekirdeğiyle parlayan özel yakalama küresi." },
     kacisTasi: { id: "kacisTasi", name: "Kaçış Taşı", category: "Özel", price: 150, sell: 60, effect: { escape: true }, description: "Vahşi savaştan güvenli kaçış sağlar." },
-    primeCekirdegi: { id: "primeCekirdegi", name: "Prime Çekirdeği", category: "Özel", price: 0, sell: 0, protected: true, primeKey: true, description: "Uygun Luma'nın savaş içinde Prime formuna geçmesini sağlayan kor kristali." },
     parlakKristal: { id: "parlakKristal", name: "Parlak Kristal", category: "Görev", price: 0, sell: 0, protected: true, description: "Köyün kuyusundan kaybolan sıcak ışıklı kristal." },
     ormanAnahtari: { id: "ormanAnahtari", name: "Orman Anahtarı", category: "Görev", price: 0, sell: 0, protected: true, description: "Eski ağaç kapısını açan reçineli anahtar." },
-    magaraFeneri: { id: "magaraFeneri", name: "Mağara Feneri", category: "Görev", price: 0, sell: 0, protected: true, description: "Eski Taş Mağarası'nda yolu gösteren kristal fener." },
-    lavPusulasi: { id: "lavPusulasi", name: "Lav Pusulası", category: "Görev", price: 0, sell: 0, protected: true, description: "Kor Dağı'nın içinde çıkış yönünü titreşimle gösteren eski pusula." },
-    obsidyenDefine: { id: "obsidyenDefine", name: "Obsidyen Define", category: "Define", price: 0, sell: 420, description: "Volkan tünellerinde saklanan parlak obsidyen külçesi." },
-    korTac: { id: "korTac", name: "Kor Tacı", category: "Define", price: 0, sell: 760, description: "Magma Kalbi muhafızlarının sakladığı değerli bir taç." },
-    antikSikke: { id: "antikSikke", name: "Antik Sikke", category: "Define", price: 0, sell: 160, description: "Eski define avcılarından kalma ısıya dayanıklı sikke." }
+    magaraFeneri: { id: "magaraFeneri", name: "Mağara Feneri", category: "Görev", price: 0, sell: 0, protected: true, description: "Eski Taş Mağarası'nda yolu gösteren kristal fener." }
   };
 })();

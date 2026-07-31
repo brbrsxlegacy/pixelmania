@@ -5,9 +5,9 @@
     return {
       version: 1,
       playerName: "Oyuncu",
-      mapId: "korKampi",
-      player: { x: 29 * 16 + 1, y: 31 * 16 - 2, dir: "up" },
-      checkpoint: { mapId: "korKampi", x: 17, y: 27 },
+      mapId: "isikpinar",
+      player: { x: 25 * 16 + 1, y: 30 * 16 - 2, dir: "down" },
+      checkpoint: { mapId: "isikpinar", x: 25, y: 30 },
       team: [],
       storage: [],
       activeIndex: 0,
@@ -18,7 +18,7 @@
       jobs: { shifts: 0, earned: 0, completed: {}, active: null },
       housing: { status: "none", homeId: null, furniture: {} },
       city: { mayorMet: false },
-      world: { targetMapId: null, discovered: { korKampi: true } },
+      world: { targetMapId: null, discovered: { isikpinar: true } },
       dex: { seen: {}, caught: {} },
       badges: {},
       pvp: { wins: 0, losses: 0 },
@@ -27,12 +27,11 @@
       friendship: { values: {}, total: 0 },
       resources: { herb: 0, ore: 0, wood: 0, crystal: 0 },
       crafting: { crafted: 0 },
-      prime: { unlocked: true, activations: 0 },
       weather: { type: "clear", timer: 0, day: 1, phase: "day", season: "Bahar" },
       farm: { planted: 0, growth: 0, harvestReady: 0, harvests: 0 },
       minigames: { played: 0, wins: 0, bestScore: 0 },
       storyBosses: { defeated: {} },
-      story: { introSeen: false, starterChosen: false, rivalFirstDone: false, volcanoEpisode: false },
+      story: { introSeen: false, starterChosen: false, rivalFirstDone: false },
       defeatedTrainers: {},
       collectedItems: {},
       settings: Object.assign(L.Save.defaultSettings(), settings || {}),
@@ -102,26 +101,22 @@
 
   L.Game.prototype.newGame = function () {
     this.state = defaultState(L.Save.loadSettings());
-    this.state.story.volcanoEpisode = true;
     if (L.Progression) L.Progression.ensureState(this.state);
     L.Audio.applySettings(this.state.settings);
-    this.loadMap("korKampi");
+    this.loadMap("isikpinar");
     this.player.x = this.state.player.x;
     this.player.y = this.state.player.y;
-    this.player.dir = "up";
+    this.player.dir = "down";
     this.resetFollower();
     this.ui.hideMain();
-    L.Quests.start(this.state, "korDagindanKacis", true);
-    L.Quests.start(this.state, "primeSirriniAc", true);
-    L.Quests.start(this.state, "volkanDefineleri", true);
+    L.Quests.start(this.state, "ilkYolArkadasin", true);
     this.state.story.introSeen = true;
     var self = this;
-    this.dialogue.show("Jeolog Serin", [
-      "Kor Dağı uyandı. İçerideki lav yolları kapanmadan kuzey tünellerinden çıkmamız gerekiyor.",
-      "Prime Çekirdeği sende; uygun Luma savaşta kısa süreli Prime formuna geçebilir.",
-      "Önce yanına bir Luma seç. Sonra Lav Pusulası'nı alıp Kor Boğazı'na ilerle."
+    this.dialogue.show("Profesör Liora", [
+      "Günaydın! Işıkpınar Köyü'nün kristalleri bugün erkenden uyandı.",
+      "Laboratuvara uğra. Yolculuğa başlamadan önce sana uygun bir Luma yoldaşı seçelim.",
+      "Kontrolleri unutma: WASD ya da ok tuşlarıyla yürü, E ile konuş, Escape ile menüyü aç."
     ], function () {
-      self.ui.openStarter();
       self.autosaveSoon();
     });
   };
@@ -149,7 +144,7 @@
     state = state && typeof state === "object" ? state : {};
     var base = defaultState(L.Save.loadSettings());
     this.state = Object.assign(base, state);
-    if (!this.mapSystem.get(this.state.mapId)) this.state.mapId = "korKampi";
+    if (!this.mapSystem.get(this.state.mapId)) this.state.mapId = "isikpinar";
     this.state.player = Object.assign({}, base.player, state.player || {});
     this.state.checkpoint = Object.assign({}, base.checkpoint, state.checkpoint || {});
     this.state.team = Array.isArray(state.team) ? state.team : [];
@@ -159,7 +154,6 @@
     this.state.defeatedTrainers = Object.assign({}, state.defeatedTrainers || {});
     this.state.collectedItems = Object.assign({}, state.collectedItems || {});
     this.state.story = Object.assign({}, base.story, state.story || {});
-    this.state.prime = Object.assign({}, base.prime, state.prime || {});
     this.state.settings = Object.assign(L.Save.defaultSettings(), L.Save.loadSettings(), this.state.settings || {});
     this.state.avatar = Object.assign(base.avatar, state.avatar || {});
     this.state.avatar.unlocked = Object.assign({ guardian: true }, this.state.avatar.unlocked || {});
@@ -175,10 +169,10 @@
     if (L.Progression) L.Progression.ensureState(this.state);
     L.Creatures.serializeFix(this.state);
     L.Audio.applySettings(this.state.settings);
-    this.loadMap(this.state.mapId || "korKampi");
-    this.player.x = this.state.player.x || 29 * 16 + 1;
-    this.player.y = this.state.player.y || 31 * 16 - 2;
-    this.player.dir = this.state.player.dir || "up";
+    this.loadMap(this.state.mapId || "isikpinar");
+    this.player.x = this.state.player.x || 25 * 16 + 1;
+    this.player.y = this.state.player.y || 30 * 16 - 2;
+    this.player.dir = this.state.player.dir || "down";
     this.ensurePlayerSafe("load");
     this.resetFollower();
     this.state.activeIndex = Math.max(0, Math.min(this.state.team.length - 1, this.state.activeIndex || 0));
@@ -355,9 +349,6 @@
   };
 
   L.Game.prototype.healingCheckpoint = function () {
-    if (this.map && ["korKampi", "korBogazi", "obsidyenTunel", "magmaKalbi", "korZirveCikisi"].indexOf(this.map.id) >= 0) {
-      return this.findSafeCheckpoint("korKampi", 17, 27);
-    }
     return this.findSafeCheckpoint("isikpinar", 17, 31);
   };
 
@@ -386,15 +377,6 @@
     L.Quests.progress(this.state, "chooseStarter", 1);
     this.ui.closeStarter();
     var self = this;
-    if (this.state.story.volcanoEpisode) {
-      this.dialogue.show("Jeolog Serin", [
-        starter.displayName + " yanında. Güzel, şimdi sıcaklık yükselmeden Lav Pusulası'nı al.",
-        "Savaşta Prime düğmesi görünürse çekirdeği kullanabilirsin. Her savaşta yalnızca bir kez."
-      ], function () {
-        self.autosaveSoon();
-      });
-      return;
-    }
     this.dialogue.show("Arven", [
       "Demek " + starter.displayName + " seçtin! Güzel seçim, ama benimki de fena değil.",
       "Hadi küçük bir dostluk maçı yapalım. Kaybeden laboratuvar masalarını toplar!"

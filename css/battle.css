@@ -138,32 +138,6 @@ body.battle-active .touch-controls {
   animation: damage-pop .7s steps(8) forwards;
 }
 
-.prime-burst {
-  position: absolute;
-  z-index: 48;
-  width: 168px;
-  padding: 8px 10px;
-  border: 2px solid #101521;
-  color: #fff4d2;
-  background:
-    linear-gradient(90deg, rgba(242, 185, 75, .92), rgba(228, 109, 69, .86)),
-    #7d351f;
-  text-align: center;
-  text-shadow: 0 2px 0 #101521;
-  pointer-events: none;
-  animation: prime-burst .82s steps(8) forwards;
-}
-
-.prime-burst.player {
-  left: 48px;
-  top: 92px;
-}
-
-.prime-burst.enemy {
-  right: 48px;
-  top: 38px;
-}
-
 .boss-intro {
   position: absolute;
   inset: 0;
@@ -204,13 +178,6 @@ body.battle-active .touch-controls {
 @keyframes damage-pop {
   from { transform: translateY(0); opacity: 1; }
   to { transform: translateY(-28px); opacity: 0; }
-}
-
-@keyframes prime-burst {
-  0% { opacity: 0; transform: scale(.82); }
-  18% { opacity: 1; transform: scale(1.05); }
-  72% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.12); }
 }
 
 .battle-screen.shake {

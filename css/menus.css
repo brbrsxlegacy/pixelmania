@@ -4,9 +4,9 @@
   place-items: center;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(92, 31, 33, .18), rgba(9, 17, 31, .46)),
-    url("../assets/underground-kingdom-menu.png") center / cover no-repeat,
-    linear-gradient(180deg, #3b3140 0%, #7d351f 46%, #f2b94b 58%, #2f313b 59%, #172033 100%);
+    linear-gradient(180deg, rgba(9, 17, 31, .18), rgba(9, 17, 31, .36)),
+    url("../assets/menu-poster.png") center / cover no-repeat,
+    linear-gradient(180deg, #79c8f2 0%, #f6d879 58%, #5fb95f 59%, #2f8548 100%);
   color: #172033;
 }
 
@@ -16,7 +16,7 @@
   inset: 0;
   background:
     linear-gradient(180deg, rgba(255, 244, 210, .18), transparent 30%),
-    linear-gradient(0deg, rgba(5, 9, 18, .68), transparent 48%);
+    linear-gradient(0deg, rgba(5, 9, 18, .52), transparent 48%);
   pointer-events: none;
 }
 
@@ -43,8 +43,8 @@
   position: absolute;
   width: 64px;
   height: 18px;
-  background: #6f6a72;
-  box-shadow: 14px -8px 0 #6f6a72, 34px -2px 0 #6f6a72, 46px -10px 0 #6f6a72;
+  background: #fff6d7;
+  box-shadow: 14px -8px 0 #fff6d7, 34px -2px 0 #fff6d7, 46px -10px 0 #fff6d7;
   border: 2px solid rgba(23, 32, 51, .28);
   animation: drift 18s linear infinite;
   opacity: .28;
@@ -64,14 +64,14 @@
   z-index: 2;
   grid-row: 2;
   text-align: center;
-  text-shadow: 0 3px 0 #101521, 0 0 14px rgba(242, 185, 75, .4);
+  text-shadow: 0 2px 0 rgba(255, 244, 210, .8), 0 5px 0 rgba(16, 21, 33, .2);
 }
 
 .title-block h1 {
   margin: 2px 0;
   font-size: clamp(28px, 7vw, 52px);
   line-height: .92;
-  color: #fff4d2;
+  color: #172033;
 }
 
 .subtitle {

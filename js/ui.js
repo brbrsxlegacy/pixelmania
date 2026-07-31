@@ -273,7 +273,6 @@
       var friend = L.Progression ? L.Progression.friendship(state, c) : 0;
       var passive = L.Progression ? L.Progression.passiveFor(c) : null;
       var mood = L.Progression && L.Progression.moodFor ? L.Progression.moodFor(state, c) : null;
-      var prime = L.Prime && L.Prime.info(c);
       html += "<div class='team-card'><strong>" + (i === state.activeIndex ? "▶ " : "") + c.displayName + "</strong><br>" +
         "<canvas class='creature-card-art' width='96' height='66' data-team-art='" + i + "'></canvas>" +
         "<small>" + c.element + " • Sv. " + c.level + " • HP " + c.hp + "/" + c.maxHp + " • EXP " + c.exp + "/" + c.expToNext + "</small><br>" +
@@ -282,7 +281,6 @@
         (passive ? "<small>Dostluk " + friend + "/100 • Pasif: " + passive.name + "</small><br>" : "") +
         (mood ? "<span class='status-pill mood-pill mood-" + mood.id + "'>" + mood.label + "</span><small>" + mood.bonus + "</small><br>" : "") +
         (evo ? "<small>Evrim: " + evo.to.name + " • Sv. " + evo.level + "</small><br>" : "") +
-        (prime ? "<small>Prime: " + prime.name + " • Sv. " + prime.minLevel + "+</small><br>" : "") +
         "<button data-team-active='" + i + "'>Aktif Yap</button>" +
         "<button data-feed-luma='" + i + "'>Besle</button>" +
         (evo && evo.ready ? "<button data-team-evolve='" + i + "' class='primary'>Evrimle</button>" : "") +
@@ -830,7 +828,7 @@
   };
 
   L.UiController.prototype.showAbout = function (returnMode) {
-    var html = "<div class='panel-row'><strong>Yeraltı Krallığı</strong><br>HTML5 Canvas, vanilla JavaScript ve programatik pixel art ile hazırlanmış özgün Türkçe yaratık toplama RPG'si.</div>";
+    var html = "<div class='panel-row'><strong>Işık Muhafızları: Luma Yolu</strong><br>HTML5 Canvas, vanilla JavaScript ve programatik pixel art ile hazırlanmış özgün Türkçe yaratık toplama RPG'si.</div>";
     this.showPanel("Hakkında", html, "about", returnMode || "world");
   };
 

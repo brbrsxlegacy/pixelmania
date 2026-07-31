@@ -8,8 +8,7 @@
     botanikBahce: [63, 31], rengarenkCayir: [77, 28], geceKorusu: [79, 15], sisBatakligi: [92, 17],
     meteorTepesi: [62, 16], lavKanyonu: [75, 12], kumruCukuru: [75, 27], kristalMaden: [90, 10],
     sahilRotasi: [62, 66], buzulKiyi: [78, 72], gokKulesi: [47, 12], antikaHarabe: [31, 18], kutupPatikasi: [35, 13],
-    kokLabirenti: [69, 24], derinKristalZindan: [94, 6], batikMahzen: [70, 78],
-    korKampi: [75, 4], korBogazi: [82, 4], obsidyenTunel: [88, 4], magmaKalbi: [94, 4], korZirveCikisi: [98, 12]
+    kokLabirenti: [69, 24], derinKristalZindan: [94, 6], batikMahzen: [70, 78]
   };
 
   var cityStations = {
@@ -18,8 +17,8 @@
   };
 
   function ensureState(state) {
-    state.world = Object.assign({ targetMapId: null, discovered: { isikpinar: true, korKampi: true } }, state.world || {});
-    state.world.discovered = Object.assign({ isikpinar: true, korKampi: true }, state.world.discovered || {});
+    state.world = Object.assign({ targetMapId: null, discovered: { isikpinar: true } }, state.world || {});
+    state.world.discovered = Object.assign({ isikpinar: true }, state.world.discovered || {});
     state.dex = Object.assign({ seen: {}, caught: {} }, state.dex || {});
     state.dex.seen = Object.assign({}, state.dex.seen || {});
     state.dex.caught = Object.assign({}, state.dex.caught || {});
@@ -77,17 +76,7 @@
     if (!open) return null;
     var id = open.id || "";
     if (id.indexOf("visit_") === 0) return { mapId: id.replace("visit_", ""), label: open.text };
-    var direct = {
-      reachLake: "kristalGol",
-      enterCave: "magara",
-      findCrystal: "yesilova",
-      findLantern: "magara",
-      talkMayor: "belediyeBahcesi",
-      findLavaCompass: "korKampi",
-      beatPrimeTrainer: "obsidyenTunel",
-      collectVolcanoTreasure: "korBogazi",
-      usePrime: "korBogazi"
-    };
+    var direct = { reachLake: "kristalGol", enterCave: "magara", findCrystal: "yesilova", findLantern: "magara", talkMayor: "belediyeBahcesi" };
     if (direct[id]) return { mapId: direct[id], label: open.text };
     if (id.indexOf("catch_") === 0) {
       var wanted = id.replace("catch_", "");
