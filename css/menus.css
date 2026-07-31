@@ -104,9 +104,8 @@
   text-align: left;
   padding: 7px 12px 7px 32px;
   background:
-    linear-gradient(90deg, rgba(242,185,75,.92) 0 18px, transparent 18px),
+    linear-gradient(90deg, #f2b94b 0 18px, transparent 18px),
     linear-gradient(180deg, rgba(255,255,255,.82), rgba(239,213,141,.94)),
-    url("../assets/ai/crownlex-master-atlas.png") 8% 98% / 520px 520px,
     #fff4d2;
   box-shadow: 0 3px 0 rgba(0, 0, 0, .28);
 }
@@ -142,7 +141,6 @@
   border: 3px solid #101521;
   background:
     linear-gradient(135deg, rgba(255,255,255,.22) 0 12px, transparent 12px 24px) 0 0 / 24px 24px,
-    url("../assets/ai/crownlex-master-atlas.png") 62% 88% / 680px 680px,
     #fff4d2;
   color: #172033;
   box-shadow: 0 6px 0 rgba(0, 0, 0, .42), inset 0 0 0 2px rgba(255, 255, 255, .32);
@@ -199,7 +197,6 @@
   border: 2px solid #101521;
   background:
     linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,244,210,.16)),
-    url("../assets/ai/crownlex-master-atlas.png") 56% 95% / 540px 540px,
     #fff8df;
   color: #172033;
   padding: 8px;
@@ -364,7 +361,6 @@
   margin: 3px 3px 0 0;
   background:
     linear-gradient(180deg, rgba(255,255,255,.38), rgba(239,213,141,.4)),
-    url("../assets/ai/crownlex-master-atlas.png") 12% 98% / 460px 460px,
     #fff4d2;
 }
 
