@@ -5,7 +5,7 @@
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(9, 17, 31, .18), rgba(9, 17, 31, .36)),
-    url("../assets/menu-poster-ai.png") center / cover no-repeat,
+    url("../assets/menu-poster.png") center / cover no-repeat,
     linear-gradient(180deg, #79c8f2 0%, #f6d879 58%, #5fb95f 59%, #2f8548 100%);
   color: #172033;
 }
@@ -15,9 +15,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(255, 244, 210, .08), transparent 30%),
-    linear-gradient(0deg, rgba(5, 9, 18, .66), transparent 54%),
-    linear-gradient(90deg, rgba(5, 9, 18, .34), transparent 38%, rgba(5, 9, 18, .12));
+    linear-gradient(180deg, rgba(255, 244, 210, .18), transparent 30%),
+    linear-gradient(0deg, rgba(5, 9, 18, .52), transparent 48%);
   pointer-events: none;
 }
 
@@ -65,14 +64,14 @@
   z-index: 2;
   grid-row: 2;
   text-align: center;
-  text-shadow: 0 3px 0 #101521, 0 0 14px rgba(255, 244, 210, .42);
+  text-shadow: 0 2px 0 rgba(255, 244, 210, .8), 0 5px 0 rgba(16, 21, 33, .2);
 }
 
 .title-block h1 {
   margin: 2px 0;
   font-size: clamp(28px, 7vw, 52px);
   line-height: .92;
-  color: #fff4d2;
+  color: #172033;
 }
 
 .subtitle {
@@ -105,7 +104,7 @@
   text-align: left;
   padding: 7px 12px 7px 32px;
   background:
-    linear-gradient(90deg, rgba(242, 185, 75, .92) 0 18px, transparent 18px),
+    linear-gradient(90deg, #f2b94b 0 18px, transparent 18px),
     linear-gradient(180deg, rgba(255,255,255,.82), rgba(239,213,141,.94)),
     #fff4d2;
   box-shadow: 0 3px 0 rgba(0, 0, 0, .28);
