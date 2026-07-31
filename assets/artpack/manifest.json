@@ -1,0 +1,31 @@
+{
+  "lumas": {
+    "path": "assets/artpack/lumas.png",
+    "count": 133,
+    "cols": 16,
+    "rows": 9,
+    "cellW": 64,
+    "cellH": 64
+  },
+  "characters": {
+    "path": "assets/artpack/characters.png",
+    "count": 34,
+    "cols": 12,
+    "rows": 3,
+    "cellW": 64,
+    "cellH": 72
+  },
+  "buildings": {
+    "path": "assets/artpack/buildings.png",
+    "count": 29,
+    "cols": 6,
+    "rows": 5,
+    "cellW": 176,
+    "cellH": 128
+  },
+  "sourceCounts": {
+    "lumas": 211,
+    "characters": 34,
+    "buildings": 29
+  }
+}
