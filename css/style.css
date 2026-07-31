@@ -39,9 +39,12 @@ select {
 button {
   border: 0;
   color: #1c2335;
-  background: var(--paper);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.62), rgba(239,213,141,.58)),
+    url("../assets/ai/crownlex-master-atlas.png") 50% 96% / 360px 360px;
   box-shadow: inset 0 -3px 0 rgba(68, 43, 23, .28), 0 3px 0 rgba(0, 0, 0, .22);
   cursor: pointer;
+  image-rendering: pixelated;
 }
 
 button:focus-visible {
