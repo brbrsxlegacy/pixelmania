@@ -84,17 +84,7 @@
       findRoyalMap: "kraliyetKapisi",
       beatPrimeWarden: "primeOcagi",
       beatUnderworldCrown: "tahtSalonu",
-      beatShadowKing: "tahtSalonu",
       collectRoyalRelic: "defineMahzeni",
-      collectMapPiece: "defineMahzeni",
-      openSecretVault: "defineMahzeni",
-      solveFungusPuzzle: "mantarOrmani",
-      rideCrystalCurrent: "kristalNehir",
-      crossLavaBridge: "lavDenizi",
-      surviveBonePit: "kemikKumlari",
-      slideIcePath: "buzulMagara",
-      unlockPrimeSpecies: "primeOcagi",
-      usePrimeStone: "primeOcagi",
       usePrime: "primeOcagi"
     };
     if (direct[id]) return { mapId: direct[id], label: open.text };

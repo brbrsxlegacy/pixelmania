@@ -31,7 +31,6 @@
       resources: { herb: 0, ore: 0, wood: 0, crystal: 0 },
       crafting: { crafted: 0 },
       prime: { unlocked: true, activations: 0 },
-      underground: { events: {}, puzzle: { fungus: [] }, flags: {}, cooldowns: {}, bridgeOpen: true, secretVaultOpen: false, shadowBossDefeated: false },
       weather: { type: "clear", timer: 0, day: 1, phase: "day", season: "Bahar" },
       farm: { planted: 0, growth: 0, harvestReady: 0, harvests: 0 },
       minigames: { played: 0, wins: 0, bestScore: 0 },
@@ -122,7 +121,6 @@
     L.Quests.start(this.state, "primeOcagiGorevi", true);
     L.Quests.start(this.state, "tahtDefineleri", true);
     L.Quests.start(this.state, "kacisRotasi", true);
-    if (L.Underground) L.Underground.onNewGame(this);
     this.state.story.introSeen = true;
     var self = this;
     this.dialogue.show("Haritaci Nira", [
@@ -176,7 +174,6 @@
     }, {});
     this.state.story = Object.assign({}, base.story, state.story || {});
     this.state.prime = Object.assign({}, base.prime, state.prime || {});
-    this.state.underground = Object.assign({}, base.underground, state.underground || {});
     this.state.settings = Object.assign(L.Save.defaultSettings(), L.Save.loadSettings(), this.state.settings || {});
     this.state.avatar = Object.assign(base.avatar, state.avatar || {});
     this.state.avatar.unlocked = Object.assign({ guardian: true }, this.state.avatar.unlocked || {});
@@ -190,7 +187,6 @@
     if (L.Daily) L.Daily.ensureState(this.state);
     if (L.Eggs) L.Eggs.ensureState(this.state);
     if (L.Progression) L.Progression.ensureState(this.state);
-    if (L.Underground) L.Underground.ensureState(this.state);
     L.Creatures.serializeFix(this.state);
     L.Audio.applySettings(this.state.settings);
     this.loadMap(this.state.mapId || START_MAP);
@@ -258,20 +254,11 @@
     L.Quests.progress(this.state, "visit_" + mapId, 1);
     if (mapId === "kristalGol") L.Quests.progress(this.state, "reachLake", 1);
     if (mapId === "magara") L.Quests.progress(this.state, "enterCave", 1);
-    if (L.Underground) L.Underground.onLoadMap(this, mapId);
   };
 
   L.Game.prototype.changeMap = function (exit) {
     var self = this;
     if (this.transitionCooldown > 0) return;
-    if (L.Underground) {
-      var gate = L.Underground.canUseExit(this, exit);
-      if (!gate.ok) {
-        this.dialogue.show(gate.title || "Kapı", [gate.message || "Bu yol henuz acilmadi."]);
-        if (L.Audio) L.Audio.play("error");
-        return;
-      }
-    }
     this.transitionCooldown = .75;
     this.mode = "transition";
     document.getElementById("fadeLayer").classList.add("active");
@@ -559,7 +546,6 @@
     L.Inventory.add(this.state, item.itemId, item.qty || 1);
     var base = L.Inventory.get(item.itemId);
     if (item.questObjective) L.Quests.progress(this.state, item.questObjective, 1);
-    if (L.Underground) L.Underground.onCollectItem(this, item);
     this.ui.notify(base.name + " x" + (item.qty || 1) + " alındı.");
     if (L.Audio) L.Audio.play("pickup");
   };
@@ -578,7 +564,6 @@
     if (roamer) return this.startRoamerBattle(roamer);
     var interaction = this.mapSystem.interactionAt(this.map, tile.x, tile.y);
     if (!interaction) return;
-    if (L.Underground && L.Underground.handleInteraction(this, interaction)) return;
     var self = this;
     if (interaction.type === "door") {
       this.changeMap({ to: interaction.to, spawnX: interaction.spawnX, spawnY: interaction.spawnY });
@@ -922,7 +907,6 @@
         var eggMultiplier = L.Progression && L.Progression.eggProgressMultiplier ? L.Progression.eggProgressMultiplier(this.state) : 1;
         if (L.Eggs) L.Eggs.progress(this, moved / 16 * eggMultiplier);
         if (L.Progression) L.Progression.walk(this, moved / 16);
-        if (L.Underground) L.Underground.update(this, dt);
         if (this.mode !== "world") return;
         if (this.roamers) this.roamers.update(dt, this.map);
         this.camera.follow(this.player, this.map, dt);
@@ -953,7 +937,6 @@
     }
     this.mapSystem.draw(this.ctx, this);
     if (L.Progression) L.Progression.drawWeather(this, this.ctx);
-    if (L.Underground) L.Underground.drawOverlay(this, this.ctx);
     this.drawTargetArrow();
     this.drawMiniMap();
     if (this.state && this.state.settings.showControls && this.mode === "world") {

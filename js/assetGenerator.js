@@ -204,31 +204,6 @@
           rect(ctx, x + 9, y + 3, 4, 1, "#f2ead0");
           rect(ctx, x + 5, y + 6, 1, 1, "#6e685f");
           break;
-        case "crystalCurrent":
-          shadeTile(ctx, x, y, "#226078", "#14384a", time, "#a8f4ff");
-          var current = Math.floor((time || 0) * 8) % 12;
-          rect(ctx, x + current - 4, y + 4, 10, 2, "#d9fbff");
-          rect(ctx, x + 12 - current, y + 10, 9, 1, "#7ed8ee");
-          rect(ctx, x + 5, y + 13, 7, 1, "#f08bb0");
-          break;
-        case "icePath":
-          shadeTile(ctx, x, y, "#c9f2ff", "#80bfdc", time, "#ffffff");
-          rect(ctx, x + 2, y + 3, 12, 1, "rgba(255,255,255,.65)");
-          rect(ctx, x + 4, y + 9, 8, 1, "#93d4e8");
-          rect(ctx, x + 1, y + 14, 14, 1, "#6aa9c8");
-          break;
-        case "bonePit":
-          rect(ctx, x, y, TILE, TILE, "#3a3330");
-          rect(ctx, x + 2, y + 2, 12, 12, "#15151c");
-          rect(ctx, x + 4, y + 10, 8, 2, "#6f6258");
-          rect(ctx, x + 6, y + 5, 4, 1, "#c7bba5");
-          break;
-        case "secretFloor":
-          shadeTile(ctx, x, y, "#4d3b58", "#241f2f", time, "#f2b94b");
-          rect(ctx, x + 3, y + 3, 10, 10, "rgba(242,185,75,.2)");
-          rect(ctx, x + 7, y + 1, 2, 14, "#9f6fd8");
-          rect(ctx, x + 1, y + 7, 14, 2, "#9f6fd8");
-          break;
         case "gardenTile":
           shadeTile(ctx, x, y, "#66bf5d", "#3f944f", time, "#91dc6d");
           rect(ctx, x + 3, y + 4, 3, 3, "#f08bb0");
