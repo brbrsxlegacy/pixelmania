@@ -107,7 +107,6 @@
   background:
     linear-gradient(90deg, rgba(242, 185, 75, .92) 0 18px, transparent 18px),
     linear-gradient(180deg, rgba(255,255,255,.82), rgba(239,213,141,.94)),
-    url("../assets/ui-plates-ai.png") 2% 4% / 430px 430px,
     #fff4d2;
   box-shadow: 0 3px 0 rgba(0, 0, 0, .28);
 }
@@ -143,7 +142,6 @@
   border: 3px solid #101521;
   background:
     linear-gradient(135deg, rgba(255,255,255,.22) 0 12px, transparent 12px 24px) 0 0 / 24px 24px,
-    url("../assets/ui-plates-ai.png") 48% 28% / 720px 720px,
     #fff4d2;
   color: #172033;
   box-shadow: 0 6px 0 rgba(0, 0, 0, .42), inset 0 0 0 2px rgba(255, 255, 255, .32);
@@ -200,7 +198,6 @@
   border: 2px solid #101521;
   background:
     linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,244,210,.16)),
-    url("../assets/ui-plates-ai.png") 18% 18% / 520px 520px,
     #fff8df;
   color: #172033;
   padding: 8px;
@@ -365,7 +362,6 @@
   margin: 3px 3px 0 0;
   background:
     linear-gradient(180deg, rgba(255,255,255,.38), rgba(239,213,141,.4)),
-    url("../assets/ui-plates-ai.png") 6% 4% / 430px 430px,
     #fff4d2;
 }
 
