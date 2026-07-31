@@ -79,27 +79,6 @@
       bass: [0, null, 0, null, -2, null, -2, null, 5, null, 5, null, 4, null, 0, null],
       chords: [[0, 2, 4], [-2, 1, 4], [5, 7, 9], [4, 6, 8]]
     },
-    fungal: {
-      bpm: 90, root: C3 * Math.pow(2, -9 / 12), lead: "triangle", bassWave: "sine", drum: "none",
-      scale: [0, 2, 3, 6, 7, 10, 12],
-      melody: [5, null, 7, null, 10, 7, null, 5, 3, null, 6, null, 7, null, 10, null],
-      bass: [0, null, null, null, 5, null, null, null, 3, null, null, null, 5, null, null, null],
-      chords: [[0, 2, 4], [5, 7, 9], [3, 5, 7], [6, 8, 10]]
-    },
-    crystalDepth: {
-      bpm: 82, root: C3 * Math.pow(2, 6 / 12), lead: "sine", bassWave: "triangle", drum: "none",
-      scale: [0, 2, 5, 7, 9, 11, 12],
-      melody: [7, null, 9, 11, null, 12, 9, null, 7, 5, null, 7, 9, null, 12, null],
-      bass: [0, null, null, null, 4, null, null, null, 5, null, null, null, 2, null, null, null],
-      chords: [[0, 2, 4], [4, 6, 8], [5, 7, 9], [2, 4, 6]]
-    },
-    royalDepths: {
-      bpm: 100, root: C3 * Math.pow(2, -4 / 12), lead: "square", bassWave: "triangle", drum: "low",
-      scale: [0, 1, 4, 6, 7, 10, 12],
-      melody: [7, 10, null, 12, 10, 7, null, 6, 4, null, 7, 10, 12, null, 10, null],
-      bass: [0, null, 0, null, 6, null, 6, null, 4, null, 4, null, 0, null, 0, null],
-      chords: [[0, 2, 4], [6, 8, 10], [4, 6, 8], [0, 3, 5]]
-    },
     snow: {
       bpm: 82, root: C3 * Math.pow(2, 9 / 12), lead: "sine", bassWave: "triangle", drum: "none",
       scale: [0, 2, 5, 7, 9, 12],
@@ -161,12 +140,6 @@
   function trackForMap(map) {
     var id = String(map && map.id || "");
     if (!id) return "field";
-    if (map && map.region === "underground") {
-      if (/mantar/i.test(id) || map.biome === "fungus") return "fungal";
-      if (/kristal|buzul/i.test(id) || map.biome === "crystal" || map.biome === "frost") return "crystalDepth";
-      if (/kraliyet|obsidyenCarsisi|define|taht/i.test(id) || map.biome === "royal" || map.biome === "market" || map.biome === "throne") return "royalDepths";
-      return "underworld";
-    }
     if (/bossArena|arenaMeydan/i.test(id)) return "arena";
     if (/home|Interior|labInterior|house|clinic|shop/i.test(id)) return "home";
     if (/isikpinar/i.test(id)) return "village";
@@ -353,7 +326,7 @@
     },
 
     playBattleMusic: function (boss) {
-      var underworld = ["underworld", "fungal", "crystalDepth", "royalDepths"].indexOf(this.music.lastMapTrack) >= 0;
+      var underworld = this.music.lastMapTrack === "underworld";
       this.setMusic(boss ? (underworld ? "underworldBoss" : "boss") : (underworld ? "underworldBattle" : "battle"));
     },
 

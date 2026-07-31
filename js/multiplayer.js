@@ -128,7 +128,7 @@
     return {
       id: this.playerId,
       name: this.playerName || "Oyuncu",
-      mapId: this.game.map ? this.game.map.id : state.mapId || "kraliyetKapisi",
+      mapId: this.game.map ? this.game.map.id : state.mapId || "isikpinar",
       x: Math.round(this.game.player.x),
       y: Math.round(this.game.player.y),
       dir: this.game.player.dir || "down",

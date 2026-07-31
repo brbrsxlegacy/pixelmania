@@ -72,10 +72,10 @@
   ];
 
   var storyBosses = [
-    { id: "lavaTitan", title: "Lavagon Kizil Hukumdar", element: "Alev", creatureId: "lavagon", level: 34, reward: 760, resource: "ore", map: "lavDenizi", subtitle: "Lav Denizi koprulerini titreten agir koruyucu" },
-    { id: "fungusTitan", title: "Prime Magmantar Ana Koloni", element: "Alev", creatureId: "magmantar", level: 35, reward: 780, resource: "herb", map: "mantarOrmani", subtitle: "Fosfor kokleriyle tum ormani dinleyen dev" },
-    { id: "crystalTitan", title: "Kristalik Nehir Kalbi", element: "Kaya", creatureId: "kristalik", level: 37, reward: 840, resource: "crystal", map: "kristalNehir", subtitle: "Nehir isigini sirtinda tasiyan kristal lord" },
-    { id: "crownTitan", title: "Obsidikurt Taht Golgesi", element: "Alev", creatureId: "obsidikurt", level: 41, reward: 1040, resource: "ore", map: "tahtSalonu", subtitle: "Tahtin altindaki son Prime golge" }
+    { id: "leafTitan", title: "Taçorman Devi", element: "Yaprak", creatureId: "crownlex", level: 34, reward: 680, resource: "wood", map: "yesilova", subtitle: "Koklerden kalkan dev tacli Luma" },
+    { id: "sparkTitan", title: "Barbo Yildirim Krali", element: "Elektrik", creatureId: "barbo", level: 35, reward: 720, resource: "crystal", map: "trenIstasyonu", subtitle: "Raylarin ustunde buyuyen kivilcim hukumdari" },
+    { id: "stoneTitan", title: "Kristalor Magara Lordu", element: "Kaya", creatureId: "kristalik", level: 37, reward: 760, resource: "ore", map: "magara", subtitle: "Eski tasin icinde uyuyan agir basli dev" },
+    { id: "lightTitan", title: "Lumeru Safak Nöbetcisi", element: "Işık", creatureId: "lumeru", level: 40, reward: 900, resource: "crystal", map: "buyukArena", subtitle: "Arenayi gun gibi aydinlatan final sinavi" }
   ];
 
   function emptyResources() {

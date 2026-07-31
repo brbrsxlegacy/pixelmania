@@ -83,7 +83,7 @@
       return {
         slot: slot,
         exists: true,
-        mapId: state.mapId || "kraliyetKapisi",
+        mapId: state.mapId || "korKampi",
         mapName: window.LUMA_DATA.maps[state.mapId] ? window.LUMA_DATA.maps[state.mapId].name : "Bilinmeyen",
         playerName: state.playerName || "Oyuncu",
         starter: first ? first.name : "Yok",
