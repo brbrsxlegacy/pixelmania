@@ -1,9 +1,9 @@
 {
   "lumas": {
     "path": "assets/artpack/lumas.png",
-    "count": 133,
+    "count": 211,
     "cols": 16,
-    "rows": 9,
+    "rows": 14,
     "cellW": 64,
     "cellH": 64
   },

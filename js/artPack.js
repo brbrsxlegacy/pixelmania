@@ -3,12 +3,53 @@
   if (!L.Asset) return;
 
   var atlasDefs = {
-    lumas: { src: "assets/artpack/lumas.png", cols: 16, count: 133, cellW: 64, cellH: 64 },
+    lumas: { src: "assets/artpack/lumas.png", cols: 16, count: 211, cellW: 64, cellH: 64 },
     characters: { src: "assets/artpack/characters.png", cols: 12, count: 34, cellW: 64, cellH: 72 },
     buildings: { src: "assets/artpack/buildings.png", cols: 6, count: 29, cellW: 176, cellH: 128 }
   };
   var atlases = {};
   var creatureIndex = {};
+  var lumaManualIndex = {
+    filizik: 0, cimsirik: 1, kozpati: 12, korcik: 13, kopukcu: 24, minsu: 25,
+    tasburun: 36, ruzgocuk: 46, voltik: 56, golgemir: 68, parilti: 78,
+    kristalik: 90, nilperi: 102, agackulak: 114, lumeru: 82,
+    crownlex: 46, barbo: 56
+  };
+  var lumaBodyPools = {
+    sprout: range(0, 11),
+    flower: range(0, 11).concat(range(132, 135)),
+    cat: range(12, 23),
+    fox: range(12, 23),
+    otter: range(24, 35),
+    drop: range(24, 35),
+    fish: range(102, 113),
+    penguin: range(102, 113).concat(range(24, 35)),
+    beetle: range(36, 45),
+    crystal: range(90, 101),
+    golem: range(160, 171),
+    rhino: range(192, 196),
+    bird: range(46, 55),
+    owl: range(46, 55),
+    moth: range(136, 147),
+    mantis: range(136, 147),
+    mouse: range(56, 67),
+    bat: range(68, 77),
+    wolf: range(68, 77),
+    orb: range(78, 89),
+    sprite: range(78, 89),
+    star: range(198, 206),
+    deer: range(114, 123),
+    turtle: range(124, 135),
+    snail: range(124, 135),
+    lizard: range(148, 159),
+    serpent: range(148, 159),
+    crab: range(172, 181),
+    scorpion: range(197, 203),
+    rabbit: range(182, 190),
+    frog: range(182, 190),
+    jelly: range(182, 190),
+    mushroom: range(207, 210)
+  };
 
   function rect(ctx, x, y, w, h, color) {
     ctx.fillStyle = color;
@@ -23,10 +64,38 @@
     image.src = def.src;
   }
 
+  function range(start, end) {
+    var values = [];
+    for (var i = start; i <= end; i += 1) values.push(i);
+    return values;
+  }
+
+  function hashId(value) {
+    var hash = 0;
+    value = String(value || "");
+    for (var i = 0; i < value.length; i += 1) {
+      hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+    }
+    return hash;
+  }
+
+  function chooseFromPool(pool, id, base) {
+    if (!pool || !pool.length) return null;
+    var variant = base && base.sprite && base.sprite.variant != null ? base.sprite.variant : 0;
+    return pool[(hashId(id) + variant) % pool.length];
+  }
+
+  function chooseCreatureArtIndex(id, base, fallbackIndex) {
+    if (lumaManualIndex[id] != null) return lumaManualIndex[id];
+    var body = base && base.sprite && base.sprite.body;
+    var byBody = chooseFromPool(lumaBodyPools[body], id, base);
+    if (byBody != null) return byBody;
+    return fallbackIndex % atlasDefs.lumas.count;
+  }
   function buildCreatureIndex() {
     var data = window.LUMA_DATA && window.LUMA_DATA.creatures || {};
     Object.keys(data).forEach(function (id, index) {
-      creatureIndex[id] = index % atlasDefs.lumas.count;
+      creatureIndex[id] = chooseCreatureArtIndex(id, data[id], index);
     });
   }
 
@@ -90,15 +159,26 @@
     chest: { index: 28, w: 20, h: 18, x: -2, y: -2 }
   };
 
+  var interiorObjectFallback = {
+    bookshelf: true,
+    bedBlue: true,
+    bedRed: true,
+    table: true,
+    labDesk: true,
+    shopCounter: true,
+    shelfGoods: true,
+    healingBed: true,
+    healingCore: true
+  };
   var outfitArt = {
     guardian: { front: 0, back: 8 },
     ranger: { front: 4, back: 12 },
     courier: { front: 2, back: 10 },
     night: { front: 5, back: 13 },
     scholar: { front: 3, back: 11 },
-    ember: { front: 2, back: 10 },
-    aqua: { front: 0, back: 8 },
-    crystal: { front: 5, back: 13 }
+    ember: { front: 6, back: 14 },
+    aqua: { front: 1, back: 9 },
+    crystal: { front: 7, back: 15 }
   };
 
   var npcArt = {
@@ -139,6 +219,7 @@
     },
 
     drawObject: function (ctx, code, x, y) {
+      if (interiorObjectFallback[code]) return false;
       var art = buildingArt[code];
       if (!art || !ready("buildings")) return false;
       var dx = x + (art.x || 0);

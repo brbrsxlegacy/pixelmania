@@ -195,7 +195,7 @@ def main() -> None:
     buildings = extract_grid_items(args.buildings, "buildings")
 
     manifest = {
-        "lumas": pack(lumas, args.out_dir / "lumas.png", 64, 64, 16, 133),
+        "lumas": pack(lumas, args.out_dir / "lumas.png", 64, 64, 16),
         "characters": pack(characters, args.out_dir / "characters.png", 64, 72, 12),
         "buildings": pack(buildings, args.out_dir / "buildings.png", 176, 128, 6),
         "sourceCounts": {
