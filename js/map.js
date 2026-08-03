@@ -17,10 +17,13 @@
     var endX = Math.min(map.w - 1, Math.ceil((camera.x + camera.width) / TILE) + 3);
     var endY = Math.min(map.h - 1, Math.ceil((camera.y + camera.height) / TILE) + 4);
 
-    for (var y = startY; y <= endY; y += 1) {
-      for (var x = startX; x <= endX; x += 1) {
-        var index = y * map.w + x;
-        L.Asset.drawTile(ctx, map.ground[index], x * TILE - camera.x, y * TILE - camera.y, time);
+    var aiBackdrop = map.aiPiece && L.AiMapPieces && L.AiMapPieces.drawBackdrop(ctx, map, camera);
+    if (!aiBackdrop) {
+      for (var y = startY; y <= endY; y += 1) {
+        for (var x = startX; x <= endX; x += 1) {
+          var index = y * map.w + x;
+          L.Asset.drawTile(ctx, map.ground[index], x * TILE - camera.x, y * TILE - camera.y, time);
+        }
       }
     }
 

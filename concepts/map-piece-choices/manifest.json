@@ -40,46 +40,50 @@
     {
       "id": "mapPiece001",
       "number": 1,
-      "title": "I??kp?nar Ba?lang?? Yolu",
+      "title": "Isikpinar Baslangic Yolu",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-001.png",
       "sheetRange": "01-25",
       "row": 1,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece001"
     },
     {
       "id": "mapPiece002",
       "number": 2,
-      "title": "K?y Evleri K?mesi",
+      "title": "Koy Evleri Kumesi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-002.png",
       "sheetRange": "01-25",
       "row": 1,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece002"
     },
     {
       "id": "mapPiece003",
       "number": 3,
-      "title": "Revir Bah?esi",
+      "title": "Revir Bahcesi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-003.png",
       "sheetRange": "01-25",
       "row": 1,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece003"
     },
     {
       "id": "mapPiece004",
       "number": 4,
-      "title": "Pazar D?kkan? ?n?",
+      "title": "Pazar Dukkani Onu",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-004.png",
       "sheetRange": "01-25",
       "row": 1,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece004"
     },
     {
       "id": "mapPiece005",
@@ -90,62 +94,68 @@
       "sheetRange": "01-25",
       "row": 1,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece005"
     },
     {
       "id": "mapPiece006",
       "number": 6,
-      "title": "?i?ekli ?ay?r",
+      "title": "Cicekli Cayir",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-006.png",
       "sheetRange": "01-25",
       "row": 2,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece006"
     },
     {
       "id": "mapPiece007",
       "number": 7,
-      "title": "Bu?day Tarlas?",
+      "title": "Bugday Tarlasi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-007.png",
       "sheetRange": "01-25",
       "row": 2,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece007"
     },
     {
       "id": "mapPiece008",
       "number": 8,
-      "title": "G?let Kenar?",
+      "title": "Golet Kenari",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-008.png",
       "sheetRange": "01-25",
       "row": 2,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece008"
     },
     {
       "id": "mapPiece009",
       "number": 9,
-      "title": "Dere K?pr?s?",
+      "title": "Dere Koprusu",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-009.png",
       "sheetRange": "01-25",
       "row": 2,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece009"
     },
     {
       "id": "mapPiece010",
       "number": 10,
-      "title": "Orman Patikas?",
+      "title": "Orman Patikasi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-010.png",
       "sheetRange": "01-25",
       "row": 2,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece010"
     },
     {
       "id": "mapPiece011",
@@ -156,282 +166,308 @@
       "sheetRange": "01-25",
       "row": 3,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece011"
     },
     {
       "id": "mapPiece012",
       "number": 12,
-      "title": "Kayal?k Ge?it",
+      "title": "Kayalik Gecit",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-012.png",
       "sheetRange": "01-25",
       "row": 3,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece012"
     },
     {
       "id": "mapPiece013",
       "number": 13,
-      "title": "Eski Ma?ara A?z?",
+      "title": "Eski Magara Agzi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-013.png",
       "sheetRange": "01-25",
       "row": 3,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece013"
     },
     {
       "id": "mapPiece014",
       "number": 14,
-      "title": "Tepe Seyir Alan?",
+      "title": "Tepe Seyir Alani",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-014.png",
       "sheetRange": "01-25",
       "row": 3,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece014"
     },
     {
       "id": "mapPiece015",
       "number": 15,
-      "title": "Ta? Tap?nak Kal?nt?s?",
+      "title": "Tas Tapinak Kalintisi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-015.png",
       "sheetRange": "01-25",
       "row": 3,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece015"
     },
     {
       "id": "mapPiece016",
       "number": 16,
-      "title": "Kasaba ?e?me Meydan?",
+      "title": "Kasaba Cesme Meydani",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-016.png",
       "sheetRange": "01-25",
       "row": 4,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece016"
     },
     {
       "id": "mapPiece017",
       "number": 17,
-      "title": "?itli Bah?e Yolu",
+      "title": "Citli Bahce Yolu",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-017.png",
       "sheetRange": "01-25",
       "row": 4,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece017"
     },
     {
       "id": "mapPiece018",
       "number": 18,
-      "title": "Meyve Bah?esi",
+      "title": "Meyve Bahcesi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-018.png",
       "sheetRange": "01-25",
       "row": 4,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece018"
     },
     {
       "id": "mapPiece019",
       "number": 19,
-      "title": "Yel De?irmeni Tarlas?",
+      "title": "Yel Degirmeni Tarlasi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-019.png",
       "sheetRange": "01-25",
       "row": 4,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece019"
     },
     {
       "id": "mapPiece020",
       "number": 20,
-      "title": "Liman ?skelesi",
+      "title": "Liman Iskelesi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-020.png",
       "sheetRange": "01-25",
       "row": 4,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece020"
     },
     {
       "id": "mapPiece021",
       "number": 21,
-      "title": "Orman Kamp?",
+      "title": "Orman Kampi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-021.png",
       "sheetRange": "01-25",
       "row": 5,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece021"
     },
     {
       "id": "mapPiece022",
       "number": 22,
-      "title": "K?y Park?",
+      "title": "Koy Parki",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-022.png",
       "sheetRange": "01-25",
       "row": 5,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece022"
     },
     {
       "id": "mapPiece023",
       "number": 23,
-      "title": "Pazar Tezgahlar?",
+      "title": "Pazar Tezgahlari",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-023.png",
       "sheetRange": "01-25",
       "row": 5,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece023"
     },
     {
       "id": "mapPiece024",
       "number": 24,
-      "title": "Kumsal Ge?idi",
+      "title": "Kumsal Gecidi",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-024.png",
       "sheetRange": "01-25",
       "row": 5,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece024"
     },
     {
       "id": "mapPiece025",
       "number": 25,
-      "title": "?n?aat Alan?",
+      "title": "Insaat Alani",
       "category": "village-nature",
       "source": "concepts/map-piece-choices/pieces/map-piece-025.png",
       "sheetRange": "01-25",
       "row": 5,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece025"
     },
     {
       "id": "mapPiece026",
       "number": 26,
-      "title": "?ehir Ta? Soka??",
+      "title": "Sehir Tas Sokagi",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-026.png",
       "sheetRange": "26-50",
       "row": 1,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece026"
     },
     {
       "id": "mapPiece027",
       "number": 27,
-      "title": "Apartman ?n?",
+      "title": "Apartman Onu",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-027.png",
       "sheetRange": "26-50",
       "row": 1,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece027"
     },
     {
       "id": "mapPiece028",
       "number": 28,
-      "title": "Belediye Meydan?",
+      "title": "Belediye Meydani",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-028.png",
       "sheetRange": "26-50",
       "row": 1,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece028"
     },
     {
       "id": "mapPiece029",
       "number": 29,
-      "title": "Emlak Ofisi ?? G?r?n?m",
+      "title": "Emlak Ofisi Ic Gorunum",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-029.png",
       "sheetRange": "26-50",
       "row": 1,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece029"
     },
     {
       "id": "mapPiece030",
       "number": 30,
-      "title": "Stil Soka??",
+      "title": "Stil Sokagi",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-030.png",
       "sheetRange": "26-50",
       "row": 1,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece030"
     },
     {
       "id": "mapPiece031",
       "number": 31,
-      "title": "Tren ?stasyonu",
+      "title": "Tren Istasyonu",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-031.png",
       "sheetRange": "26-50",
       "row": 2,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece031"
     },
     {
       "id": "mapPiece032",
       "number": 32,
-      "title": "Fabrika Y?k Avlusu",
+      "title": "Fabrika Yuk Avlusu",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-032.png",
       "sheetRange": "26-50",
       "row": 2,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece032"
     },
     {
       "id": "mapPiece033",
       "number": 33,
-      "title": "Arena Kap?s?",
+      "title": "Arena Kapisi",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-033.png",
       "sheetRange": "26-50",
       "row": 2,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece033"
     },
     {
       "id": "mapPiece034",
       "number": 34,
-      "title": "Neon Gece Pazar?",
+      "title": "Neon Gece Pazari",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-034.png",
       "sheetRange": "26-50",
       "row": 2,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece034"
     },
     {
       "id": "mapPiece035",
       "number": 35,
-      "title": "Kanal K?pr?s?",
+      "title": "Kanal Koprusu",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-035.png",
       "sheetRange": "26-50",
       "row": 2,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece035"
     },
     {
       "id": "mapPiece036",
       "number": 36,
-      "title": "?at? Bah?esi",
+      "title": "Cati Bahcesi",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-036.png",
       "sheetRange": "26-50",
       "row": 3,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece036"
     },
     {
       "id": "mapPiece037",
@@ -442,40 +478,44 @@
       "sheetRange": "26-50",
       "row": 3,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece037"
     },
     {
       "id": "mapPiece038",
       "number": 38,
-      "title": "K?t?phane ?n?",
+      "title": "Kutuphane Onu",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-038.png",
       "sheetRange": "26-50",
       "row": 3,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece038"
     },
     {
       "id": "mapPiece039",
       "number": 39,
-      "title": "F?r?n K??esi",
+      "title": "Firin Kosesi",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-039.png",
       "sheetRange": "26-50",
       "row": 3,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece039"
     },
     {
       "id": "mapPiece040",
       "number": 40,
-      "title": "At?lye Avlusu",
+      "title": "Atolye Avlusu",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-040.png",
       "sheetRange": "26-50",
       "row": 3,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece040"
     },
     {
       "id": "mapPiece041",
@@ -486,29 +526,32 @@
       "sheetRange": "26-50",
       "row": 4,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece041"
     },
     {
       "id": "mapPiece042",
       "number": 42,
-      "title": "Fener Kayal???",
+      "title": "Fener Kayaligi",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-042.png",
       "sheetRange": "26-50",
       "row": 4,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece042"
     },
     {
       "id": "mapPiece043",
       "number": 43,
-      "title": "Mini Oyun Karnaval?",
+      "title": "Mini Oyun Karnavali",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-043.png",
       "sheetRange": "26-50",
       "row": 4,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece043"
     },
     {
       "id": "mapPiece044",
@@ -519,18 +562,20 @@
       "sheetRange": "26-50",
       "row": 4,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece044"
     },
     {
       "id": "mapPiece045",
       "number": 45,
-      "title": "Kanalizasyon Giri?i",
+      "title": "Kanalizasyon Girisi",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-045.png",
       "sheetRange": "26-50",
       "row": 4,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece045"
     },
     {
       "id": "mapPiece046",
@@ -541,62 +586,68 @@
       "sheetRange": "26-50",
       "row": 5,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece046"
     },
     {
       "id": "mapPiece047",
       "number": 47,
-      "title": "Sand?kl? Arka Sokak",
+      "title": "Sandikli Arka Sokak",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-047.png",
       "sheetRange": "26-50",
       "row": 5,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece047"
     },
     {
       "id": "mapPiece048",
       "number": 48,
-      "title": "Gece ?e?me Meydan?",
+      "title": "Gece Cesme Meydani",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-048.png",
       "sheetRange": "26-50",
       "row": 5,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece048"
     },
     {
       "id": "mapPiece049",
       "number": 49,
-      "title": "Ya?murlu Bulvar",
+      "title": "Yagmurlu Bulvar",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-049.png",
       "sheetRange": "26-50",
       "row": 5,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece049"
     },
     {
       "id": "mapPiece050",
       "number": 50,
-      "title": "Fenerli Festival Soka??",
+      "title": "Fenerli Festival Sokagi",
       "category": "city",
       "source": "concepts/map-piece-choices/pieces/map-piece-050.png",
       "sheetRange": "26-50",
       "row": 5,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece050"
     },
     {
       "id": "mapPiece051",
       "number": 51,
-      "title": "Derin Orman A??kl???",
+      "title": "Derin Orman Acikligi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-051.png",
       "sheetRange": "51-75",
       "row": 1,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece051"
     },
     {
       "id": "mapPiece052",
@@ -607,139 +658,152 @@
       "sheetRange": "51-75",
       "row": 1,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece052"
     },
     {
       "id": "mapPiece053",
       "number": 53,
-      "title": "Batakl?k Tahta Yolu",
+      "title": "Bataklik Tahta Yolu",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-053.png",
       "sheetRange": "51-75",
       "row": 1,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece053"
     },
     {
       "id": "mapPiece054",
       "number": 54,
-      "title": "Karl? K?y Kenar?",
+      "title": "Karli Koy Kenari",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-054.png",
       "sheetRange": "51-75",
       "row": 1,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece054"
     },
     {
       "id": "mapPiece055",
       "number": 55,
-      "title": "Karl? ?am Patikas?",
+      "title": "Karli Cam Patikasi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-055.png",
       "sheetRange": "51-75",
       "row": 1,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece055"
     },
     {
       "id": "mapPiece056",
       "number": 56,
-      "title": "??l Vahas?",
+      "title": "Col Vahasi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-056.png",
       "sheetRange": "51-75",
       "row": 2,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece056"
     },
     {
       "id": "mapPiece057",
       "number": 57,
-      "title": "??l Harabeleri",
+      "title": "Col Harabeleri",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-057.png",
       "sheetRange": "51-75",
       "row": 2,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece057"
     },
     {
       "id": "mapPiece058",
       "number": 58,
-      "title": "Lav Ma?aras? A?z?",
+      "title": "Lav Magarasi Agzi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-058.png",
       "sheetRange": "51-75",
       "row": 2,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece058"
     },
     {
       "id": "mapPiece059",
       "number": 59,
-      "title": "Volkanik ?atlak D?zl???",
+      "title": "Volkanik Catlak Duzlugu",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-059.png",
       "sheetRange": "51-75",
       "row": 2,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece059"
     },
     {
       "id": "mapPiece060",
       "number": 60,
-      "title": "Kristal Ma?ara Odas?",
+      "title": "Kristal Magara Odasi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-060.png",
       "sheetRange": "51-75",
       "row": 2,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece060"
     },
     {
       "id": "mapPiece061",
       "number": 61,
-      "title": "Maden Ray Giri?i",
+      "title": "Maden Ray Girisi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-061.png",
       "sheetRange": "51-75",
       "row": 3,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece061"
     },
     {
       "id": "mapPiece062",
       "number": 62,
-      "title": "Antik Tap?nak Kap?s?",
+      "title": "Antik Tapinak Kapisi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-062.png",
       "sheetRange": "51-75",
       "row": 3,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece062"
     },
     {
       "id": "mapPiece063",
       "number": 63,
-      "title": "Ta? Labirent Harabesi",
+      "title": "Tas Labirent Harabesi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-063.png",
       "sheetRange": "51-75",
       "row": 3,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece063"
     },
     {
       "id": "mapPiece064",
       "number": 64,
-      "title": "Ay????? Mezarl???",
+      "title": "Ayisigi Mezarligi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-064.png",
       "sheetRange": "51-75",
       "row": 3,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece064"
     },
     {
       "id": "mapPiece065",
@@ -750,62 +814,68 @@
       "sheetRange": "51-75",
       "row": 3,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece065"
     },
     {
       "id": "mapPiece066",
       "number": 66,
-      "title": "?elale Havuzu",
+      "title": "Selale Havuzu",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-066.png",
       "sheetRange": "51-75",
       "row": 4,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece066"
     },
     {
       "id": "mapPiece067",
       "number": 67,
-      "title": "Nehir Deltas?",
+      "title": "Nehir Deltasi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-067.png",
       "sheetRange": "51-75",
       "row": 4,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece067"
     },
     {
       "id": "mapPiece068",
       "number": 68,
-      "title": "Da? Merdivenleri",
+      "title": "Dag Merdivenleri",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-068.png",
       "sheetRange": "51-75",
       "row": 4,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece068"
     },
     {
       "id": "mapPiece069",
       "number": 69,
-      "title": "U?urum ?p K?pr?s?",
+      "title": "Ucurum Ip Koprusu",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-069.png",
       "sheetRange": "51-75",
       "row": 4,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece069"
     },
     {
       "id": "mapPiece070",
       "number": 70,
-      "title": "Kanyon Ge?idi",
+      "title": "Kanyon Gecidi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-070.png",
       "sheetRange": "51-75",
       "row": 4,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece070"
     },
     {
       "id": "mapPiece071",
@@ -816,29 +886,32 @@
       "sheetRange": "51-75",
       "row": 5,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece071"
     },
     {
       "id": "mapPiece072",
       "number": 72,
-      "title": "Dev ?i?ek Tarlas?",
+      "title": "Dev Cicek Tarlasi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-072.png",
       "sheetRange": "51-75",
       "row": 5,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece072"
     },
     {
       "id": "mapPiece073",
       "number": 73,
-      "title": "Sisli Batakl?k",
+      "title": "Sisli Bataklik",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-073.png",
       "sheetRange": "51-75",
       "row": 5,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece073"
     },
     {
       "id": "mapPiece074",
@@ -849,62 +922,68 @@
       "sheetRange": "51-75",
       "row": 5,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece074"
     },
     {
       "id": "mapPiece075",
       "number": 75,
-      "title": "Gizli Boss Arenas?",
+      "title": "Gizli Boss Arenasi",
       "category": "biome-dungeon",
       "source": "concepts/map-piece-choices/pieces/map-piece-075.png",
       "sheetRange": "51-75",
       "row": 5,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece075"
     },
     {
       "id": "mapPiece076",
       "number": 76,
-      "title": "Kraliyet Bah?e Kap?s?",
+      "title": "Kraliyet Bahce Kapisi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-076.png",
       "sheetRange": "76-100",
       "row": 1,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece076"
     },
     {
       "id": "mapPiece077",
       "number": 77,
-      "title": "B?y?k Boss Avlusu",
+      "title": "Buyuk Boss Avlusu",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-077.png",
       "sheetRange": "76-100",
       "row": 1,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece077"
     },
     {
       "id": "mapPiece078",
       "number": 78,
-      "title": "Kadim Portal ?emberi",
+      "title": "Kadim Portal Cemberi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-078.png",
       "sheetRange": "76-100",
       "row": 1,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece078"
     },
     {
       "id": "mapPiece079",
       "number": 79,
-      "title": "Terk Edilmi? Malikane",
+      "title": "Terk Edilmis Malikane",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-079.png",
       "sheetRange": "76-100",
       "row": 1,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece079"
     },
     {
       "id": "mapPiece080",
@@ -915,73 +994,80 @@
       "sheetRange": "76-100",
       "row": 1,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece080"
     },
     {
       "id": "mapPiece081",
       "number": 81,
-      "title": "B?y?l? K?t?phane",
+      "title": "Buyulu Kutuphane",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-081.png",
       "sheetRange": "76-100",
       "row": 2,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece081"
     },
     {
       "id": "mapPiece082",
       "number": 82,
-      "title": "Simya At?lyesi",
+      "title": "Simya Atolyesi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-082.png",
       "sheetRange": "76-100",
       "row": 2,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece082"
     },
     {
       "id": "mapPiece083",
       "number": 83,
-      "title": "Yeralt? Laboratuvar?",
+      "title": "Yeralti Laboratuvari",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-083.png",
       "sheetRange": "76-100",
       "row": 2,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece083"
     },
     {
       "id": "mapPiece084",
       "number": 84,
-      "title": "Luma ?iftli?i",
+      "title": "Luma Ciftligi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-084.png",
       "sheetRange": "76-100",
       "row": 2,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece084"
     },
     {
       "id": "mapPiece085",
       "number": 85,
-      "title": "E?itim Dojosu",
+      "title": "Egitim Dojosu",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-085.png",
       "sheetRange": "76-100",
       "row": 2,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece085"
     },
     {
       "id": "mapPiece086",
       "number": 86,
-      "title": "Lonca Binas?",
+      "title": "Lonca Binasi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-086.png",
       "sheetRange": "76-100",
       "row": 3,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece086"
     },
     {
       "id": "mapPiece087",
@@ -992,40 +1078,44 @@
       "sheetRange": "76-100",
       "row": 3,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece087"
     },
     {
       "id": "mapPiece088",
       "number": 88,
-      "title": "A??k Art?rma Meydan?",
+      "title": "Acik Artirma Meydani",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-088.png",
       "sheetRange": "76-100",
       "row": 3,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece088"
     },
     {
       "id": "mapPiece089",
       "number": 89,
-      "title": "L?ks Villa Kap?s?",
+      "title": "Luks Villa Kapisi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-089.png",
       "sheetRange": "76-100",
       "row": 3,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece089"
     },
     {
       "id": "mapPiece090",
       "number": 90,
-      "title": "Kiral?k Ev Soka??",
+      "title": "Kiralik Ev Sokagi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-090.png",
       "sheetRange": "76-100",
       "row": 3,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece090"
     },
     {
       "id": "mapPiece091",
@@ -1036,7 +1126,8 @@
       "sheetRange": "76-100",
       "row": 4,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece091"
     },
     {
       "id": "mapPiece092",
@@ -1047,7 +1138,8 @@
       "sheetRange": "76-100",
       "row": 4,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece092"
     },
     {
       "id": "mapPiece093",
@@ -1058,73 +1150,80 @@
       "sheetRange": "76-100",
       "row": 4,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece093"
     },
     {
       "id": "mapPiece094",
       "number": 94,
-      "title": "D?kkan ?? Mekan?",
+      "title": "Dukkan Ic Mekani",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-094.png",
       "sheetRange": "76-100",
       "row": 4,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece094"
     },
     {
       "id": "mapPiece095",
       "number": 95,
-      "title": "K?yafet D?kkan?",
+      "title": "Kiyafet Dukkani",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-095.png",
       "sheetRange": "76-100",
       "row": 4,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece095"
     },
     {
       "id": "mapPiece096",
       "number": 96,
-      "title": "Oyuncu Yatak Odas?",
+      "title": "Oyuncu Yatak Odasi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-096.png",
       "sheetRange": "76-100",
       "row": 5,
       "col": 1,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece096"
     },
     {
       "id": "mapPiece097",
       "number": 97,
-      "title": "?iftlik Ah?r?",
+      "title": "Ciftlik Ahiri",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-097.png",
       "sheetRange": "76-100",
       "row": 5,
       "col": 2,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece097"
     },
     {
       "id": "mapPiece098",
       "number": 98,
-      "title": "Sera ?? Mekan?",
+      "title": "Sera Ic Mekani",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-098.png",
       "sheetRange": "76-100",
       "row": 5,
       "col": 3,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece098"
     },
     {
       "id": "mapPiece099",
       "number": 99,
-      "title": "G?zlemevi Tepesi",
+      "title": "Gozlemevi Tepesi",
       "category": "special-interior",
       "source": "concepts/map-piece-choices/pieces/map-piece-099.png",
       "sheetRange": "76-100",
       "row": 5,
       "col": 4,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece099"
     },
     {
       "id": "mapPiece100",
@@ -1135,7 +1234,8 @@
       "sheetRange": "76-100",
       "row": 5,
       "col": 5,
-      "selected": true
+      "selected": true,
+      "mapId": "aiPiece100"
     }
   ]
 }

@@ -216,6 +216,7 @@
       "<button class='panel-row' data-pause='tournament'>Turnuva</button>" +
       "<button class='panel-row' data-pause='legendary'>Efsane Avı</button>" +
       "<button class='panel-row' data-pause='map'>Harita</button>" +
+      "<button class='panel-row' data-pause='aiPieces'>AI Rotalar</button>" +
       "<button class='panel-row' data-pause='dex'>Lumadex</button>" +
       "<button class='panel-row' data-pause='badges'>Rozetler</button>" +
       "<button class='panel-row' data-pause='multiplayer'>Çok Oyunculu</button>" +
@@ -616,6 +617,34 @@
     this.showPanel("Harita", html, "map", "world");
   };
 
+  L.UiController.prototype.showAiMapPieces = function () {
+    var pieces = L.AiMapPieces ? L.AiMapPieces.list() : (window.LUMA_DATA.aiMapPieces || []);
+    var active = this.aiPieceCategory || "all";
+    var categoryLabels = {
+      all: "Tümü",
+      "village-nature": "Köy/Doğa",
+      city: "Şehir",
+      "biome-dungeon": "Biyom/Zindan",
+      "special-interior": "Özel/İç"
+    };
+    var filtered = active === "all" ? pieces : pieces.filter(function (piece) { return piece.category === active; });
+    var html = "<div class='panel-row'><strong>AI Rotalar:</strong> " + filtered.length + "/" + pieces.length +
+      "<br><small>Bu parçalar artık oyunda gezilebilir rota haritası. Karttan Git'e bas, aşağı çıkıştan geri dön.</small></div>";
+    html += "<div class='panel-row ai-piece-tabs'>" + Object.keys(categoryLabels).map(function (key) {
+      return "<button data-ai-piece-category='" + key + "'" + (active === key ? " class='primary'" : "") + ">" + categoryLabels[key] + "</button>";
+    }).join("") + "</div>";
+    html += "<div class='panel-grid ai-piece-grid'>";
+    filtered.forEach(function (piece) {
+      html += "<div class='item-row ai-piece-card'>" +
+        "<img src='" + escapeHtml(piece.source) + "' alt='#" + piece.number + " " + escapeHtml(piece.title) + "'>" +
+        "<strong>#" + String(piece.number).padStart(3, "0") + " " + escapeHtml(piece.title) + "</strong>" +
+        "<small>" + escapeHtml(categoryLabels[piece.category] || piece.category) + "</small>" +
+        "<button class='primary' data-ai-piece-travel='" + escapeHtml(piece.mapId) + "'>Git</button>" +
+        "</div>";
+    });
+    html += "</div>";
+    this.showPanel("AI Rotalar", html, "aiPieces", "world");
+  };
   L.UiController.prototype.showLumadex = function () {
     var state = this.game.state;
     L.WorldMap.ensureState(state);
@@ -867,6 +896,7 @@
       if (pause === "tournament") this.showTournament();
       if (pause === "legendary") this.showLegendary();
       if (pause === "map") this.showMap();
+      if (pause === "aiPieces") this.showAiMapPieces();
       if (pause === "dex") this.showLumadex();
       if (pause === "badges") this.showBadges();
       if (pause === "multiplayer") this.showMultiplayer("world");
@@ -884,6 +914,17 @@
         this.closePanel();
         this.showMain();
       }
+      return;
+    }
+    var aiPieceCategory = button.getAttribute("data-ai-piece-category");
+    if (aiPieceCategory) {
+      this.aiPieceCategory = aiPieceCategory;
+      this.showAiMapPieces();
+      return;
+    }
+    var aiPieceTravel = button.getAttribute("data-ai-piece-travel");
+    if (aiPieceTravel) {
+      this.game.enterAiMapPiece(aiPieceTravel);
       return;
     }
     var mapTarget = button.getAttribute("data-map-target");

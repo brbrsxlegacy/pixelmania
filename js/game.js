@@ -19,6 +19,7 @@
       housing: { status: "none", homeId: null, furniture: {} },
       city: { mayorMet: false },
       world: { targetMapId: null, discovered: { isikpinar: true } },
+      aiMapReturn: null,
       dex: { seen: {}, caught: {} },
       badges: {},
       pvp: { wins: 0, losses: 0 },
@@ -236,8 +237,20 @@
     if (mapId === "magara") L.Quests.progress(this.state, "enterCave", 1);
   };
 
+  L.Game.prototype.resolveSpecialExit = function (exit) {
+    if (!exit || exit.to !== "__aiReturn") return exit;
+    var fallback = { mapId: "isikpinar", x: 25, y: 30 };
+    var saved = this.state && this.state.aiMapReturn || fallback;
+    var mapId = this.mapSystem.get(saved.mapId) ? saved.mapId : fallback.mapId;
+    var resolved = { to: mapId, spawnX: saved.x || fallback.x, spawnY: saved.y || fallback.y };
+    if (this.state) this.state.aiMapReturn = null;
+    return resolved;
+  };
+
   L.Game.prototype.changeMap = function (exit) {
     var self = this;
+    exit = this.resolveSpecialExit(exit);
+    if (!exit) return;
     if (this.transitionCooldown > 0) return;
     this.transitionCooldown = .75;
     this.mode = "transition";
@@ -566,6 +579,10 @@
       this.ui.showHousing();
       return;
     }
+    if (interaction.type === "aiRoutes") {
+      this.ui.showAiMapPieces();
+      return;
+    }
     if (interaction.type === "shop") return L.Shop.open(this);
     if (interaction.type === "itemChest") {
       this.collectItem({ id: "chest_" + interaction.itemId, itemId: interaction.itemId, qty: interaction.qty || 1, questObjective: interaction.objective });
@@ -663,6 +680,29 @@
     return true;
   };
 
+  L.Game.prototype.enterAiMapPiece = function (mapId) {
+    if (!this.state || !this.map) return false;
+    var target = this.mapSystem.get(mapId);
+    if (!target || !target.aiPiece) {
+      this.ui.notify("AI rota bulunamadı.");
+      if (L.Audio) L.Audio.play("error");
+      return false;
+    }
+    var tile = this.playerTile();
+    this.state.aiMapReturn = { mapId: this.map.id, x: tile.x, y: tile.y };
+    this.ui.closePanel();
+    this.loadMap(mapId);
+    var safe = this.findSafeMoveTile(mapId, 16, 16);
+    this.player.setTile(safe.x, safe.y);
+    this.player.dir = "down";
+    this.camera.follow(this.player, this.map, 1);
+    this.resetFollower();
+    this.syncState();
+    this.autosaveSoon();
+    this.ui.notify(target.name + " açıldı. Aşağıdan çıkış yapabilirsin.");
+    if (L.Audio) L.Audio.play("confirm");
+    return true;
+  };
   L.Game.prototype.visitHome = function () {
     if (!this.state || !L.Economy) return false;
     L.Economy.ensureState(this.state);

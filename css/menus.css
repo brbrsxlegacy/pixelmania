@@ -611,6 +611,37 @@
   color: #172033;
 }
 
+
+.ai-piece-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-piece-grid {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.ai-piece-card {
+  display: grid;
+  gap: 7px;
+  align-content: start;
+}
+
+.ai-piece-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 2px solid #101521;
+  background: #172033;
+  image-rendering: auto;
+}
+
+.ai-piece-card strong {
+  min-height: 34px;
+  line-height: 1.25;
+}
 @media (max-width: 520px) {
   .starter-card {
     grid-template-columns: 1fr;
