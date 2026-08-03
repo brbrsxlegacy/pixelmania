@@ -1,0 +1,3 @@
+Pixelmania AI map piece choices
+Status: all 100 selected.
+Next step: convert chosen concepts into playable tile/collision maps before shipping.

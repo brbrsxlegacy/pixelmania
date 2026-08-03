@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixelmania Map Piece Choices</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101521;
+      --panel: #172033;
+      --text: #fff4d2;
+      --muted: #aeb8c8;
+      --accent: #f2b94b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      background: rgba(16, 21, 33, .94);
+      border-bottom: 2px solid #263247;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(18px, 2.6vw, 28px);
+      letter-spacing: 0;
+    }
+    .count {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    main {
+      padding: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 14px;
+    }
+    .piece {
+      margin: 0;
+      background: var(--panel);
+      border: 2px solid #263247;
+      box-shadow: 0 8px 0 rgba(0,0,0,.2);
+    }
+    .piece img {
+      display: block;
+      width: 100%;
+      image-rendering: auto;
+      background: #0b1020;
+    }
+    .piece figcaption {
+      display: grid;
+      gap: 4px;
+      padding: 9px;
+      min-height: 70px;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+    .num {
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .cat {
+      color: var(--muted);
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pixelmania AI Map Pieces</h1>
+    <div class="count" id="count">100 selected</div>
+  </header>
+  <main>
+    <section class="grid" id="grid" aria-label="Map piece choices"></section>
+  </main>
+  <script>
+    fetch("manifest.json")
+      .then(function (res) { return res.json(); })
+      .then(function (manifest) {
+        document.getElementById("count").textContent = manifest.count + " selected";
+        var grid = document.getElementById("grid");
+        grid.innerHTML = manifest.pieces.map(function (piece) {
+          var src = piece.source.replace("concepts/map-piece-choices/", "");
+          return "<figure class='piece'>" +
+            "<img src='" + src + "' alt='" + piece.number + " - " + piece.title + "'>" +
+            "<figcaption><span class='num'>#" + String(piece.number).padStart(3, "0") + "</span>" +
+            "<strong>" + piece.title + "</strong>" +
+            "<span class='cat'>" + piece.category + "</span></figcaption>" +
+            "</figure>";
+        }).join("");
+      });
+  </script>
+</body>
+</html>
