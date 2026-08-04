@@ -1363,3 +1363,56 @@
     padding-right: 42px;
   }
 }
+
+/* Per-tab close X buttons; visible inside every Lumadex tab. */
+.lumadex-tab-shell {
+  position: relative;
+  min-width: 0;
+}
+
+.lumadex-tab-shell .lumadex-tab {
+  width: 100%;
+  padding-right: 34px;
+}
+
+.lumadex-tab-close {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  z-index: 6;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #05080e;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fff4d2, #f2b94b 58%, #d06d32);
+  color: #101923;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+  box-shadow: 0 2px 0 rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.45);
+}
+
+.lumadex-tab-close:hover,
+.lumadex-tab-close:focus-visible {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+@media (max-width: 760px), (hover: none) and (orientation: landscape) {
+  .lumadex-tab-shell .lumadex-tab {
+    padding-right: 25px;
+  }
+
+  .lumadex-tab-close {
+    right: 3px;
+    top: 3px;
+    width: 22px;
+    height: 22px;
+    border-width: 2px;
+    border-radius: 7px;
+    font-size: 15px;
+  }
+}

@@ -270,7 +270,7 @@
       "<div class='lumadex-status'><strong>LUMADEX OS</strong><span>" + (this.game.map ? this.game.map.name : "Saha") + "</span><span>" + this.game.state.money + " Luma</span></div>" +
       "<div class='lumadex-tabs' role='tablist'>";
     groups.forEach(function (group) {
-      html += "<button class='lumadex-tab" + (group.active ? " active" : "") + "' data-lumadex-tab='" + group.id + "'>" + group.label + "</button>";
+      html += "<div class='lumadex-tab-shell'><button class='lumadex-tab" + (group.active ? " active" : "") + "' data-lumadex-tab='" + group.id + "'>" + group.label + "</button><button class='lumadex-tab-close' data-pause='close' aria-label='Kapat'>&times;</button></div>";
     });
     html += "</div><div class='lumadex-pages'>";
     groups.forEach(function (group) {
