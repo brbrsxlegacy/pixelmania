@@ -202,34 +202,78 @@
   };
 
   L.UiController.prototype.showPause = function () {
-    var html = "<div class='panel-grid'>" +
-      "<button class='panel-row' data-pause='team'>Yaratıklar</button>" +
-      "<button class='panel-row' data-pause='bag'>Çanta</button>" +
-      "<button class='panel-row' data-pause='quests'>Görevler</button>" +
-      "<button class='panel-row' data-pause='story'>Hikaye</button>" +
-      "<button class='panel-row' data-pause='daily'>Günlük</button>" +
-      "<button class='panel-row' data-pause='crafting'>Atolye</button>" +
-      "<button class='panel-row' data-pause='worldAbilities'>Dünya Yetenekleri</button>" +
-      "<button class='panel-row' data-pause='minigames'>Mini Oyunlar</button>" +
-      "<button class='panel-row' data-pause='weather'>Hava ve Pasifler</button>" +
-      "<button class='panel-row' data-pause='bosses'>Dev Bosslar</button>" +
-      "<button class='panel-row' data-pause='tournament'>Turnuva</button>" +
-      "<button class='panel-row' data-pause='legendary'>Efsane Avı</button>" +
-      "<button class='panel-row' data-pause='map'>Harita</button>" +
-      "<button class='panel-row' data-pause='aiPieces'>AI Rotalar</button>" +
-      "<button class='panel-row' data-pause='dex'>Lumadex</button>" +
-      "<button class='panel-row' data-pause='badges'>Rozetler</button>" +
-      "<button class='panel-row' data-pause='multiplayer'>Çok Oyunculu</button>" +
-      "<button class='panel-row' data-pause='jobs'>Meslekler</button>" +
-      "<button class='panel-row' data-pause='housing'>Evler</button>" +
-      "<button class='panel-row' data-pause='eggs'>Yumurtalar</button>" +
-      "<button class='panel-row' data-pause='market'>Pazar</button>" +
-      "<button class='panel-row' data-pause='unstuck'>Sıkışmadan Kurtul</button>" +
-      "<button class='panel-row' data-pause='settings'>Ayarlar</button>" +
-      "<button class='panel-row' data-pause='save'>Kaydet</button>" +
-      "<button class='panel-row danger' data-pause='main'>Ana Menü</button>" +
-      "</div>";
-    this.showPanel("Duraklat", html, "pause", "world");
+    var groups = [
+      {
+        id: "team",
+        label: "Ekip",
+        active: true,
+        apps: [
+          ["team", "Yarat&#305;klar", "Ekip"],
+          ["bag", "&#199;anta", "Envanter"],
+          ["dex", "Lumadex", "Katalog"],
+          ["eggs", "Yumurtalar", "Kulu&#231;ka"],
+          ["badges", "Rozetler", "Ba&#351;ar&#305;"],
+          ["market", "Pazar", "Ticaret"],
+          ["jobs", "Meslekler", "Gelir"],
+          ["housing", "Evler", "Emlak"]
+        ]
+      },
+      {
+        id: "world",
+        label: "D&#252;nya",
+        apps: [
+          ["map", "Harita", "Rota"],
+          ["quests", "G&#246;revler", "Hedef"],
+          ["story", "Hikaye", "B&#246;l&#252;m"],
+          ["daily", "G&#252;nl&#252;k", "Bonus"],
+          ["weather", "Hava", "Biyom"],
+          ["worldAbilities", "Yetenekler", "Saha"],
+          ["aiPieces", "AI Rotalar", "Ke&#351;if"],
+          ["legendary", "Efsane Av&#305;", "Nadir"]
+        ]
+      },
+      {
+        id: "battle",
+        label: "Sava&#351;",
+        apps: [
+          ["bosses", "Dev Bosslar", "Boss"],
+          ["tournament", "Turnuva", "Lig"],
+          ["minigames", "Mini Oyunlar", "Oyun"],
+          ["crafting", "At&#246;lye", "&#220;retim"],
+          ["multiplayer", "&#199;ok Oyunculu", "Online"]
+        ]
+      },
+      {
+        id: "system",
+        label: "Sistem",
+        apps: [
+          ["settings", "Ayarlar", "Sistem"],
+          ["save", "Kaydet", "Slot"],
+          ["unstuck", "Kurtul", "G&#252;venli"],
+          ["main", "Ana Men&#252;", "&#199;&#305;k&#305;&#351;", "danger"]
+        ]
+      }
+    ];
+    var html = "<div class='lumadex-home'>" +
+      "<div class='lumadex-status'><strong>LUMADEX OS</strong><span>" + (this.game.map ? this.game.map.name : "Saha") + "</span><span>" + this.game.state.money + " Luma</span></div>" +
+      "<div class='lumadex-tabs' role='tablist'>";
+    groups.forEach(function (group) {
+      html += "<button class='lumadex-tab" + (group.active ? " active" : "") + "' data-lumadex-tab='" + group.id + "'>" + group.label + "</button>";
+    });
+    html += "</div><div class='lumadex-pages'>";
+    groups.forEach(function (group) {
+      html += "<div class='lumadex-page" + (group.active ? " active" : "") + "' data-lumadex-page='" + group.id + "'>";
+      group.apps.forEach(function (app) {
+        html += "<button class='lumadex-app " + (app[3] || "") + "' data-pause='" + app[0] + "'>" +
+          "<span class='lumadex-app-icon' aria-hidden='true'></span>" +
+          "<strong>" + app[1] + "</strong>" +
+          "<small>" + app[2] + "</small>" +
+          "</button>";
+      });
+      html += "</div>";
+    });
+    html += "</div></div>";
+    this.showPanel("Lumadex", html, "pause", "world");
   };
 
   L.UiController.prototype.openStarter = function () {
@@ -881,6 +925,16 @@
   };
 
   L.UiController.prototype.handlePanelClick = function (button) {
+    var tab = button.getAttribute("data-lumadex-tab");
+    if (tab) {
+      this.panelContent.querySelectorAll(".lumadex-tab").forEach(function (entry) {
+        entry.classList.toggle("active", entry.getAttribute("data-lumadex-tab") === tab);
+      });
+      this.panelContent.querySelectorAll(".lumadex-page").forEach(function (entry) {
+        entry.classList.toggle("active", entry.getAttribute("data-lumadex-page") === tab);
+      });
+      return;
+    }
     var pause = button.getAttribute("data-pause");
     if (pause) {
       if (pause === "team") this.showTeam();
