@@ -258,6 +258,7 @@
         id: "system",
         label: "Sistem",
         apps: [
+          ["close", "Oyuna D&#246;n", "Kapat"],
           ["settings", "Ayarlar", "Sistem"],
           ["save", "Kaydet", "Slot"],
           ["unstuck", "Kurtul", "G&#252;venli"],
@@ -948,6 +949,7 @@
     }
     var pause = button.getAttribute("data-pause");
     if (pause) {
+      if (pause === "close") this.closePanel();
       if (pause === "team") this.showTeam();
       if (pause === "bag") this.showInventory();
       if (pause === "quests") this.showQuests();

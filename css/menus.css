@@ -1168,6 +1168,7 @@
 .lumadex-app[data-pause="settings"] .lumadex-app-icon { background-position: 25% 100%; }
 .lumadex-app[data-pause="save"] .lumadex-app-icon { background-position: 50% 100%; }
 .lumadex-app[data-pause="unstuck"] .lumadex-app-icon { background-position: 75% 100%; }
+.lumadex-app[data-pause="close"] .lumadex-app-icon { background-position: 100% 100%; }
 .lumadex-app[data-pause="main"] .lumadex-app-icon { background-position: 100% 100%; }
 
 .lumadex-app strong {
