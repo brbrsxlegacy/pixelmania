@@ -170,7 +170,16 @@
     this.returnMode = returnMode || (this.game.mode === "menu" ? "menu" : "world");
     this.panelTitle.textContent = title;
     this.panelContent.innerHTML = html;
-    this.panel.dataset.context = context || "";
+    var panelContext = context || "";
+    var lumadexContexts = {
+      pause: true, team: true, inventory: true, quests: true, story: true, daily: true, crafting: true,
+      worldAbilities: true, minigames: true, weather: true, bosses: true, tournament: true, legendary: true,
+      map: true, aiPieces: true, dex: true, badges: true, jobs: true, housing: true, eggs: true, market: true,
+      multiplayer: true, settings: true, controls: true, about: true, slots: true, evolutionTree: true, moves: true
+    };
+    this.panel.dataset.context = panelContext;
+    if (lumadexContexts[panelContext]) this.panel.dataset.device = "lumadex";
+    else delete this.panel.dataset.device;
     this.panel.classList.remove("hidden");
     if (this.game.mode !== "menu") this.game.mode = "panel";
   };
@@ -178,6 +187,8 @@
   L.UiController.prototype.closePanel = function () {
     this.panel.classList.add("hidden");
     this.panelContent.innerHTML = "";
+    this.panel.dataset.context = "";
+    delete this.panel.dataset.device;
     if (this.returnMode === "menu") this.game.mode = "menu";
     else this.game.mode = "world";
   };

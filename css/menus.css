@@ -1212,3 +1212,94 @@
     height: 34px;
   }
 }
+
+/* Scope Lumadex AI skin to real Lumadex app panels and keep normal popups sane. */
+.panel-screen[data-device="lumadex"] .lumadex-status,
+.panel-screen[data-device="lumadex"] .lumadex-tab {
+  border: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 12, 22, .34), rgba(5, 12, 22, 0) 34%),
+    url("../assets/ui/lumadex-app-card.png") center / 100% 100% no-repeat;
+  color: #fff4d2;
+  text-shadow: 0 2px 0 #05080e;
+  box-shadow: none;
+}
+
+.panel-screen[data-device="lumadex"] .lumadex-tab.active {
+  background:
+    linear-gradient(90deg, rgba(242, 185, 75, .28), rgba(5, 12, 22, 0) 36%),
+    url("../assets/ui/lumadex-app-card.png") center / 100% 100% no-repeat;
+  color: #ffffff;
+}
+
+.panel-screen[data-device="lumadex"] .lumadex-status span {
+  background: rgba(143, 216, 240, .14);
+  color: #d7ead7;
+}
+
+.panel-screen:not([data-device="lumadex"]) {
+  background: rgba(5, 7, 15, .62);
+}
+
+.panel-screen:not([data-device="lumadex"]) .panel-window {
+  width: min(440px, calc(100vw - 18px));
+  height: auto;
+  max-height: min(250px, calc(100vh - 18px));
+  padding: 0;
+  gap: 0;
+  border: 3px solid #101521;
+  border-radius: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.22) 0 12px, transparent 12px 24px) 0 0 / 24px 24px,
+    #fff4d2;
+  color: #172033;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, .42), inset 0 0 0 2px rgba(255, 255, 255, .32);
+  overflow: hidden;
+}
+
+.panel-screen:not([data-device="lumadex"]) .panel-window::before,
+.panel-screen:not([data-device="lumadex"]) .panel-window::after {
+  content: none;
+}
+
+.panel-screen:not([data-device="lumadex"]) .panel-window header {
+  min-height: 0;
+  margin: 0;
+  padding: 8px 10px;
+  border: 0;
+  border-bottom: 2px solid #101521;
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.28), transparent 42%),
+    #f2b94b;
+  color: #172033;
+  box-shadow: none;
+}
+
+.panel-screen:not([data-device="lumadex"]) .panel-window h2 {
+  color: #172033;
+  font-size: 16px;
+  text-shadow: none;
+}
+
+.panel-screen:not([data-device="lumadex"]) #panelClose {
+  position: static;
+  width: 32px;
+  height: 28px;
+  border: 2px solid #101521;
+  border-radius: 0;
+  background: #fff8df;
+  color: #172033;
+  box-shadow: none;
+}
+
+.panel-screen:not([data-device="lumadex"]) .panel-content {
+  position: static;
+  padding: 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #172033;
+  box-shadow: none;
+  backdrop-filter: none;
+}
