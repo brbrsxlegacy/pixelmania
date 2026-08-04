@@ -1416,3 +1416,52 @@
     font-size: 15px;
   }
 }
+
+/* Close button lives inside every Lumadex app header. */
+.panel-screen[data-device="lumadex"] .panel-window header {
+  position: relative;
+  padding-right: 58px;
+}
+
+.panel-screen[data-device="lumadex"] #panelClose {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  z-index: 20;
+  width: 40px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 3px solid #05080e;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #fff4d2, #f2b94b 58%, #d06d32);
+  color: #101923;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 900;
+  opacity: 1;
+  pointer-events: auto;
+  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+  box-shadow: 0 3px 0 rgba(0,0,0,.32), inset 0 2px 0 rgba(255,255,255,.45);
+}
+
+.panel-screen[data-device="lumadex"] #panelClose:hover,
+.panel-screen[data-device="lumadex"] #panelClose:focus-visible {
+  filter: brightness(1.1);
+}
+
+@media (max-width: 760px), (hover: none) and (orientation: landscape) {
+  .panel-screen[data-device="lumadex"] .panel-window header {
+    padding-right: 44px;
+  }
+
+  .panel-screen[data-device="lumadex"] #panelClose {
+    right: 6px;
+    width: 32px;
+    height: 28px;
+    border-width: 2px;
+    border-radius: 9px;
+    font-size: 20px;
+  }
+}
