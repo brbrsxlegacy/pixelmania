@@ -1058,3 +1058,157 @@
     font-size: 8px;
   }
 }
+/* AI-generated Lumadex assets */
+.panel-window {
+  width: min(980px, calc(100% - 10px));
+  height: min(640px, calc(100% - 10px));
+  max-height: calc(100% - 10px);
+  padding: clamp(58px, 7vw, 92px) clamp(74px, 9vw, 136px) clamp(52px, 7vw, 80px) clamp(78px, 10vw, 144px);
+  border: 0;
+  border-radius: 24px;
+  background: url("../assets/ui/lumadex-device-frame.png") center / 100% 100% no-repeat;
+  box-shadow: 0 14px 22px rgba(0,0,0,.45);
+}
+
+.panel-window::before,
+.panel-window::after {
+  content: none;
+}
+
+.panel-window header,
+.panel-content {
+  position: relative;
+  z-index: 1;
+}
+
+.panel-window header {
+  margin: 0 0 8px;
+  min-height: 42px;
+  padding: 8px 52px 8px 14px;
+  border-width: 3px;
+  border-radius: 14px;
+  background: rgba(6, 16, 25, .78);
+  backdrop-filter: blur(2px);
+}
+
+#panelClose {
+  right: clamp(78px, 9vw, 138px);
+  top: clamp(60px, 7vw, 92px);
+  background: linear-gradient(180deg, #fff4d2, #f2b94b);
+}
+
+.panel-content {
+  min-height: 0;
+  background: rgba(213, 234, 215, .92);
+  backdrop-filter: blur(2px);
+}
+
+.lumadex-app {
+  min-height: 92px;
+  padding: 14px 12px 12px;
+  grid-template-columns: 46px minmax(0, 1fr);
+  border: 0;
+  border-radius: 16px;
+  background:
+    linear-gradient(90deg, rgba(5, 12, 22, .2), rgba(5, 12, 22, 0) 26%),
+    url("../assets/ui/lumadex-app-card.png") center / 100% 100% no-repeat;
+  color: #fff4d2;
+  box-shadow: 0 5px 0 rgba(0,0,0,.18);
+}
+
+.lumadex-app:hover,
+.lumadex-app:focus-visible {
+  background:
+    linear-gradient(90deg, rgba(242, 185, 75, .18), rgba(5, 12, 22, 0) 28%),
+    url("../assets/ui/lumadex-app-card.png") center / 100% 100% no-repeat;
+  transform: translateY(-1px);
+}
+
+.lumadex-app.danger {
+  background:
+    linear-gradient(90deg, rgba(228, 109, 69, .35), rgba(5, 12, 22, 0) 30%),
+    url("../assets/ui/lumadex-app-card.png") center / 100% 100% no-repeat;
+}
+
+.lumadex-app-icon,
+.lumadex-app:nth-child(3n+1) .lumadex-app-icon,
+.lumadex-app:nth-child(3n+2) .lumadex-app-icon,
+.lumadex-app:nth-child(3n+3) .lumadex-app-icon {
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 10px;
+  background-image: url("../assets/ui/lumadex-app-icons.png");
+  background-size: 500% 500%;
+  background-repeat: no-repeat;
+  box-shadow: 0 3px 0 rgba(0,0,0,.3);
+}
+
+.lumadex-app[data-pause="team"] .lumadex-app-icon { background-position: 0% 0%; }
+.lumadex-app[data-pause="bag"] .lumadex-app-icon { background-position: 25% 0%; }
+.lumadex-app[data-pause="dex"] .lumadex-app-icon { background-position: 50% 0%; }
+.lumadex-app[data-pause="eggs"] .lumadex-app-icon { background-position: 75% 0%; }
+.lumadex-app[data-pause="badges"] .lumadex-app-icon { background-position: 100% 0%; }
+.lumadex-app[data-pause="market"] .lumadex-app-icon { background-position: 0% 25%; }
+.lumadex-app[data-pause="jobs"] .lumadex-app-icon { background-position: 25% 25%; }
+.lumadex-app[data-pause="housing"] .lumadex-app-icon { background-position: 50% 25%; }
+.lumadex-app[data-pause="map"] .lumadex-app-icon { background-position: 75% 25%; }
+.lumadex-app[data-pause="quests"] .lumadex-app-icon { background-position: 100% 25%; }
+.lumadex-app[data-pause="story"] .lumadex-app-icon { background-position: 0% 50%; }
+.lumadex-app[data-pause="daily"] .lumadex-app-icon { background-position: 25% 50%; }
+.lumadex-app[data-pause="weather"] .lumadex-app-icon { background-position: 50% 50%; }
+.lumadex-app[data-pause="worldAbilities"] .lumadex-app-icon { background-position: 75% 50%; }
+.lumadex-app[data-pause="aiPieces"] .lumadex-app-icon { background-position: 100% 50%; }
+.lumadex-app[data-pause="legendary"] .lumadex-app-icon { background-position: 0% 75%; }
+.lumadex-app[data-pause="bosses"] .lumadex-app-icon { background-position: 25% 75%; }
+.lumadex-app[data-pause="tournament"] .lumadex-app-icon { background-position: 50% 75%; }
+.lumadex-app[data-pause="minigames"] .lumadex-app-icon { background-position: 75% 75%; }
+.lumadex-app[data-pause="crafting"] .lumadex-app-icon { background-position: 100% 75%; }
+.lumadex-app[data-pause="multiplayer"] .lumadex-app-icon { background-position: 0% 100%; }
+.lumadex-app[data-pause="settings"] .lumadex-app-icon { background-position: 25% 100%; }
+.lumadex-app[data-pause="save"] .lumadex-app-icon { background-position: 50% 100%; }
+.lumadex-app[data-pause="unstuck"] .lumadex-app-icon { background-position: 75% 100%; }
+.lumadex-app[data-pause="main"] .lumadex-app-icon { background-position: 100% 100%; }
+
+.lumadex-app strong {
+  color: #fff4d2;
+  text-shadow: 0 2px 0 #05080e;
+}
+
+.lumadex-app small {
+  color: #8fd8f0;
+  text-shadow: 0 1px 0 #05080e;
+}
+
+@media (max-width: 760px), (hover: none) and (orientation: landscape) {
+  .panel-window {
+    width: calc(100% - 6px);
+    height: calc(100% - 6px);
+    padding: 42px 56px 38px 58px;
+  }
+
+  .panel-window header {
+    min-height: 34px;
+    margin-bottom: 5px;
+    padding: 6px 38px 6px 10px;
+  }
+
+  #panelClose {
+    right: 58px;
+    top: 43px;
+  }
+
+  .lumadex-app {
+    min-height: 68px;
+    grid-template-columns: 34px minmax(0, 1fr);
+    padding: 8px 8px;
+  }
+
+  .lumadex-app-icon,
+  .lumadex-app:nth-child(3n+1) .lumadex-app-icon,
+  .lumadex-app:nth-child(3n+2) .lumadex-app-icon,
+  .lumadex-app:nth-child(3n+3) .lumadex-app-icon {
+    width: 34px;
+    height: 34px;
+  }
+}
