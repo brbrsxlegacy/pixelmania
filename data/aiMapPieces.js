@@ -902,6 +902,89 @@
     window.LUMA_DATA.maps[piece.mapId] = makeAiMap(piece);
   });
 
+
+  function pieceMeta(number) {
+    var piece = pieces[number - 1];
+    if (!piece) return null;
+    return { number: piece.number, title: piece.title, category: piece.category, source: piece.source };
+  }
+
+  function applyBackdrop(map, number) {
+    var meta = pieceMeta(number);
+    if (!map || !meta) return;
+    map.aiPiece = meta;
+    map.aiBackdropApplied = true;
+  }
+
+  (function applyExistingMapBackdrops() {
+    var maps = window.LUMA_DATA.maps || {};
+    var direct = {
+      isikpinar: 1,
+      yesilova: 10,
+      fisilti: 51,
+      kristalGol: 8,
+      magara: 13,
+      lumaSehir: 28,
+      pazarMeydani: 23,
+      belediyeBahcesi: 76,
+      lumaAkademi: 37,
+      trenIstasyonu: 31,
+      liman: 20,
+      sanayi: 32,
+      arenaMeydan: 33,
+      botanikBahce: 17,
+      rengarenkCayir: 72,
+      geceKorusu: 52,
+      sisBatakligi: 73,
+      meteorTepesi: 99,
+      lavKanyonu: 59,
+      kumruCukuru: 56,
+      kristalMaden: 60,
+      sahilRotasi: 24,
+      buzulKiyi: 54,
+      gokKulesi: 99,
+      antikaHarabe: 62,
+      kutupPatikasi: 55,
+      kokLabirenti: 63,
+      derinKristalZindan: 60,
+      batikMahzen: 74,
+      labInterior: 83,
+      houseBlueInterior: 96,
+      houseRedInterior: 96,
+      clinicInterior: 93,
+      shopInterior: 94,
+      homeStudioInterior: 96,
+      homeGardenFlatInterior: 98,
+      homeHarborRoomInterior: 96,
+      homeAcademyLoftInterior: 81,
+      bossArena_leaf: 75,
+      bossArena_ember: 77,
+      bossArena_tide: 74,
+      bossArena_stone: 60,
+      bossArena_wind: 78,
+      bossArena_spark: 78,
+      bossArena_shadow: 52,
+      bossArena_light: 100
+    };
+
+    Object.keys(direct).forEach(function (mapId) {
+      applyBackdrop(maps[mapId], direct[mapId]);
+    });
+
+    Object.keys(maps).forEach(function (mapId) {
+      var map = maps[mapId];
+      if (!map || map.aiPiece || /^aiPiece\d+$/.test(mapId)) return;
+      if (/clinic|healing|revir/i.test(mapId)) applyBackdrop(map, 93);
+      else if (/shop|style|market|pazar/i.test(mapId)) applyBackdrop(map, 94);
+      else if (/lab|akademi/i.test(mapId)) applyBackdrop(map, 83);
+      else if (/home|house|apartment|realEstate|emlak/i.test(mapId)) applyBackdrop(map, 96);
+      else if (/mayor|belediye|hall/i.test(mapId)) applyBackdrop(map, 91);
+      else if (/station|tren/i.test(mapId)) applyBackdrop(map, 31);
+      else if (/factory|sanayi|arena/i.test(mapId)) applyBackdrop(map, 87);
+      else if (/interior/i.test(mapId)) applyBackdrop(map, 81);
+    });
+  })();
+
   (function addAiRouteBoard() {
     var village = window.LUMA_DATA.maps.isikpinar;
     if (!village) return;
