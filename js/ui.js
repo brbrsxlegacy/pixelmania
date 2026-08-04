@@ -258,7 +258,6 @@
         id: "system",
         label: "Sistem",
         apps: [
-          ["close", "Oyuna D&#246;n", "Kapat"],
           ["settings", "Ayarlar", "Sistem"],
           ["save", "Kaydet", "Slot"],
           ["unstuck", "Kurtul", "G&#252;venli"],
@@ -267,6 +266,7 @@
       }
     ];
     var html = "<div class='lumadex-home'>" +
+      "<button class='lumadex-close-x' data-pause='close' aria-label='Kapat'>&times;</button>" +
       "<div class='lumadex-status'><strong>LUMADEX OS</strong><span>" + (this.game.map ? this.game.map.name : "Saha") + "</span><span>" + this.game.state.money + " Luma</span></div>" +
       "<div class='lumadex-tabs' role='tablist'>";
     groups.forEach(function (group) {

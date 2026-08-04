@@ -1304,3 +1304,62 @@
   box-shadow: none;
   backdrop-filter: none;
 }
+
+/* Prominent close X for every Lumadex tab. */
+.lumadex-home {
+  position: relative;
+}
+
+.lumadex-close-x {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  z-index: 4;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #05080e;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fff4d2, #f2b94b 55%, #d06d32);
+  color: #101923;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgba(255,255,255,.55);
+  box-shadow: 0 4px 0 rgba(0,0,0,.28), inset 0 2px 0 rgba(255,255,255,.42);
+}
+
+.lumadex-close-x:hover,
+.lumadex-close-x:focus-visible {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.panel-screen[data-device="lumadex"] .lumadex-status {
+  padding-right: 56px;
+}
+
+.panel-screen[data-device="lumadex"] #panelClose {
+  width: 42px;
+  height: 38px;
+  border-radius: 13px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+@media (max-width: 760px), (hover: none) and (orientation: landscape) {
+  .lumadex-close-x {
+    right: 5px;
+    top: 5px;
+    width: 32px;
+    height: 32px;
+    border-width: 2px;
+    border-radius: 10px;
+    font-size: 20px;
+  }
+
+  .panel-screen[data-device="lumadex"] .lumadex-status {
+    padding-right: 42px;
+  }
+}
