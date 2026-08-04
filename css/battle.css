@@ -345,7 +345,7 @@ body.battle-active .touch-controls {
   border-radius: 10px;
   background: radial-gradient(circle at 35% 30%, var(--accent, #f2b94b), rgba(16,25,32,.92) 68%);
   color: #fff4d2;
-  font-size: 8px;
+  font-size: 7px;
   line-height: 1;
   overflow: hidden;
 }
@@ -429,7 +429,7 @@ body.battle-active .touch-controls {
   height: 86px;
   display: grid;
   place-items: center;
-  border: 4px solid #080d15;
+  border: 3px solid #080d15;
   background: linear-gradient(180deg, #20313f, #101922);
   box-shadow: 0 5px 0 rgba(0,0,0,.34), inset 0 0 0 2px rgba(255,255,255,.08);
   color: #fff4d2;
@@ -439,7 +439,7 @@ body.battle-active .touch-controls {
 
 .battle-turn-badge span {
   align-self: end;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1;
 }
 
@@ -459,7 +459,7 @@ body.battle-active .touch-controls {
   display: grid;
   gap: 5px;
   place-content: center;
-  border: 4px solid #080d15;
+  border: 3px solid #080d15;
   background: linear-gradient(180deg, #20313f, #101922);
   box-shadow: 0 5px 0 rgba(0,0,0,.34), inset 0 0 0 2px rgba(255,255,255,.08);
 }
@@ -478,7 +478,7 @@ body.battle-active .touch-controls {
   top: 94px;
   left: 18px;
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .party-token {
@@ -509,12 +509,12 @@ body.battle-active .touch-controls {
   z-index: 6;
   left: 18px;
   right: 18px;
-  bottom: 76px;
-  height: 186px;
+  bottom: 60px;
+  height: 144px;
   min-height: 0;
-  padding: 10px;
-  border: 4px solid #080d15;
-  border-radius: 18px;
+  padding: 6px;
+  border: 3px solid #080d15;
+  border-radius: 14px;
   background:
     linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0)),
     rgba(13, 21, 28, .94);
@@ -524,15 +524,15 @@ body.battle-active .touch-controls {
 
 .battle-modern .battle-main-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 250px 104px;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 212px 68px;
+  gap: 8px;
   align-items: stretch;
 }
 
 .battle-move-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -553,10 +553,10 @@ body.battle-active .touch-controls {
 .battle-modern .move-card {
   position: relative;
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-columns: 40px minmax(0, 1fr);
   grid-template-rows: auto auto auto auto;
-  gap: 3px 7px;
-  padding: 8px;
+  gap: 2px 6px;
+  padding: 6px;
   text-align: left;
   border-color: var(--accent, #f2b94b);
 }
@@ -568,8 +568,8 @@ body.battle-active .touch-controls {
 
 .battle-card-icon {
   grid-row: 1 / span 4;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   image-rendering: pixelated;
   align-self: start;
 }
@@ -580,7 +580,7 @@ body.battle-active .touch-controls {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.1;
 }
 
@@ -590,7 +590,7 @@ body.battle-active .touch-controls {
   border-radius: 5px;
   background: var(--accent, #f2b94b);
   color: #101721;
-  font-size: 10px;
+  font-size: 8px;
   line-height: 1.1;
   text-shadow: none;
 }
@@ -601,13 +601,13 @@ body.battle-active .touch-controls {
   justify-content: space-between;
   gap: 6px;
   color: #dce7ee;
-  font-size: 12px;
+  font-size: 8px;
   line-height: 1.1;
 }
 
 .pp-line {
   margin-top: 2px;
-  padding: 3px 6px;
+  padding: 2px 5px;
   border-radius: 6px;
   background: rgba(255,255,255,.07);
 }
@@ -615,19 +615,19 @@ body.battle-active .touch-controls {
 .battle-command-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 
 .battle-modern .battle-command {
   display: grid;
   place-items: center;
-  padding: 7px 5px;
-  font-size: 19px;
+  padding: 5px 4px;
+  font-size: 14px;
   line-height: 1;
 }
 
 .battle-command-icon {
-  font-size: 26px;
+  font-size: 21px;
   line-height: 1;
 }
 
@@ -638,14 +638,14 @@ body.battle-active .touch-controls {
 
 .battle-dpad {
   position: relative;
-  width: 104px;
-  height: 104px;
+  width: 68px;
+  height: 68px;
   align-self: center;
-  border: 6px solid #080d15;
+  border: 4px solid #080d15;
   border-radius: 50%;
   background:
     radial-gradient(circle, #333a43 0 18%, #202730 19% 100%);
-  box-shadow: inset 0 0 0 4px rgba(255,255,255,.06), 0 5px 0 rgba(0,0,0,.32);
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.06), 0 4px 0 rgba(0,0,0,.32);
 }
 
 .battle-dpad span,
@@ -660,10 +660,22 @@ body.battle-active .touch-controls {
   opacity: .9;
 }
 
-.battle-dpad span { left: 39px; top: 12px; border-width: 0 12px 16px 12px; border-color: transparent transparent #d7d1c0 transparent; }
-.battle-dpad b { left: 39px; bottom: 12px; border-width: 16px 12px 0 12px; border-color: #d7d1c0 transparent transparent transparent; }
-.battle-dpad i { left: 12px; top: 39px; border-width: 12px 16px 12px 0; border-color: transparent #d7d1c0 transparent transparent; }
-.battle-dpad em { right: 12px; top: 39px; border-width: 12px 0 12px 16px; border-color: transparent transparent transparent #d7d1c0; }
+.battle-dpad span { left: 24px; top: 8px; border-width: 0 8px 10px 8px; border-color: transparent transparent #d7d1c0 transparent; }
+.battle-dpad b { left: 24px; bottom: 8px; border-width: 10px 8px 0 8px; border-color: #d7d1c0 transparent transparent transparent; }
+.battle-dpad i { left: 8px; top: 24px; border-width: 8px 10px 8px 0; border-color: transparent #d7d1c0 transparent transparent; }
+.battle-dpad em { right: 8px; top: 24px; border-width: 8px 0 8px 10px; border-color: transparent transparent transparent #d7d1c0; }
+.battle-dpad::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #303842;
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.08);
+  transform: translate(-50%, -50%);
+}
 
 .battle-modern .battle-list-grid {
   display: grid;
@@ -680,7 +692,7 @@ body.battle-active .touch-controls {
   grid-template-columns: 58px minmax(0, 1fr);
   align-content: center;
   gap: 5px 8px;
-  padding: 8px;
+  padding: 6px;
   text-align: left;
 }
 
@@ -707,9 +719,9 @@ body.battle-active .touch-controls {
   left: 18px;
   right: 18px;
   bottom: 14px;
-  min-height: 48px;
+  min-height: 40px;
   padding: 12px 16px;
-  border: 4px solid #080d15;
+  border: 3px solid #080d15;
   border-radius: 14px;
   background:
     linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0)),
@@ -734,7 +746,7 @@ body.boss-battle .battle-modern .combatant.enemy {
     top: 8px;
     left: 74px;
     right: 74px;
-    gap: 8px;
+    gap: 6px;
     grid-template-columns: minmax(150px, 230px) minmax(150px, 220px);
   }
 
@@ -760,11 +772,11 @@ body.boss-battle .battle-modern .combatant.enemy {
   }
 
   .battle-modern .combatant span[id$="Level"] {
-    font-size: 12px;
+    font-size: 8px;
   }
 
   .battle-modern .combatant small {
-    font-size: 10px;
+    font-size: 8px;
   }
 
   .battle-modern .hp-shell {
@@ -789,14 +801,14 @@ body.boss-battle .battle-modern .combatant.enemy {
     border-width: 3px;
   }
 
-  .battle-turn-badge span { font-size: 10px; }
+  .battle-turn-badge span { font-size: 8px; }
   .battle-turn-badge strong { font-size: 24px; }
 
   .battle-burger {
     top: 8px;
     left: 8px;
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border-width: 3px;
   }
 
@@ -813,22 +825,22 @@ body.boss-battle .battle-modern .combatant.enemy {
 
   .party-token,
   .party-token canvas {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
   }
 
   .battle-modern .battle-menu {
     left: 8px;
     right: 8px;
-    bottom: 54px;
-    height: 138px;
-    padding: 7px;
+    bottom: 46px;
+    height: 108px;
+    padding: 5px;
     border-width: 3px;
     border-radius: 12px;
   }
 
   .battle-modern .battle-main-grid {
-    grid-template-columns: minmax(0, 1fr) 154px;
+    grid-template-columns: minmax(0, 1fr) 120px;
     gap: 7px;
   }
 
@@ -841,7 +853,7 @@ body.boss-battle .battle-modern .combatant.enemy {
   }
 
   .battle-modern .move-card {
-    grid-template-columns: 34px minmax(0, 1fr);
+    grid-template-columns: 28px minmax(0, 1fr);
     gap: 2px 5px;
     padding: 5px;
     border-width: 2px;
@@ -851,22 +863,22 @@ body.boss-battle .battle-modern .combatant.enemy {
   .battle-card-icon,
   .battle-modern .item-card .battle-card-icon,
   .team-card-art {
-    width: 34px;
-    height: 34px;
+    width: 28px;
+    height: 28px;
   }
 
   .battle-modern .battle-card strong {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .element-badge {
     padding: 1px 4px;
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .battle-modern .battle-card small,
   .pp-line {
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .battle-command-grid {
@@ -877,11 +889,11 @@ body.boss-battle .battle-modern .combatant.enemy {
     border-width: 2px;
     border-radius: 9px;
     padding: 3px;
-    font-size: 12px;
+    font-size: 8px;
   }
 
   .battle-command-icon {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .battle-modern .battle-list-grid {
@@ -900,12 +912,12 @@ body.boss-battle .battle-modern .combatant.enemy {
   .battle-modern .battle-message {
     left: 8px;
     right: 8px;
-    bottom: 7px;
-    min-height: 39px;
-    padding: 8px 10px;
+    bottom: 6px;
+    min-height: 28px;
+    padding: 6px 9px;
     border-width: 3px;
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 8px;
   }
 }
 body.battle-active .battle-modern .battle-menu {
@@ -915,7 +927,7 @@ body.battle-active .battle-modern .battle-menu {
 
 body.battle-active .battle-modern .battle-main-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 250px 104px;
+  grid-template-columns: minmax(0, 1fr) 212px 68px;
 }
 
 body.battle-active .battle-modern .battle-list-grid {
@@ -929,10 +941,66 @@ body.battle-active .battle-modern .battle-menu button {
 
 @media (max-width: 760px), (hover: none) and (orientation: landscape) {
   body.battle-active .battle-modern .battle-main-grid {
-    grid-template-columns: minmax(0, 1fr) 154px;
+    grid-template-columns: minmax(0, 1fr) 120px;
   }
 
   body.battle-active .battle-modern .battle-list-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* Compact battle hotfix: keep controls readable and symmetric. */
+.battle-dpad span,
+.battle-dpad i,
+.battle-dpad b,
+.battle-dpad em {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  background: #d7d1c0;
+}
+
+.battle-dpad span {
+  left: 26px;
+  top: 8px;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.battle-dpad b {
+  left: 26px;
+  bottom: 8px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.battle-dpad i {
+  left: 8px;
+  top: 26px;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+.battle-dpad em {
+  right: 8px;
+  top: 26px;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+@media (max-width: 760px), (hover: none) and (orientation: landscape) {
+  .battle-modern .combatant span[id$="Level"] {
+    font-size: 11px;
+  }
+
+  .battle-turn-badge span {
+    font-size: 10px;
+  }
+
+  .battle-modern .battle-command {
+    font-size: 11px;
+  }
+
+  .battle-modern .battle-message {
+    font-size: 11px;
+  }
+
+  .battle-modern .move-card small {
+    display: none;
   }
 }
