@@ -1,0 +1,297 @@
+/* Pixelmania ana menü teması — referans görseldeki düzeni canlı butonlarla uygular. */
+
+.main-menu {
+  display: block;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(106, 201, 255, .16), transparent 32%),
+    linear-gradient(180deg, rgba(7, 13, 27, .02) 0%, rgba(7, 13, 27, .10) 52%, rgba(7, 13, 27, .42) 100%),
+    url("../assets/menu-poster.png") center / cover no-repeat,
+    linear-gradient(180deg, #45aaf2 0%, #9adbea 40%, #62b75c 65%, #2e6f39 100%);
+  color: #fff;
+}
+
+.main-menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(3, 8, 18, .16), transparent 22%, transparent 78%, rgba(3, 8, 18, .16)),
+    linear-gradient(180deg, transparent 54%, rgba(5, 9, 18, .34) 100%);
+}
+
+.main-menu::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 3px rgba(4, 9, 18, .88), inset 0 0 0 5px rgba(255,255,255,.12);
+}
+
+.main-menu .menu-sky,
+.main-menu .menu-footer {
+  display: none;
+}
+
+.main-menu .title-block {
+  position: absolute;
+  left: 50%;
+  top: 8.5%;
+  z-index: 3;
+  width: min(92%, 680px);
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.main-menu .title-block .eyebrow {
+  display: none;
+}
+
+.main-menu .title-block h1 {
+  margin: 0;
+  color: transparent;
+  font-size: 0;
+  line-height: 1;
+  text-shadow: none;
+}
+
+.main-menu .title-block h1::before {
+  content: "PIXELMANIA";
+  display: block;
+  color: #ffc62b;
+  font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+  font-size: clamp(38px, 9.2vw, 78px);
+  font-weight: 900;
+  line-height: .88;
+  letter-spacing: .025em;
+  -webkit-text-stroke: clamp(2px, .45vw, 5px) #111722;
+  text-shadow:
+    0 3px 0 #d67f00,
+    0 6px 0 #8c4c00,
+    0 9px 0 #111722,
+    3px 11px 0 rgba(0,0,0,.34);
+}
+
+.main-menu .subtitle {
+  margin: clamp(8px, 1.5vw, 12px) 0 0;
+  color: transparent;
+  font-size: 0;
+  line-height: 1;
+  text-shadow: none;
+}
+
+.main-menu .subtitle::before {
+  content: "Işık Muhafızları:\A Luma Yolu";
+  display: block;
+  white-space: pre-line;
+  color: #fff;
+  font-family: ui-monospace, "Cascadia Mono", "Consolas", monospace;
+  font-size: clamp(13px, 2.7vw, 25px);
+  font-weight: 900;
+  line-height: 1.08;
+  -webkit-text-stroke: 1px rgba(12, 18, 30, .9);
+  text-shadow: 0 2px 0 #101521, 0 4px 0 rgba(0,0,0,.2);
+}
+
+.main-menu .menu-stack {
+  position: absolute;
+  left: 50%;
+  top: 49%;
+  z-index: 4;
+  width: min(58%, 390px);
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-areas:
+    "new new new new"
+    "continue continue continue continue"
+    "multi multi multi multi"
+    "slots settings controls about";
+  gap: clamp(5px, 1vw, 10px);
+}
+
+.main-menu .menu-stack button {
+  position: relative;
+  min-width: 0;
+  min-height: clamp(34px, 5.6vw, 52px);
+  margin: 0;
+  padding: 5px 9px;
+  border: clamp(2px, .35vw, 4px) solid #111722;
+  border-radius: clamp(3px, .7vw, 8px);
+  color: #fff;
+  font-family: ui-monospace, "Cascadia Mono", "Consolas", monospace;
+  font-size: clamp(11px, 2vw, 20px);
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 2px 0 rgba(0,0,0,.72);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.34),
+    inset 0 -4px 0 rgba(0,0,0,.24),
+    0 4px 0 rgba(0,0,0,.58),
+    0 7px 12px rgba(0,0,0,.22);
+  transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+}
+
+.main-menu .menu-stack button::before {
+  content: "";
+  position: absolute;
+  inset: 3px 4px auto 4px;
+  height: 24%;
+  border-radius: 3px;
+  background: rgba(255,255,255,.14);
+  pointer-events: none;
+}
+
+.main-menu .menu-stack button:hover,
+.main-menu .menu-stack button:focus-visible {
+  filter: brightness(1.12) saturate(1.06);
+  transform: translateY(-2px) scale(1.015);
+}
+
+.main-menu .menu-stack button:active {
+  transform: translateY(2px) scale(.995);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    inset 0 -2px 0 rgba(0,0,0,.2),
+    0 2px 0 rgba(0,0,0,.52);
+}
+
+.main-menu [data-menu-action="new"] {
+  grid-area: new;
+  background: linear-gradient(180deg, #73c900 0%, #4fa900 48%, #3d7d00 100%);
+}
+
+.main-menu [data-menu-action="continue"] {
+  grid-area: continue;
+  background: linear-gradient(180deg, #3969db 0%, #2451bd 48%, #183b8f 100%);
+}
+
+.main-menu [data-menu-action="multiplayer"] {
+  grid-area: multi;
+  background: linear-gradient(180deg, #a13bc7 0%, #7b27a8 48%, #59187d 100%);
+}
+
+.main-menu [data-menu-action="slots"],
+.main-menu [data-menu-action="settings"],
+.main-menu [data-menu-action="controls"],
+.main-menu [data-menu-action="about"] {
+  min-height: clamp(30px, 4.7vw, 43px);
+  padding: 4px 5px;
+  background: linear-gradient(180deg, #434b58 0%, #2d333d 52%, #1d222b 100%);
+  font-size: clamp(8px, 1.45vw, 15px);
+}
+
+.main-menu [data-menu-action="slots"] { grid-area: slots; }
+.main-menu [data-menu-action="settings"] { grid-area: settings; }
+.main-menu [data-menu-action="controls"] { grid-area: controls; }
+.main-menu [data-menu-action="about"] { grid-area: about; }
+
+/* Placeholder reklam menü görselini bozmaz. Gerçek reklam dolduğunda alan görünür. */
+.main-menu #ad-home-bottom:not([data-ad-loaded="true"]) {
+  display: none;
+}
+
+.main-menu #ad-home-bottom[data-ad-loaded="true"] {
+  position: absolute;
+  left: 50%;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 8;
+  transform: translateX(-50%);
+  width: min(728px, calc(100% - 20px));
+  max-height: 90px;
+  background: rgba(5, 9, 18, .92);
+}
+
+/* Reklam gerçekten görünürse menü butonlarını reklamdan uzaklaştır. */
+.main-menu:has(#ad-home-bottom[data-ad-loaded="true"]) .menu-stack {
+  top: 39%;
+}
+
+@media (max-width: 700px) {
+  .main-menu .title-block {
+    top: 7%;
+  }
+
+  .main-menu .menu-stack {
+    top: 48%;
+    width: min(72%, 390px);
+  }
+
+  .main-menu .menu-stack button {
+    min-height: 38px;
+  }
+
+  .main-menu [data-menu-action="slots"],
+  .main-menu [data-menu-action="settings"],
+  .main-menu [data-menu-action="controls"],
+  .main-menu [data-menu-action="about"] {
+    min-height: 34px;
+  }
+
+  .main-menu #ad-home-bottom[data-ad-loaded="true"] {
+    width: min(320px, calc(100% - 18px));
+    height: 50px;
+  }
+}
+
+@media (max-width: 430px) {
+  .main-menu .menu-stack {
+    width: min(82%, 360px);
+    gap: 5px;
+  }
+
+  .main-menu .menu-stack button {
+    font-size: 12px;
+  }
+
+  .main-menu [data-menu-action="slots"],
+  .main-menu [data-menu-action="settings"],
+  .main-menu [data-menu-action="controls"],
+  .main-menu [data-menu-action="about"] {
+    font-size: 9px;
+  }
+}
+
+@media (max-height: 430px) and (orientation: landscape) {
+  .main-menu .title-block {
+    top: 5%;
+  }
+
+  .main-menu .title-block h1::before {
+    font-size: clamp(34px, 8vw, 58px);
+  }
+
+  .main-menu .subtitle::before {
+    font-size: clamp(11px, 2.3vw, 18px);
+  }
+
+  .main-menu .menu-stack {
+    top: 47%;
+    width: min(56%, 360px);
+    gap: 5px;
+  }
+
+  .main-menu .menu-stack button {
+    min-height: 32px;
+    font-size: 12px;
+  }
+
+  .main-menu [data-menu-action="slots"],
+  .main-menu [data-menu-action="settings"],
+  .main-menu [data-menu-action="controls"],
+  .main-menu [data-menu-action="about"] {
+    min-height: 28px;
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-menu .menu-stack button {
+    transition: none;
+  }
+}
