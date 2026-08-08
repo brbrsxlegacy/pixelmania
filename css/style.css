@@ -334,3 +334,112 @@ body:not(.world-input-active) .touch-controls {
     max-height: 100vh;
   }
 }
+
+/* Google AdSense için güvenli, responsive reklam alanları. */
+.ad-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: calc(100vw - 24px);
+  overflow: hidden;
+  border: 1px dashed rgba(255, 244, 210, .34);
+  background: rgba(8, 13, 24, .72);
+  color: rgba(255, 244, 210, .62);
+  text-align: center;
+}
+
+.ad-container > ins.adsbygoogle {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.ad-placeholder {
+  pointer-events: none;
+  user-select: none;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .72;
+}
+
+.ad-home-bottom {
+  grid-row: 4;
+  align-self: center;
+  justify-self: center;
+  width: min(728px, calc(100vw - 24px));
+  min-height: 90px;
+  height: 90px;
+  margin: 18px auto 28px;
+}
+
+.ad-game-side {
+  display: none;
+}
+
+.ad-result-slot {
+  width: min(728px, calc(100vw - 24px));
+  min-height: 90px;
+  height: 90px;
+  margin: 14px auto 18px;
+}
+
+.battle-modern .ad-result-slot:not(.hidden) {
+  position: absolute;
+  left: 50%;
+  bottom: 118px;
+  z-index: 18;
+  transform: translateX(-50%);
+}
+
+@media (min-width: 1280px) and (min-aspect-ratio: 23/10) {
+  body.world-input-active .ad-game-side {
+    position: fixed;
+    top: 50%;
+    right: 12px;
+    z-index: 8;
+    display: flex;
+    width: min(160px, calc((100vw - (100vh * 16 / 9)) / 2 - 24px));
+    min-width: 100px;
+    min-height: 100px;
+    transform: translateY(-50%);
+  }
+}
+
+@media (max-width: 600px) {
+  .ad-home-bottom,
+  .ad-result-slot {
+    width: min(320px, calc(100vw - 20px));
+    min-height: 50px;
+    height: 50px;
+  }
+
+  .ad-home-bottom {
+    margin-top: 12px;
+    margin-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+
+  .ad-result-slot {
+    margin-top: 12px;
+    margin-bottom: 18px;
+  }
+
+  .ad-game-side {
+    display: none !important;
+  }
+}
+
+@media (max-height: 480px) and (pointer: coarse) {
+  .ad-home-bottom {
+    width: min(320px, calc(100vw - 20px));
+    min-height: 50px;
+    height: 50px;
+    margin: 8px auto max(18px, env(safe-area-inset-bottom));
+  }
+}
