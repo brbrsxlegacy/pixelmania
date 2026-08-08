@@ -27,6 +27,12 @@
       <div id="notificationStack" class="notification-stack" aria-live="polite"></div>
     </div>
 
+    <!-- ADSENSE OYUN İÇİ: Yalnızca yeterince geniş masaüstü ekranlarda, oyun alanının dışında gösterilir. -->
+    <aside id="ad-game-side" class="ad-container ad-game-side" aria-label="Reklam alanı">
+      <!-- Gerçek AdSense reklam birimi kodunu bu yorumun yerine ekle. -->
+      <span class="ad-placeholder" aria-hidden="true">Reklam alanı</span>
+    </aside>
+
     <section id="mainMenu" class="main-menu overlay-screen">
       <div class="menu-sky">
         <span class="cloud cloud-a"></span>
@@ -47,6 +53,13 @@
         <button data-menu-action="controls">Kontroller</button>
         <button data-menu-action="about">Hakkında</button>
       </nav>
+
+      <!-- ADSENSE ANA MENÜ: Gerçek AdSense reklam birimi kodunu bu container içine ekle. -->
+      <div id="ad-home-bottom" class="ad-container ad-home-bottom" aria-label="Reklam alanı">
+        <!-- Gerçek AdSense reklam birimi kodunu bu yorumun yerine ekle. -->
+        <span class="ad-placeholder" aria-hidden="true">Reklam alanı</span>
+      </div>
+
       <p class="menu-footer">Tamamen özgün yaratıklar, çevrimdışı oynanış, otomatik kayıt.</p>
     </section>
 
@@ -95,6 +108,13 @@
         </div>
       </div>
       <div class="battle-message" id="battleMessage">Ne yapacaksın?</div>
+
+      <!-- ADSENSE SONUÇ: Sonuç/skor/ödül bilgileri gösterildikten sonra LUMA.Ads.showResultSlot() ile aç. -->
+      <div id="ad-result" class="ad-container ad-result-slot hidden" aria-label="Reklam alanı">
+        <!-- Gerçek AdSense reklam birimi kodunu bu yorumun yerine ekle. -->
+        <span class="ad-placeholder" aria-hidden="true">Reklam alanı</span>
+      </div>
+
       <div class="battle-menu" id="battleMenu"></div>
     </section>
 
