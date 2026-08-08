@@ -106,6 +106,102 @@
     });
   };
 
+  function ensureRewardState(state) {
+    if (!state) return null;
+    state.adRewards = state.adRewards && typeof state.adRewards === "object" ? state.adRewards : {};
+    state.adRewards.legendary = state.adRewards.legendary && typeof state.adRewards.legendary === "object" ? state.adRewards.legendary : {};
+    state.adRewards.legendary.watched = Math.max(0, Math.min(1, Number(state.adRewards.legendary.watched) || 0));
+    return state.adRewards.legendary;
+  }
+
+  function patchLegendaryRewardAds() {
+    if (!L.UiController || !L.UiController.prototype) return;
+
+    var proto = L.UiController.prototype;
+    if (proto.__legendaryRewardAdsPatched) return;
+    proto.__legendaryRewardAdsPatched = true;
+
+    var baseShowLegendary = proto.showLegendary;
+    var baseHandlePanelClick = proto.handlePanelClick;
+
+    proto.showLegendary = function () {
+      baseShowLegendary.call(this);
+
+      var reward = ensureRewardState(this.game && this.game.state);
+      if (!reward || !this.panelContent) return;
+
+      var progress = reward.watched || 0;
+      var row = document.createElement("div");
+      row.className = "panel-row rewarded-legendary-ad";
+      row.innerHTML =
+        "<strong>İsteğe bağlı ödüllü reklam:</strong> " + progress + "/2" +
+        "<br><small>2 ödüllü reklamı tamamen izleyince 1 Efsane Yemi kazanırsın. Reklam açılmazsa veya tamamlanmazsa ilerleme sayılmaz.</small><br>" +
+        "<button class='primary' data-legendary-reward-ad='1'>Ödüllü Reklam İzle (" + progress + "/2)</button>";
+
+      var firstGrid = this.panelContent.querySelector(".panel-grid");
+      if (firstGrid) this.panelContent.insertBefore(row, firstGrid);
+      else this.panelContent.appendChild(row);
+    };
+
+    proto.handlePanelClick = function (button) {
+      if (!button || !button.hasAttribute("data-legendary-reward-ad")) {
+        return baseHandlePanelClick.call(this, button);
+      }
+
+      if (this._legendaryRewardAdBusy) return;
+
+      var self = this;
+      var state = this.game && this.game.state;
+      var reward = ensureRewardState(state);
+      if (!reward) return;
+
+      this._legendaryRewardAdBusy = true;
+      button.disabled = true;
+      button.textContent = "Reklam hazırlanıyor...";
+
+      var rewardGranted = false;
+
+      function grantReward() {
+        if (rewardGranted) return;
+        rewardGranted = true;
+
+        var current = ensureRewardState(self.game && self.game.state);
+        if (!current || !self.game || !self.game.state) return;
+
+        current.watched += 1;
+
+        if (current.watched >= 2) {
+          current.watched = 0;
+          if (L.Progression) L.Progression.ensureState(self.game.state);
+          self.game.state.legendaryHunts.lures += 1;
+          self.notify("2/2 tamamlandı! +1 Efsane Yemi kazandın.");
+          if (L.Audio) L.Audio.play("victory");
+        } else {
+          self.notify("Ödüllü reklam tamamlandı: 1/2.");
+          if (L.Audio) L.Audio.play("confirm");
+        }
+
+        self.game.autosaveSoon();
+      }
+
+      Promise.resolve(window.showRewardedAd(grantReward)).then(function (result) {
+        if (result && result.rewarded) grantReward();
+        if (!rewardGranted) {
+          self.notify("Ödüllü reklam şu anda hazır değil.");
+          if (L.Audio) L.Audio.play("error");
+        }
+      }).catch(function () {
+        self.notify("Ödüllü reklam açılamadı. İlerlemen değişmedi.");
+        if (L.Audio) L.Audio.play("error");
+      }).then(function () {
+        self._legendaryRewardAdBusy = false;
+        if (self.panel && self.panel.dataset.context === "legendary") self.showLegendary();
+      });
+    };
+  }
+
+  patchLegendaryRewardAds();
+
   window.addEventListener("DOMContentLoaded", function () {
     L.Ads.init();
     var game = new L.Game();
