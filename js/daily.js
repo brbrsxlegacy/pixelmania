@@ -2,19 +2,38 @@
   var L = window.LUMA;
   if (!L) return;
 
-  function todayKey() {
-    var now = new Date();
+  function dateKey(date) {
+    var now = date || new Date();
     var year = now.getFullYear();
     var month = String(now.getMonth() + 1).padStart(2, '0');
     var day = String(now.getDate()).padStart(2, '0');
     return year + '-' + month + '-' + day;
   }
 
+  function todayKey() {
+    return dateKey(new Date());
+  }
+
+  function yesterdayKey() {
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return dateKey(yesterday);
+  }
+
   var dailyTasks = [
-    { id: 'winWild', label: '3 vahşi savaş kazan', target: 3, reward: '60 Luma' },
-    { id: 'catchAny', label: '2 Luma yakala', target: 2, reward: '1 Luma Küresi' },
-    { id: 'workShift', label: '1 vardiya çalış', target: 1, reward: '90 Luma' },
-    { id: 'pvpBattle', label: '1 PvP maçı bitir', target: 1, reward: 'PvP puanı' }
+    { id: 'winWild', label: '3 vahşi savaş kazan', target: 3, reward: '75 Luma' },
+    { id: 'catchAny', label: '2 Luma yakala', target: 2, reward: '2 Luma Küresi' },
+    { id: 'workShift', label: '1 vardiya çalış', target: 1, reward: '100 Luma' }
+  ];
+
+  var loginRewards = [
+    { day: 1, label: '100 Luma', money: 100 },
+    { day: 2, label: '125 Luma + 1 Luma Küresi', money: 125, item: 'lumaKuresi', qty: 1 },
+    { day: 3, label: '175 Luma + 2 Küçük İksir', money: 175, item: 'kucukIksir', qty: 2 },
+    { day: 4, label: '225 Luma + Luma Yumurtası', money: 225, egg: true },
+    { day: 5, label: '300 Luma + 2 Luma Küresi', money: 300, item: 'lumaKuresi', qty: 2 },
+    { day: 6, label: '400 Luma + Luma Yumurtası', money: 400, egg: true },
+    { day: 7, label: '600 Luma + Efsane Yemi + Yumurta', money: 600, egg: true, lure: 1 }
   ];
 
   function ensureTaskBag(state) {
@@ -33,13 +52,71 @@
     return state.daily;
   }
 
+  function ensureLoginReward(state) {
+    state.loginReward = state.loginReward && typeof state.loginReward === 'object' ? state.loginReward : {};
+    state.loginReward.lastClaim = state.loginReward.lastClaim || null;
+    state.loginReward.streak = Math.max(0, Number(state.loginReward.streak) || 0);
+    state.loginReward.totalClaims = Math.max(0, Number(state.loginReward.totalClaims) || 0);
+    return state.loginReward;
+  }
+
   function addMoney(state, amount) {
     state.money = Math.max(0, Math.floor((state.money || 0) + amount));
   }
 
+  function loginDayFor(state) {
+    var login = ensureLoginReward(state);
+    var nextStreak = login.lastClaim === yesterdayKey() ? login.streak + 1 : (login.lastClaim === todayKey() ? login.streak : 1);
+    return ((Math.max(1, nextStreak) - 1) % loginRewards.length) + 1;
+  }
+
+  function loginInfo(state) {
+    var login = ensureLoginReward(state);
+    var day = loginDayFor(state);
+    return {
+      canClaim: login.lastClaim !== todayKey(),
+      streak: login.streak,
+      day: day,
+      reward: loginRewards[day - 1],
+      lastClaim: login.lastClaim,
+      totalClaims: login.totalClaims
+    };
+  }
+
+  function claimLogin(game) {
+    if (!game || !game.state) return { ok: false, message: 'Oyun kaydı hazır değil.' };
+    var state = game.state;
+    var login = ensureLoginReward(state);
+    var key = todayKey();
+    if (login.lastClaim === key) return { ok: false, message: 'Bugünkü giriş ödülünü zaten aldın.' };
+
+    if (login.lastClaim === yesterdayKey()) login.streak += 1;
+    else login.streak = 1;
+
+    var day = ((login.streak - 1) % loginRewards.length) + 1;
+    var reward = loginRewards[day - 1];
+    login.lastClaim = key;
+    login.totalClaims += 1;
+
+    addMoney(state, reward.money || 0);
+    if (reward.item && L.Inventory) L.Inventory.add(state, reward.item, reward.qty || 1);
+    if (reward.egg && L.Eggs) L.Eggs.grant(game, null, 'günlük giriş ' + day);
+    if (reward.lure) {
+      if (L.Progression && L.Progression.ensureState) L.Progression.ensureState(state);
+      if (state.legendaryHunts) state.legendaryHunts.lures = (state.legendaryHunts.lures || 0) + reward.lure;
+    }
+
+    if (game.autosaveSoon) game.autosaveSoon();
+    return { ok: true, day: day, reward: reward, message: day + '. gün giriş ödülü: ' + reward.label };
+  }
+
   L.Daily = {
     tasks: dailyTasks,
+    loginRewards: loginRewards,
     ensureState: ensureTaskBag,
+    ensureLoginReward: ensureLoginReward,
+    loginInfo: loginInfo,
+    claimLogin: claimLogin,
     progress: function (state, id, amount) {
       var daily = ensureTaskBag(state);
       var task = dailyTasks.find(function (entry) { return entry.id === id; });
@@ -58,15 +135,14 @@
       if (daily.claimed || !this.isComplete(state)) return false;
       daily.claimed = true;
       daily.streak = (daily.streak || 0) + 1;
-      addMoney(state, 250 + daily.streak * 25);
+      addMoney(state, 300 + daily.streak * 25);
       if (L.Inventory) {
         L.Inventory.add(state, 'lumaKuresi', 3);
         L.Inventory.add(state, 'kucukIksir', 2);
       }
-      if (L.Eggs) L.Eggs.grant(game, null, 'günlük seri ' + daily.streak);
-      if (game && game.dialogue) {
-        game.dialogue.show('Günlük ödül alındı: para, eşya ve yeni bir Luma yumurtası!');
-      }
+      if (L.Eggs) L.Eggs.grant(game, null, 'günlük görev serisi ' + daily.streak);
+      if (game && game.ui && game.ui.notify) game.ui.notify('3 günlük görev tamamlandı: para, eşya ve Luma yumurtası kazandın!');
+      if (game && game.autosaveSoon) game.autosaveSoon();
       return true;
     }
   };
@@ -87,7 +163,7 @@
   function candidatesFor(element) {
     if (!L.Creatures || !L.Creatures.list) return [];
     var list = L.Creatures.list.filter(function (base) {
-      return base && base.id !== 'lumeru' && base.id !== 'crownlex';
+      return base && base.id !== 'lumeru' && base.id !== 'crownlex' && !base.crateExclusive;
     });
     var filtered = element ? list.filter(function (base) { return base.element === element; }) : list;
     return filtered.length ? filtered : list;
@@ -107,7 +183,7 @@
     creature.nickname = base.name;
     L.Creatures.addToCollection(game.state, creature);
     if (L.WorldMap && L.WorldMap.recordCaught) L.WorldMap.recordCaught(game.state, creature.id);
-    if (game.dialogue) game.dialogue.show('Yumurta çatladı! ' + creature.nickname + ' takımına katıldı.');
+    if (game && game.ui && game.ui.notify) game.ui.notify('Yumurta çatladı! ' + creature.nickname + ' koleksiyonuna katıldı.');
     if (game.autosaveSoon) game.autosaveSoon();
     return true;
   }
