@@ -1004,3 +1004,17 @@ body.battle-active .battle-modern .battle-menu button {
     display: none;
   }
 }
+/* Three.js battle renderer layer */
+.battle-modern .three-battle-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.battle-modern.three-battle-ready #battleCanvas {
+  opacity: 0;
+}

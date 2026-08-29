@@ -64,11 +64,15 @@
 
   L.Multiplayer.prototype.bindUnload = function () {
     var self = this;
-    window.addEventListener("beforeunload", function () {
+    function leaveSilently() {
       if (!self.roomCode) return;
       try {
         fetch(self.url("/rooms/" + self.roomCode + "/players/" + self.playerId), { method: "DELETE", keepalive: true });
       } catch (err) {}
+    }
+    window.addEventListener("pagehide", leaveSilently);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") leaveSilently();
     });
   };
 
