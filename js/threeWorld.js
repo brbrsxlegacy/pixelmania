@@ -4,6 +4,8 @@
 
   var TILE = 16;
   var THREE_URL = "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js";
+  var TERRAIN_ATLAS_URL = "assets/three/paper-terrain-atlas.png?v=paper3d-20260830";
+  var SKY_TEXTURE_URL = "assets/three/paper-sky.png?v=paper3d-20260830";
 
   var tileStyles = {
     grass: { color: 0x63c25a, height: 0.12 },
@@ -73,6 +75,15 @@
     station: { w: 5, d: 3.3, h: 1.2, wall: 0x3f6691, roof: 0x22374f, trim: 0xf4d77a, door: 0x1f2b3b },
     arena: { w: 5.2, d: 3.8, h: 1.45, wall: 0x9b5544, roof: 0x2d3142, trim: 0xf0c45f, door: 0x241b1d },
     apartment: { w: 3.7, d: 3.2, h: 2.1, wall: 0x8b939d, roof: 0x263141, trim: 0xe2e9ef, door: 0x222b39 }
+  };
+
+  var terrainTextureSlots = {
+    grass: [0, 0], meadow: [0, 0], gardenTile: [0, 0],
+    forest: [1, 0], sandGrass: [2, 0], desert: [2, 0], road: [3, 0],
+    plaza: [0, 1], marketTile: [0, 1], leafRoad: [1, 1], tallGrass: [2, 1], water: [3, 1],
+    cave: [0, 2], caveFloor: [0, 2], cityStone: [1, 2], labFloor: [1, 2], clinicFloor: [1, 2], asphalt: [2, 2],
+    woodFloor: [3, 2], shopFloor: [3, 2], bridge: [3, 2], roomWall: [2, 2], rug: [3, 2],
+    snow: [0, 3], lava: [1, 3], swamp: [2, 3], ruinFloor: [3, 3]
   };
 
   function normalize(value) {
@@ -175,6 +186,13 @@
     this.actorRoot = null;
     this.actorCache = {};
     this.materials = {};
+    this.tileMaterials = {};
+    this.terrainTextures = {};
+    this.spriteTextures = {};
+    this.terrainAtlas = null;
+    this.skyTexture = null;
+    this.skyDome = null;
+    this.textureVersion = 0;
     this.mapKey = "";
     this.width = 0;
     this.height = 0;
@@ -220,6 +238,8 @@
       this.sun.shadow.camera.top = 22;
       this.sun.shadow.camera.bottom = -22;
       this.scene.add(this.sun);
+      this.loadPaperTextures();
+      this.loadPaperSky();
 
       this.resize();
       window.addEventListener("resize", this.resize.bind(this), { passive: true });
@@ -266,6 +286,99 @@
     return this.materials[key];
   };
 
+  World3DView.prototype.loadPaperTextures = function () {
+    if (!window.Image) return;
+    var image = new Image();
+    var self = this;
+    image.onload = function () {
+      self.terrainAtlas = image;
+      self.terrainTextures = {};
+      self.tileMaterials = {};
+      self.textureVersion += 1;
+      self.mapKey = "";
+    };
+    image.onerror = function () {
+      console.warn("Paper terrain texture could not load.");
+    };
+    image.src = TERRAIN_ATLAS_URL;
+  };
+
+  World3DView.prototype.loadPaperSky = function () {
+    var self = this;
+    var loader = new this.THREE.TextureLoader();
+    loader.load(SKY_TEXTURE_URL, function (texture) {
+      self.configurePixelTexture(texture);
+      if (self.THREE.SRGBColorSpace) texture.colorSpace = self.THREE.SRGBColorSpace;
+      self.skyTexture = texture;
+      self.buildSkyDome();
+    }, undefined, function () {
+      console.warn("Paper sky texture could not load.");
+    });
+  };
+
+  World3DView.prototype.configurePixelTexture = function (texture) {
+    texture.magFilter = this.THREE.NearestFilter;
+    texture.minFilter = this.THREE.NearestFilter;
+    texture.wrapS = this.THREE.RepeatWrapping;
+    texture.wrapT = this.THREE.RepeatWrapping;
+    texture.generateMipmaps = false;
+    texture.needsUpdate = true;
+    return texture;
+  };
+
+  World3DView.prototype.buildSkyDome = function () {
+    if (!this.scene || !this.skyTexture) return;
+    if (this.skyDome) this.scene.remove(this.skyDome);
+    var geometry = new this.THREE.SphereGeometry(70, 32, 16);
+    var material = new this.THREE.MeshBasicMaterial({ map: this.skyTexture, side: this.THREE.BackSide, fog: false });
+    this.skyDome = new this.THREE.Mesh(geometry, material);
+    this.skyDome.rotation.y = Math.PI;
+    this.scene.add(this.skyDome);
+  };
+
+  World3DView.prototype.makeAtlasTexture = function (code) {
+    if (!this.terrainAtlas) return null;
+    var key = code || "grass";
+    if (this.terrainTextures[key]) return this.terrainTextures[key];
+    var slot = terrainTextureSlots[key] || terrainTextureSlots.grass;
+    var image = this.terrainAtlas;
+    var cellW = image.width / 4;
+    var cellH = image.height / 4;
+    var canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 128;
+    var ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(image, slot[0] * cellW, slot[1] * cellH, cellW, cellH, 0, 0, canvas.width, canvas.height);
+    var texture = new this.THREE.CanvasTexture(canvas);
+    this.configurePixelTexture(texture);
+    this.terrainTextures[key] = texture;
+    return texture;
+  };
+
+  World3DView.prototype.tileMat = function (code, style, options) {
+    var texture = this.makeAtlasTexture(code);
+    var key = "tile|" + code + "|" + this.textureVersion + "|" + (options && options.emissive || 0) + "|" + (options && options.transparent ? 1 : 0);
+    if (!this.tileMaterials[key]) {
+      var params = {
+        color: texture ? 0xffffff : style.color,
+        roughness: options && options.roughness != null ? options.roughness : 0.82,
+        metalness: 0.02,
+        flatShading: true
+      };
+      if (texture) params.map = texture;
+      if (options && options.emissive) {
+        params.emissive = options.emissive;
+        params.emissiveIntensity = options.emissiveIntensity || 0.35;
+      }
+      if (options && options.transparent) {
+        params.transparent = true;
+        params.opacity = options.opacity == null ? 0.9 : options.opacity;
+      }
+      this.tileMaterials[key] = new this.THREE.MeshStandardMaterial(params);
+    }
+    return this.tileMaterials[key];
+  };
   World3DView.prototype.prepare = function (mesh) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
@@ -321,7 +434,7 @@
     this.buildGround(map);
     this.buildDecorations(map);
     this.buildBorder(map);
-    this.mapKey = map.id + "|" + map.w + "|" + map.h + "|" + map.ground.length + "|" + map.decoration.length;
+    this.mapKey = map.id + "|" + map.w + "|" + map.h + "|" + map.ground.length + "|" + map.decoration.length + "|" + this.textureVersion;
   };
 
   World3DView.prototype.buildGround = function (map) {
@@ -339,7 +452,8 @@
       var style = tileStyle(code);
       var geometry = new THREE.BoxGeometry(1.01, style.height, 1.01);
       var materialOptions = style.shine ? { emissive: style.shine, emissiveIntensity: code === "lava" ? 0.55 : 0.14, roughness: 0.38, transparent: code === "water", opacity: 0.86 } : {};
-      var mesh = new THREE.InstancedMesh(geometry, this.mat(style.color, materialOptions), groups[code].length);
+      var mesh = new THREE.InstancedMesh(geometry, this.tileMat(code, style, materialOptions), groups[code].length);
+      mesh.userData.tileCode = code;
       mesh.receiveShadow = true;
       for (var i = 0; i < groups[code].length; i += 1) {
         var tile = groups[code][i];
@@ -654,6 +768,91 @@
     return g;
   };
 
+  World3DView.prototype.artStatusKey = function () {
+    if (!L.ArtPack || !L.ArtPack.status) return "fallback";
+    var status = L.ArtPack.status();
+    return [status.characters ? 1 : 0, status.lumas ? 1 : 0, status.buildings ? 1 : 0].join("");
+  };
+
+  World3DView.prototype.makePaperSprite = function (width, height) {
+    var material = new this.THREE.SpriteMaterial({ color: 0xffffff, transparent: true, alphaTest: 0.08, depthWrite: false });
+    var sprite = new this.THREE.Sprite(material);
+    sprite.scale.set(width, height, 1);
+    sprite.userData.paperSprite = true;
+    sprite.userData.paperWidth = width;
+    sprite.userData.paperHeight = height;
+    return sprite;
+  };
+
+  World3DView.prototype.spriteTexture = function (key, width, height, draw) {
+    var cacheKey = key + "|" + this.artStatusKey();
+    if (this.spriteTextures[cacheKey]) return this.spriteTextures[cacheKey];
+    var canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    var ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, width, height);
+    draw(ctx);
+    var texture = new this.THREE.CanvasTexture(canvas);
+    texture.magFilter = this.THREE.NearestFilter;
+    texture.minFilter = this.THREE.NearestFilter;
+    texture.generateMipmaps = false;
+    texture.needsUpdate = true;
+    this.spriteTextures[cacheKey] = texture;
+    return texture;
+  };
+
+  World3DView.prototype.setSpriteTexture = function (sprite, texture) {
+    if (!sprite || !sprite.material || !texture) return;
+    if (sprite.material.map === texture) return;
+    sprite.material.map = texture;
+    sprite.material.needsUpdate = true;
+  };
+
+  World3DView.prototype.playerSpriteTexture = function (game) {
+    var avatar = game.state && game.state.avatar || {};
+    var outfit = avatar.outfit || "guardian";
+    var dir = game.player && game.player.dir || "down";
+    var moving = !!(game.player && game.player.moving);
+    var running = !!(game.player && game.player.running);
+    var frame = moving ? Math.floor((game.time || 0) * (running ? 11 : 8)) % 4 : 0;
+    var key = ["player", outfit, dir, moving ? 1 : 0, running ? 1 : 0, frame].join(":");
+    return this.spriteTexture(key, 64, 72, function (ctx) {
+      if (L.Asset && L.Asset.drawPlayer) L.Asset.drawPlayer(ctx, 25, 38, dir, moving, running, game.time || 0, avatar);
+    });
+  };
+
+  World3DView.prototype.npcSpriteTexture = function (npc, time, index) {
+    var key = ["npc", npc && (npc.id || npc.name || npc.sprite || npc.type) || index, npc && (npc.sprite || npc.type) || "person", Math.floor((time || 0) * 3) % 3].join(":");
+    return this.spriteTexture(key, 64, 72, function (ctx) {
+      if (L.Asset && L.Asset.drawNpc) L.Asset.drawNpc(ctx, npc, 25, 38, time || 0);
+    });
+  };
+
+  World3DView.prototype.remoteSpriteTexture = function (remote, time) {
+    var key = ["remote", remote && (remote.id || remote.name) || "player", remote && remote.dir || "down", Math.floor((time || 0) * 3) % 3].join(":");
+    return this.spriteTexture(key, 96, 80, function (ctx) {
+      if (L.Asset && L.Asset.drawRemotePlayer) L.Asset.drawRemotePlayer(ctx, remote, 40, 44, time || 0);
+    });
+  };
+
+  World3DView.prototype.creatureSpriteTexture = function (creature, time, index) {
+    var id = creature && (creature.id || creature.creatureId) || "unknown";
+    var shiny = creature && creature.shiny ? 1 : 0;
+    var key = ["luma", id, shiny, Math.floor((time || 0) * 3 + (index || 0)) % 4].join(":");
+    return this.spriteTexture(key, 72, 72, function (ctx) {
+      if (L.Asset && L.Asset.drawCreature) L.Asset.drawCreature(ctx, creature, 14, 13, 1.28, false, time || 0);
+    });
+  };
+
+  World3DView.prototype.placeTileSprite = function (actor, map, x, y, bob) {
+    actor.position.set(worldX(map, x) + 0.5, (actor.userData.paperHeight || 1.1) * 0.52 + (bob || 0), worldZ(map, y) + 0.5);
+  };
+
+  World3DView.prototype.placePointSprite = function (actor, map, tileX, tileY, bob) {
+    actor.position.set(worldX(map, tileX), (actor.userData.paperHeight || 1.1) * 0.52 + (bob || 0), worldZ(map, tileY));
+  };
   World3DView.prototype.ensureActor = function (key, factory) {
     var actor = this.actorCache[key];
     if (!actor) {
@@ -681,6 +880,10 @@
   };
 
   World3DView.prototype.setActorTile = function (actor, map, x, y, dir, bob) {
+    if (actor.userData && actor.userData.paperSprite) {
+      this.placeTileSprite(actor, map, x, y, bob);
+      return;
+    }
     actor.position.set(worldX(map, x) + 0.5, bob || 0.18, worldZ(map, y) + 0.5);
     actor.rotation.y = directionAngle(dir);
   };
@@ -691,34 +894,35 @@
     this.markActorsDead();
 
     var player = this.ensureActor("player", function () {
-      return this.makeHumanoid({ body: 0x315b8f, hair: 0x5a3526, trim: 0xf2c94c });
+      return this.makePaperSprite(0.95, 1.35);
     });
+    this.setSpriteTexture(player, this.playerSpriteTexture(game));
     var playerTileX = (game.player.x + game.player.w / 2) / TILE;
     var playerTileY = (game.player.y + game.player.h) / TILE;
-    player.position.set(worldX(map, playerTileX), 0.2 + Math.sin(game.time * 10) * 0.015, worldZ(map, playerTileY));
-    player.rotation.y = directionAngle(game.player.dir);
+    this.placePointSprite(player, map, playerTileX, playerTileY, Math.sin(game.time * 10) * 0.015);
 
     (game.npcs.current || []).forEach(function (npc, index) {
+      var isSign = npc.type === "sign" || npc.sprite === "sign";
       var actor = this.ensureActor("npc:" + (npc.id || index), function () {
-        var model = npc.sprite === "sign" ? this.makeSign({ w: 2, h: 2 }, 1, 1) : this.makeHumanoid(this.npcPalette(npc));
-        model.scale.set(0.95, 0.95, 0.95);
-        return model;
+        if (isSign) return this.makeSign({ w: 2, h: 2 }, 1, 1);
+        return this.makePaperSprite(0.95, 1.35);
       });
-      this.setActorTile(actor, map, npc.x, npc.y, npc.dir, 0.18 + Math.sin(game.time * 3 + index) * 0.008);
+      if (isSign) {
+        this.setActorTile(actor, map, npc.x, npc.y, npc.dir, 0.18);
+      } else {
+        this.setSpriteTexture(actor, this.npcSpriteTexture(npc, game.time, index));
+        this.placeTileSprite(actor, map, npc.x, npc.y, Math.sin(game.time * 3 + index) * 0.008);
+      }
     }, this);
 
     if (game.roamers && game.roamers.current) {
       game.roamers.current.forEach(function (roamer, index) {
+        var base = baseForCreature(roamer.creatureId) || { id: roamer.creatureId };
         var actor = this.ensureActor("roamer:" + index + ":" + roamer.creatureId, function () {
-          var base = baseForCreature(roamer.creatureId) || { id: roamer.creatureId };
-          var model = this.makeLuma(base);
-          model.scale.set(0.82, 0.82, 0.82);
-          return model;
+          return this.makePaperSprite(0.9, 0.9);
         });
-        var tx = roamer.x / TILE;
-        var ty = roamer.y / TILE;
-        actor.position.set(worldX(map, tx), 0.22 + Math.sin(game.time * 5 + index) * 0.035, worldZ(map, ty));
-        actor.rotation.y = game.time * 0.8 + index;
+        this.setSpriteTexture(actor, this.creatureSpriteTexture(base, game.time, index));
+        this.placePointSprite(actor, map, roamer.x / TILE, roamer.y / TILE, Math.sin(game.time * 5 + index) * 0.035);
       }, this);
     }
 
@@ -726,51 +930,46 @@
       var followerCreature = game.followerCreature();
       if (followerCreature) {
         var follower = this.ensureActor("follower:" + followerCreature.id, function () {
-          var model = this.makeLuma(followerCreature);
-          model.scale.set(0.7, 0.7, 0.7);
-          return model;
+          return this.makePaperSprite(0.74, 0.74);
         });
-        follower.position.set(worldX(map, game.follower.x / TILE), 0.2 + Math.sin(game.time * 7) * 0.025, worldZ(map, game.follower.y / TILE));
-        follower.rotation.y = directionAngle(game.follower.dir);
+        this.setSpriteTexture(follower, this.creatureSpriteTexture(followerCreature, game.time, 11));
+        this.placePointSprite(follower, map, game.follower.x / TILE, game.follower.y / TILE, Math.sin(game.time * 7) * 0.025);
       }
     }
 
     if (game.multiplayer && game.multiplayer.sameMapPlayers) {
       game.multiplayer.sameMapPlayers(map.id).forEach(function (remote, index) {
         var actor = this.ensureActor("remote:" + remote.id, function () {
-          var model = this.makeHumanoid({ body: 0x7a5bb5, hair: 0x23202b, trim: 0x9eeaff });
-          model.scale.set(0.95, 0.95, 0.95);
-          return model;
+          return this.makePaperSprite(1.08, 1.38);
         });
-        actor.position.set(worldX(map, remote.x / TILE), 0.19 + Math.sin(game.time * 5 + index) * 0.015, worldZ(map, remote.y / TILE));
-        actor.rotation.y = directionAngle(remote.dir);
+        this.setSpriteTexture(actor, this.remoteSpriteTexture(remote, game.time));
+        this.placePointSprite(actor, map, remote.x / TILE, remote.y / TILE, Math.sin(game.time * 5 + index) * 0.015);
       }, this);
     }
 
     this.pruneActors();
   };
-
   World3DView.prototype.updateCamera = function (game) {
     var map = game.map;
     var tx = (game.player.x + game.player.w / 2) / TILE - map.w / 2;
     var tz = (game.player.y + game.player.h / 2) / TILE - map.h / 2;
     var desired = {
       x: tx,
-      y: 10.5,
-      z: tz + 11.5
+      y: 7.8,
+      z: tz + 9.6
     };
     var lerp = 0.12;
     this.camera.position.x += (desired.x - this.camera.position.x) * lerp;
     this.camera.position.y += (desired.y - this.camera.position.y) * lerp;
     this.camera.position.z += (desired.z - this.camera.position.z) * lerp;
-    this.camera.lookAt(tx, 0.45, tz - 1.8);
+    this.camera.lookAt(tx, 0.65, tz - 2.25);
   };
 
   World3DView.prototype.animateWater = function (game) {
     this.mapRoot.children.forEach(function (child) {
       if (!child.isInstancedMesh) return;
-      var color = child.material && child.material.color && child.material.color.getHex();
-      if (color !== tileStyles.water.color && color !== tileStyles.lava.color) return;
+      var code = child.userData && child.userData.tileCode;
+      if (code !== "water" && code !== "lava") return;
       child.position.y = Math.sin(game.time * 2.2) * 0.035;
     });
   };
@@ -781,11 +980,12 @@
     var hidden = game.mode === "battle";
     this.canvas.style.opacity = hidden ? "0" : "1";
     if (hidden) return;
-    var key = game.map.id + "|" + game.map.w + "|" + game.map.h + "|" + game.map.ground.length + "|" + game.map.decoration.length;
+    var key = game.map.id + "|" + game.map.w + "|" + game.map.h + "|" + game.map.ground.length + "|" + game.map.decoration.length + "|" + this.textureVersion;
     if (key !== this.mapKey) this.build(game.map);
     this.syncActors(game);
     this.updateCamera(game);
     this.animateWater(game);
+    if (this.skyDome) this.skyDome.position.copy(this.camera.position);
     this.renderer.render(this.scene, this.camera);
   };
 
