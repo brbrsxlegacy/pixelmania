@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#172033">
+  <meta name="google-adsense-account" content="ca-pub-5406294002533705">
   <title>Pixelmania — Işık Muhafızları: Luma Yolu</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/menus.css">
@@ -28,11 +29,8 @@
       <div id="notificationStack" class="notification-stack" aria-live="polite"></div>
     </div>
 
-    <!-- ADSENSE OYUN İÇİ: Yalnızca yeterince geniş masaüstü ekranlarda, oyun alanının dışında gösterilir. -->
-    <aside id="ad-game-side" class="ad-container ad-game-side" aria-label="Reklam alanı">
-      <!-- Gerçek AdSense reklam birimi kodunu bu yorumun yerine ekle. -->
-      <span class="ad-placeholder" aria-hidden="true">Reklam alanı</span>
-    </aside>
+    <!-- İsteğe bağlı manuel reklam alanı. Kimliği js/adsense-config.js içinde ayarlanır. -->
+    <aside id="ad-game-side" class="ad-container ad-game-side hidden" aria-label="Reklam" data-ad-placement="gameSide"></aside>
 
     <section id="mainMenu" class="main-menu overlay-screen">
       <div class="menu-sky">
@@ -55,11 +53,8 @@
         <button data-menu-action="about">Hakkında</button>
       </nav>
 
-      <!-- ADSENSE ANA MENÜ: Gerçek AdSense reklam birimi kodunu bu container içine ekle. -->
-      <div id="ad-home-bottom" class="ad-container ad-home-bottom" aria-label="Reklam alanı">
-        <!-- Gerçek AdSense reklam birimi kodunu bu yorumun yerine ekle. -->
-        <span class="ad-placeholder" aria-hidden="true">Reklam alanı</span>
-      </div>
+      <!-- İsteğe bağlı manuel reklam alanı. Kimliği js/adsense-config.js içinde ayarlanır. -->
+      <div id="ad-home-bottom" class="ad-container ad-home-bottom hidden" aria-label="Reklam" data-ad-placement="homeBottom"></div>
 
       <p class="menu-footer">Tamamen özgün yaratıklar, çevrimdışı oynanış, otomatik kayıt.</p>
     </section>
@@ -110,11 +105,8 @@
       </div>
       <div class="battle-message" id="battleMessage">Ne yapacaksın?</div>
 
-      <!-- ADSENSE SONUÇ: Sonuç/skor/ödül bilgileri gösterildikten sonra LUMA.Ads.showResultSlot() ile aç. -->
-      <div id="ad-result" class="ad-container ad-result-slot hidden" aria-label="Reklam alanı">
-        <!-- Gerçek AdSense reklam birimi kodunu bu yorumun yerine ekle. -->
-        <span class="ad-placeholder" aria-hidden="true">Reklam alanı</span>
-      </div>
+      <!-- İsteğe bağlı manuel reklam alanı. Kimliği js/adsense-config.js içinde ayarlanır. -->
+      <div id="ad-result" class="ad-container ad-result-slot hidden" aria-label="Reklam" data-ad-placement="result"></div>
 
       <div class="battle-menu" id="battleMenu"></div>
     </section>
@@ -142,6 +134,7 @@
     </section>
   </main>
 
+  <script src="js/adsense-config.js"></script>
   <script src="data/abilities.js"></script>
   <script src="data/creatures.js"></script>
   <script src="data/items.js"></script>

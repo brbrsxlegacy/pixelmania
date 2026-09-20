@@ -191,12 +191,12 @@
 .main-menu [data-menu-action="controls"] { grid-area: controls; }
 .main-menu [data-menu-action="about"] { grid-area: about; }
 
-/* Placeholder reklam menü görselini bozmaz. Gerçek reklam dolduğunda alan görünür. */
-.main-menu #ad-home-bottom:not([data-ad-loaded="true"]) {
+/* Yapılandırılmamış veya dolmayan reklam alanı menüyü bozmaz. */
+.main-menu #ad-home-bottom.hidden {
   display: none;
 }
 
-.main-menu #ad-home-bottom[data-ad-loaded="true"] {
+.main-menu #ad-home-bottom:not(.hidden) {
   position: absolute;
   left: 50%;
   bottom: max(8px, env(safe-area-inset-bottom));

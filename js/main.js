@@ -14,10 +14,35 @@
     return unit.getAttribute("data-ad-status") === "filled" || !!slot.querySelector("iframe");
   }
 
+  function getAdConfig() {
+    return window.PIXELMANIA_ADSENSE || { client: "", slots: {} };
+  }
+
+  function createUnit(slot) {
+    if (!slot || slot.querySelector("ins.adsbygoogle")) return slot && slot.querySelector("ins.adsbygoogle");
+
+    var config = getAdConfig();
+    var placement = slot.getAttribute("data-ad-placement");
+    var slotId = config.slots && config.slots[placement];
+    if (!config.client || !slotId) return null;
+
+    var unit = document.createElement("ins");
+    unit.className = "adsbygoogle";
+    unit.setAttribute("data-ad-client", config.client);
+    unit.setAttribute("data-ad-slot", String(slotId));
+    unit.setAttribute("data-ad-format", "auto");
+    unit.setAttribute("data-full-width-responsive", "true");
+    slot.appendChild(unit);
+    return unit;
+  }
+
   L.Ads.showSlot = function (id) {
     var slot = getSlot(id);
     if (!slot) return false;
+    var unit = createUnit(slot);
+    if (!unit) return false;
     slot.classList.remove("hidden");
+    L.Ads.prepareSlot(slot);
     return true;
   };
 
@@ -34,6 +59,27 @@
 
   L.Ads.hideResultSlot = function () {
     return L.Ads.hideSlot("ad-result");
+  };
+
+  L.Ads.watchSlot = function (id) {
+    var slot = getSlot(id);
+    var unit = createUnit(slot);
+    if (!slot || !unit) return false;
+
+    slot.classList.remove("hidden");
+
+    if (!window.IntersectionObserver) {
+      L.Ads.prepareSlot(slot);
+      return true;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting || slot.clientWidth < 1) return;
+      observer.disconnect();
+      L.Ads.prepareSlot(slot);
+    });
+    observer.observe(slot);
+    return true;
   };
 
   L.Ads.markLoaded = function (id) {
@@ -53,11 +99,23 @@
   L.Ads.prepareSlot = function (slot) {
     if (!slot) return;
 
-    var unit = slot.querySelector("ins.adsbygoogle");
+    var unit = createUnit(slot);
     if (!unit) return;
+
+    if (unit.getAttribute("data-ad-initialized") === "true") return;
+    unit.setAttribute("data-ad-initialized", "true");
 
     var placeholder = slot.querySelector(".ad-placeholder");
     if (placeholder) placeholder.classList.add("hidden");
+
+    slot.classList.remove("hidden");
+
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (error) {
+      L.Ads.markFailed(slot.id);
+      return;
+    }
 
     function syncStatus() {
       var status = unit.getAttribute("data-ad-status");
@@ -86,8 +144,10 @@
   };
 
   L.Ads.init = function () {
-    var slots = document.querySelectorAll(".ad-container");
-    for (var i = 0; i < slots.length; i += 1) L.Ads.prepareSlot(slots[i]);
+    // Ana menü reklamını yükle. Yan reklam görünür olduğunda, sonuç reklamıysa
+    // showResultSlot çağrıldığında yüklenir; gizli elemana reklam basılmaz.
+    L.Ads.showSlot("ad-home-bottom");
+    L.Ads.watchSlot("ad-game-side");
   };
 
   // Gerçek ödüllü reklam sağlayıcısı bağlandığında bu fonksiyon değiştirilir.
