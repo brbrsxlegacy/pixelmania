@@ -111,6 +111,7 @@
     this.player.y = this.state.player.y;
     this.player.dir = "down";
     this.resetFollower();
+    this.camera.follow(this.player, this.map, 1);
     this.ui.hideMain();
     L.Quests.start(this.state, "ilkYolArkadasin", true);
     this.state.story.introSeen = true;
@@ -827,7 +828,7 @@
     if (!this.state || !this.map || this.mode !== "world") return;
     var ctx = this.ctx;
     var x = this.canvas.width - 100;
-    var y = 32;
+    var y = this.canvas.height > this.canvas.width ? 72 : 32;
     var w = 90;
     var h = 58;
     var sx = w / this.map.w;

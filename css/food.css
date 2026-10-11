@@ -41,6 +41,7 @@
 .touch-actions button { font-size: 11px; }
 .touch-actions [data-control="food"] { background: #a9d59a; }
 @media (orientation: portrait) and (max-width: 900px) {
+  body.game-started.world-input-active .touch-controls { display: flex; }
   body.game-started .screen-frame {
     position: absolute; top: 0; left: 0; width: 100%;
     height: calc(100% - 154px - env(safe-area-inset-bottom)); max-height: none;
