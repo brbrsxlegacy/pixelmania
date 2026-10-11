@@ -263,6 +263,13 @@
     };
   };
 
+  function notifyRewarded(ui, text) {
+    var stack = document.getElementById("notificationStack");
+    if (stack) stack.querySelectorAll("[data-rewarded-notice]").forEach(function (notice) { notice.remove(); });
+    ui.notify(text);
+    if (stack && stack.lastElementChild) stack.lastElementChild.setAttribute("data-rewarded-notice", "true");
+  }
+
   function rewardedAdAttempt(ui, busyKey, onReward, onDone) {
     if (!ui || ui[busyKey]) return;
     ui[busyKey] = true;
@@ -277,11 +284,11 @@
     Promise.resolve(window.showRewardedAd(grantOnce, busyKey === "_legendaryRewardAdBusy" ? "legendary-progress" : "market-coin")).then(function (result) {
       if (result && result.rewarded) grantOnce();
       if (!granted) {
-        ui.notify(L.RewardedAds.message(result && result.reason));
+        notifyRewarded(ui, L.RewardedAds.message(result && result.reason));
         if (L.Audio) L.Audio.play("error");
       }
     }).catch(function () {
-      ui.notify("Ödüllü reklam açılamadı. İlerlemen değişmedi.");
+      notifyRewarded(ui, "Ödüllü reklam açılamadı. İlerlemen değişmedi.");
       if (L.Audio) L.Audio.play("error");
     }).then(function () {
       ui[busyKey] = false;

@@ -6,6 +6,7 @@
   window.adBreak = window.adConfig = function (options) { window.adsbygoogle.push(options); };
   var messages = {
     notReady: "Google reklam sistemi yükleniyor. Biraz sonra tekrar dene.",
+    initTimeout: "Google ödüllü reklam sistemi henüz hazır olmadı. Daha sonra tekrar dene.",
     timeout: "Google reklam isteği zaman aşımına uğradı. Bağlantını kontrol edip tekrar dene.",
     blocked: "Google reklam sistemi yüklenemedi. Bağlantını veya reklam engelleyicini kontrol et.",
     noAdPreloaded: "Google şu an gösterilecek ödüllü reklam sağlayamadı. Biraz sonra tekrar dene.",
@@ -33,7 +34,7 @@
   window.showRewardedAd = function (callback, placementName) {
     if (active) return Promise.resolve({ rewarded: false, reason: "busy" });
     if (failed) return Promise.resolve({ rewarded: false, reason: "blocked" });
-    if (!ready) return Promise.resolve({ rewarded: false, reason: initTimedOut ? "timeout" : "notReady" });
+    if (!ready) return Promise.resolve({ rewarded: false, reason: initTimedOut ? "initTimeout" : "notReady" });
     if (lastAttempt && Date.now() - lastAttempt < 10000) return Promise.resolve({ rewarded: false, reason: "cooldown" });
     lastAttempt = Date.now();
     return new Promise(function (resolve) {
