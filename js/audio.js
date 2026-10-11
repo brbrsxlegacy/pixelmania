@@ -139,6 +139,7 @@
     unlocked: false,
     settings: { mainVolume: .75, musicVolume: .35, sfxVolume: .8 },
     musicGain: null,
+    outputGain: null,
     music: { track: null, timer: null, nextAt: 0, step: 0, lastMapTrack: null },
 
     applySettings: function (settings) {
@@ -155,6 +156,8 @@
           return;
         }
         this.ctx = new AudioContext();
+        this.outputGain = this.ctx.createGain();
+        this.outputGain.connect(this.ctx.destination);
         this.ensureMusicGain();
       } catch (err) {
         this.enabled = false;
@@ -165,7 +168,7 @@
       if (!this.ctx || this.musicGain) return;
       this.musicGain = this.ctx.createGain();
       this.musicGain.gain.setValueAtTime(0, this.ctx.currentTime);
-      this.musicGain.connect(this.ctx.destination);
+      this.musicGain.connect(this.outputGain);
       this.updateMusicVolume(true);
     },
 
@@ -323,7 +326,7 @@
         amp.gain.linearRampToValueAtTime(volume, now + .01);
         amp.gain.exponentialRampToValueAtTime(.0001, now + duration);
         osc.connect(amp);
-        amp.connect(this.ctx.destination);
+        amp.connect(this.outputGain);
         osc.start(now);
         osc.stop(now + duration + .02);
       } catch (err) {

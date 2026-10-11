@@ -1465,3 +1465,7 @@
     font-size: 20px;
   }
 }
+
+.rewarded-ad-prompt { max-width: min(420px, 90vw); border: 3px solid #172033; background: #fff4d2; color: #172033; padding: 24px; font-family: monospace; }
+.rewarded-ad-prompt::backdrop { background: rgba(7, 12, 24, .82); }
+.rewarded-ad-prompt button { padding: 12px; margin-top: 12px; cursor: pointer; background: #f4bd49; color: #172033; border: 2px solid #172033; font: inherit; }

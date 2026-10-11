@@ -921,6 +921,7 @@
   };
 
   L.Game.prototype.update = function (dt) {
+    if (this.adPaused) return;
     this.updateBodyMode();
     this.resizeViewport();
     if (this.mode === "dialogue") this.dialogue.update(dt);

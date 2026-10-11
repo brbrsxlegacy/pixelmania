@@ -150,17 +150,6 @@
     L.Ads.watchSlot("ad-game-side");
   };
 
-  // Gerçek ödüllü reklam sağlayıcısı bağlandığında bu fonksiyon değiştirilir.
-  // callback yalnızca reklam gerçekten tamamlanıp ödül hak edildiğinde çağrılmalıdır.
-  window.showRewardedAd = window.showRewardedAd || function (callback) {
-    return Promise.resolve({
-      shown: false,
-      rewarded: false,
-      reason: "placeholder",
-      onReward: typeof callback === "function" ? callback : null
-    });
-  };
-
   function registerCrateCreatures() {
     if (!window.LUMA_DATA || !window.LUMA_DATA.creatures || !L.Creatures) return;
     var data = window.LUMA_DATA.creatures;
@@ -285,10 +274,10 @@
       onReward();
     }
 
-    Promise.resolve(window.showRewardedAd(grantOnce)).then(function (result) {
+    Promise.resolve(window.showRewardedAd(grantOnce, busyKey === "_legendaryRewardAdBusy" ? "legendary-progress" : "market-coin")).then(function (result) {
       if (result && result.rewarded) grantOnce();
       if (!granted) {
-        ui.notify("Ödüllü reklam şu anda hazır değil.");
+        ui.notify(L.RewardedAds.message(result && result.reason));
         if (L.Audio) L.Audio.play("error");
       }
     }).catch(function () {
