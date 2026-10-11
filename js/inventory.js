@@ -9,6 +9,12 @@
   L.Inventory = {
     createInitial: function () {
       return {
+        isikMeyvesi: 3,
+        ormanMantari: 2,
+        altinTahil: 2,
+        koyEkmegi: 0,
+        lumaCorbasi: 0,
+        piknikTabagi: 0,
         kucukIksir: 4,
         buyukIksir: 1,
         tamIksir: 0,
@@ -28,7 +34,7 @@
     },
 
     categories: function () {
-      return ["İyileştirme", "Yakalama", "Görev", "Özel"];
+      return ["Yiyecek", "Malzeme", "İyileştirme", "Yakalama", "Görev", "Özel"];
     },
 
     entries: function (inventory, category) {

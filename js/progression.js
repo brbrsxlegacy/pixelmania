@@ -168,21 +168,23 @@
     if (!game || !game.state || !ctx) return;
     var state = ensureState(game.state);
     var w = currentWeather(state);
+    var width = game.canvas.width;
+    var height = game.canvas.height;
     if (state.weather.phase === "night") {
       ctx.fillStyle = "rgba(8, 18, 42, .18)";
-      ctx.fillRect(0, 0, 480, 270);
+      ctx.fillRect(0, 0, width, height);
     }
     if (w.color) {
       ctx.fillStyle = w.color;
-      ctx.fillRect(0, 0, 480, 270);
+      ctx.fillRect(0, 0, width, height);
     }
     var t = game.time || 0;
     if (state.weather.type === "rain" || state.weather.type === "storm") {
       ctx.strokeStyle = state.weather.type === "storm" ? "rgba(190, 220, 255, .55)" : "rgba(160, 214, 235, .45)";
       ctx.lineWidth = 1;
       for (var r = 0; r < 36; r += 1) {
-        var x = (r * 37 + Math.floor(t * 95)) % 520 - 20;
-        var y = (r * 19 + Math.floor(t * 145)) % 300 - 20;
+        var x = (r * 37 + Math.floor(t * 95)) % (width + 40) - 20;
+        var y = (r * 19 + Math.floor(t * 145)) % (height + 40) - 20;
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x - 4, y + 9);
@@ -192,7 +194,7 @@
     if (state.weather.type === "snow") {
       ctx.fillStyle = "rgba(244, 252, 255, .72)";
       for (var s = 0; s < 28; s += 1) {
-        ctx.fillRect((s * 41 + Math.floor(t * 24)) % 500 - 10, (s * 23 + Math.floor(t * 38)) % 290 - 10, 2, 2);
+        ctx.fillRect((s * 41 + Math.floor(t * 24)) % (width + 20) - 10, (s * 23 + Math.floor(t * 38)) % (height + 20) - 10, 2, 2);
       }
     }
     if (state.weather.type === "fog") {

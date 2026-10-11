@@ -65,6 +65,8 @@
     this.map = null;
     this.input = new L.Input();
     this.camera = new L.Camera(480, 270);
+    this.worldZoom = 1;
+    this.viewportSize = "";
     this.player = new L.Player(25, 30);
     this.npcs = new L.NpcManager();
     this.roamers = new L.RoamerManager();
@@ -168,6 +170,7 @@
     if (L.Daily) L.Daily.ensureState(this.state);
     if (L.Eggs) L.Eggs.ensureState(this.state);
     if (L.Progression) L.Progression.ensureState(this.state);
+    if (L.Food) L.Food.ensure(this.state);
     L.Creatures.serializeFix(this.state);
     L.Audio.applySettings(this.state.settings);
     this.loadMap(this.state.mapId || "isikpinar");
@@ -186,6 +189,25 @@
 
   L.Game.prototype.updateBodyMode = function () {
     document.body.classList.toggle("world-input-active", !!this.state && this.mode === "world");
+    document.body.classList.toggle("game-started", !!this.state && this.mode !== "menu");
+  };
+
+  L.Game.prototype.resizeViewport = function () {
+    var rect = this.canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    var width = rect.height > rect.width ? 320 : 480;
+    var height = Math.max(180, Math.min(800, Math.round(width * rect.height / rect.width)));
+    var zoom = this.map ? Math.max(1, Math.min(2, width / (this.map.w * 16))) : 1;
+    var size = width + ":" + height + ":" + zoom;
+    if (size === this.viewportSize) return;
+    this.viewportSize = size;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.worldZoom = zoom;
+    this.camera.width = width / zoom;
+    this.camera.height = height / zoom;
+    this.ctx.imageSmoothingEnabled = false;
+    if (this.map) this.camera.follow(this.player, this.map, 1);
   };
 
   L.Game.prototype.syncState = function () {
@@ -538,6 +560,12 @@
     var tile = L.Collision.facingTile(this.player);
     var npc = this.npcs.atFacingTile(this.player);
     if (npc) return this.handleNpc(npc);
+    var foodNode = L.Food && L.Food.nearest(this);
+    if (foodNode) {
+      var gathered = L.Food.gather(this, foodNode);
+      this.ui.notify(gathered.message);
+      return;
+    }
     var item = this.mapSystem.itemAt(this.map, tile.x, tile.y, this.state);
     if (!item) {
       var foot = L.Collision.tileAtPixel(this.map, this.player.x + this.player.w / 2, this.player.y + this.player.h - 3);
@@ -798,7 +826,7 @@
   L.Game.prototype.drawMiniMap = function () {
     if (!this.state || !this.map || this.mode !== "world") return;
     var ctx = this.ctx;
-    var x = 380;
+    var x = this.canvas.width - 100;
     var y = 32;
     var w = 90;
     var h = 58;
@@ -836,6 +864,8 @@
     if (!this.evolutionFx) return;
     var fx = this.evolutionFx;
     var ctx = this.ctx;
+    ctx.save();
+    ctx.translate((this.canvas.width - 480) / 2, (this.canvas.height - 270) / 2);
     var progress = Math.max(0, Math.min(1, fx.t / fx.duration));
     ctx.save();
     ctx.fillStyle = "rgba(9, 13, 24, " + (.28 + progress * .38) + ")";
@@ -854,6 +884,7 @@
     ctx.textAlign = "center";
     ctx.fillText(progress < .82 ? "Evrim başlıyor..." : fx.toName + "!", 240, 195);
     ctx.restore();
+    ctx.restore();
   };
 
   L.Game.prototype.drawTargetArrow = function () {
@@ -861,11 +892,11 @@
     var target = L.WorldMap.targetForHud(this);
     if (!target || !target.exit) return;
     var ctx = this.ctx;
-    var ex = (target.exit.x + target.exit.w / 2) * 16 - this.camera.x;
-    var ey = (target.exit.y + target.exit.h / 2) * 16 - this.camera.y;
-    var cx = Math.max(24, Math.min(456, ex));
-    var cy = Math.max(36, Math.min(238, ey));
-    var angle = Math.atan2(ey - 135, ex - 240);
+    var ex = ((target.exit.x + target.exit.w / 2) * 16 - this.camera.x) * this.worldZoom;
+    var ey = ((target.exit.y + target.exit.h / 2) * 16 - this.camera.y) * this.worldZoom;
+    var cx = Math.max(24, Math.min(this.canvas.width - 24, ex));
+    var cy = Math.max(36, Math.min(this.canvas.height - 32, ey));
+    var angle = Math.atan2(ey - this.canvas.height / 2, ex - this.canvas.width / 2);
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(angle);
@@ -890,6 +921,7 @@
 
   L.Game.prototype.update = function (dt) {
     this.updateBodyMode();
+    this.resizeViewport();
     if (this.mode === "dialogue") this.dialogue.update(dt);
     if (this.mode === "battle") this.battle.update(dt);
     if (!this.state) return;
@@ -907,6 +939,7 @@
     if (this.input.consume("unstuck")) this.unstuckPlayer();
     if (this.mode === "world") {
       if (this.input.consume("menu")) this.ui.showPause();
+      if (this.mode === "world" && this.input.consume("food")) this.ui.showFood();
       if (this.input.consume("quick")) this.quickUse();
       if (this.input.consume("action")) this.handleInteraction();
       if (this.mode === "world") {
@@ -941,21 +974,27 @@
 
   L.Game.prototype.render = function () {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "#192a28";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     if (!this.map) {
       this.ctx.fillStyle = "#172033";
-      this.ctx.fillRect(0, 0, 480, 270);
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       return;
     }
+    this.ctx.save();
+    this.ctx.scale(this.worldZoom, this.worldZoom);
     this.mapSystem.draw(this.ctx, this);
+    if (L.Food) L.Food.drawHint(this.ctx, this);
+    this.ctx.restore();
     if (L.Progression) L.Progression.drawWeather(this, this.ctx);
     this.drawTargetArrow();
     this.drawMiniMap();
-    if (this.state && this.state.settings.showControls && this.mode === "world") {
+    if (this.state && this.state.settings.showControls && this.mode === "world" && !window.matchMedia("(pointer: coarse)").matches) {
       this.ctx.fillStyle = "rgba(23, 32, 51, .72)";
-      this.ctx.fillRect(8, 238, 260, 23);
+      this.ctx.fillRect(8, this.canvas.height - 32, 310, 23);
       this.ctx.fillStyle = "#fff4d2";
       this.ctx.font = "10px monospace";
-      this.ctx.fillText("E: konuş/al • Esc: menü • U: kurtul • F5: kayıt", 14, 253);
+      this.ctx.fillText("E: etkileş • F: mutfak • Esc: menü • F5: kayıt", 14, this.canvas.height - 17);
     }
     this.drawEvolutionFx();
   };

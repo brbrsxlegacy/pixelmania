@@ -65,7 +65,8 @@
     this.starterIds = L.Creatures.starters();
     this.starterIndex = 0;
     this.returnMode = "world";
-    this.inventoryCategory = "İyileştirme";
+    this.inventoryCategory = "Yiyecek";
+    this.foodTarget = 0;
     this.bind();
     L.UI = this;
   };
@@ -172,7 +173,7 @@
     this.panelContent.innerHTML = html;
     var panelContext = context || "";
     var lumadexContexts = {
-      pause: true, team: true, inventory: true, quests: true, story: true, daily: true, crafting: true,
+      pause: true, team: true, inventory: true, food: true, quests: true, story: true, daily: true, crafting: true,
       worldAbilities: true, minigames: true, weather: true, bosses: true, tournament: true, legendary: true,
       map: true, aiPieces: true, dex: true, badges: true, jobs: true, housing: true, eggs: true, market: true,
       multiplayer: true, settings: true, controls: true, about: true, slots: true, evolutionTree: true, moves: true
@@ -221,6 +222,7 @@
         apps: [
           ["team", "Yarat&#305;klar", "Ekip"],
           ["bag", "&#199;anta", "Envanter"],
+          ["food", "Mutfak", "Piknik"],
           ["dex", "Lumadex", "Katalog"],
           ["eggs", "Yumurtalar", "Kulu&#231;ka"],
           ["badges", "Rozetler", "Ba&#351;ar&#305;"],
@@ -371,11 +373,58 @@
     entries.forEach(function (item) {
       html += "<div class='item-row'><strong>" + item.name + " x" + item.qty + "</strong><br><small>" + item.description + "</small><br>";
       if (item.category === "İyileştirme") html += "<button data-inventory-use='" + item.id + "'>Aktif yaratığa kullan</button>";
+      if (item.category === "Yiyecek" || item.category === "Malzeme") html += "<button data-pause='food'>Mutfakta kullan</button>";
       if (item.category === "Yakalama") html += "<small>Savaşta kullanılabilir.</small>";
       html += "</div>";
     });
     html += "</div>";
     this.showPanel("Çanta", html, "inventory", "world");
+  };
+
+  L.UiController.prototype.showFood = function () {
+    var state = this.game.state;
+    if (!state) return;
+    var food = L.Food.ensure(state);
+    var self = this;
+    this.foodTarget = Math.max(0, Math.min(state.team.length - 1, this.foodTarget));
+    var creature = state.team[this.foodTarget];
+    var html = "<div class='food-banner'><small>PIXELMANIA · PİKNİK GÜNCELLEMESİ</small><h3>Bir mola, bir tabak, bir dost.</h3><p>Parlayan bitkilere yaklaş, E / Etkileş ile topla. Kamp mutfağın her yerde yanında.</p></div>";
+    html += "<div class='food-quest'><strong>İlk Piknik</strong><span>Toplama " + Math.min(3, food.gathered) + "/3 · Yemek " + Math.min(2, food.cooked) + "/2 · Besleme " + Math.min(1, food.fed) + "/1</span>";
+    var ready = food.gathered >= 3 && food.cooked >= 2 && food.fed >= 1;
+    html += "<button data-food-claim='1'" + (food.rewardClaimed || !ready ? " disabled" : "") + ">" + (food.rewardClaimed ? "Ödül alındı ✓" : "Ödül: 150 Luma + Piknik Tabağı") + "</button></div>";
+    html += "<h3 class='food-heading'>01 / Malzeme sepeti</h3><div class='food-ingredients'>";
+    ["isikMeyvesi", "ormanMantari", "altinTahil"].forEach(function (id) {
+      html += "<div>" + L.Food.icon(id) + "<span>" + L.Inventory.get(id).name + "</span><strong>×" + (state.inventory[id] || 0) + "</strong></div>";
+    });
+    html += "</div><p class='food-note'>Bitkiler 120 saniye keşiften sonra yeniden büyür. Malzemeler Kadir'in dükkânında da satılır.</p>";
+    html += "<h3 class='food-heading'>02 / Ateşin başında</h3><div class='food-recipes'>";
+    L.Food.recipes.forEach(function (recipe) {
+      var item = L.Inventory.get(recipe.itemId);
+      html += "<article class='food-card'>" + L.Food.icon(item.id) + "<strong>" + item.name + "</strong><small>" + item.description + "</small><div class='food-cost'>";
+      Object.keys(recipe.cost).forEach(function (id) {
+        html += "<span class='" + ((state.inventory[id] || 0) >= recipe.cost[id] ? "enough" : "missing") + "'>" + L.Inventory.get(id).name + " " + (state.inventory[id] || 0) + "/" + recipe.cost[id] + "</span>";
+      });
+      var can = L.Food.canCook(state, recipe);
+      html += "</div><button data-food-cook='" + recipe.id + "'" + (!can ? " disabled" : "") + ">" + (can ? "Hazırla" : "Malzeme eksik") + "</button></article>";
+    });
+    html += "</div><h3 class='food-heading'>03 / Yoldaşınla paylaş</h3><div class='food-targets'>";
+    state.team.forEach(function (c, i) {
+      html += "<button data-food-target='" + i + "' class='" + (self.foodTarget === i ? "primary" : "") + "'>" + escapeHtml(c.displayName || c.name) + "</button>";
+    });
+    html += "</div>";
+    if (creature) {
+      var data = L.Food.mood(state, creature);
+      var hp = Math.round(creature.hp / creature.maxHp * 100);
+      html += "<div class='food-companion'><canvas class='creature-card-art' width='96' height='66' data-team-art='" + this.foodTarget + "'></canvas><div><strong>" + escapeHtml(creature.displayName || creature.name) + "</strong><small>Can " + creature.hp + "/" + creature.maxHp + " · Dostluk " + L.Progression.friendship(state, creature) + "/100</small><div class='food-meter' aria-label='Can yüzde " + hp + "'><i style='width:" + hp + "%'></i></div><small>Tokluk " + Math.round(100 - data.hunger) + "/100 · Enerji " + Math.round(data.energy) + "/100</small><div class='food-meter satiety'><i style='width:" + (100 - data.hunger) + "%'></i></div></div></div>";
+      html += "<div class='food-recipes food-meals'>";
+      Object.keys(window.LUMA_DATA.items).filter(function (id) { return window.LUMA_DATA.items[id].food; }).forEach(function (id) {
+        var item = L.Inventory.get(id), qty = state.inventory[id] || 0;
+        html += "<article class='food-card'>" + L.Food.icon(id) + "<strong>" + item.name + " ×" + qty + "</strong><small>" + item.description + "</small><button data-food-feed='" + id + "'" + (!qty ? " disabled" : "") + ">Paylaş</button></article>";
+      });
+      html += "</div><p class='food-note'>Luma'n yemeğini bitirmek için 15 saniye keşif ister. Yemekler savaş dışında kullanılır.</p>";
+    } else html += "<p class='food-note'>Liora'nın laboratuvarında ilk Luma'nı seç. O zamana kadar malzeme toplayıp yemek hazırlayabilirsin.</p>";
+    this.showPanel("Piknik & Mutfak", html, "food", "world");
+    this.renderPanelCreatureArt();
   };
 
   L.UiController.prototype.showQuests = function () {
@@ -937,6 +986,22 @@
   };
 
   L.UiController.prototype.handlePanelClick = function (button) {
+    var foodTarget = button.getAttribute("data-food-target");
+    if (foodTarget != null) {
+      this.foodTarget = Number(foodTarget);
+      this.showFood();
+      return;
+    }
+    var cook = button.getAttribute("data-food-cook");
+    var feedFood = button.getAttribute("data-food-feed");
+    if (cook || feedFood || button.hasAttribute("data-food-claim")) {
+      var foodResult = cook ? L.Food.cook(this.game, cook) : (feedFood ? L.Food.feed(this.game, feedFood, this.foodTarget) : L.Food.claim(this.game));
+      var scroll = this.panelContent.scrollTop;
+      this.notify(foodResult.message);
+      this.showFood();
+      this.panelContent.scrollTop = scroll;
+      return;
+    }
     var tab = button.getAttribute("data-lumadex-tab");
     if (tab) {
       this.panelContent.querySelectorAll(".lumadex-tab").forEach(function (entry) {
@@ -952,6 +1017,7 @@
       if (pause === "close") this.closePanel();
       if (pause === "team") this.showTeam();
       if (pause === "bag") this.showInventory();
+      if (pause === "food") this.showFood();
       if (pause === "quests") this.showQuests();
       if (pause === "story") this.showStory();
       if (pause === "daily") this.showDaily();
@@ -1302,12 +1368,8 @@
     }
     var feed = button.getAttribute("data-feed-luma");
     if (feed != null) {
-      this.game.state.activeIndex = Number(feed);
-      var feedResult = L.Progression ? L.Progression.feedActive(this.game) : { ok: false, message: "Besleme sistemi hazir degil." };
-      this.notify(feedResult.message);
-      if (feedResult.ok && L.Audio) L.Audio.play("confirm");
-      if (!feedResult.ok && L.Audio) L.Audio.play("error");
-      this.showTeam();
+      this.foodTarget = Number(feed);
+      this.showFood();
       return;
     }
     var evolve = button.getAttribute("data-team-evolve");

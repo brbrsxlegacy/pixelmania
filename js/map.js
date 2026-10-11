@@ -28,6 +28,9 @@
     }
 
     var drawables = [];
+    if (L.Food) L.Food.nodes(map).forEach(function (node) {
+      drawables.push({ type: "food", node: node, depth: node.y * TILE + 16 });
+    });
     for (var yy = startY; yy <= endY; yy += 1) {
       for (var xx = startX; xx <= endX; xx += 1) {
         var code = map.decoration[yy * map.w + xx];
@@ -71,6 +74,7 @@
     drawables.sort(function (a, b) { return a.depth - b.depth; });
 
     drawables.forEach(function (d) {
+      if (d.type === "food") L.Food.drawNode(ctx, d.node, game);
       if (d.type === "decor") L.Asset.drawObject(ctx, d.code, d.x * TILE - camera.x, d.y * TILE - camera.y, time);
       if (d.type === "item") L.Asset.drawObject(ctx, "chest", d.item.x * TILE - camera.x, d.item.y * TILE - camera.y, time);
       if (d.type === "npc") L.Asset.drawNpc(ctx, d.npc, d.npc.x * TILE + 1 - camera.x, d.npc.y * TILE - 2 - camera.y, time);

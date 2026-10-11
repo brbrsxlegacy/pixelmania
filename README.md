@@ -19,10 +19,21 @@ Sonra `http://localhost:8000` adresini açın.
 - E / Enter: Etkileşim ve onay
 - Escape: Menü
 - Q: Hızlı eşya
+- F: Piknik & Mutfak
 - F5: Hızlı kayıt
 - F9: Hızlı yükleme
 
 Mobilde yön pedi, etkileşim, koşu, hızlı eşya ve menü düğmeleri otomatik görünür.
+
+## Piknik güncellemesi — 11 Ekim 2026
+
+- Dünya ve savaşlar tekrar 2D Canvas ile çizilir. Eski 3D modülleri kaynakta saklanır ancak sayfada yüklenmez; WebGL/CDN bağımlılığı kaldırılmıştır.
+- Dikey telefonda dünya ekranın üstünü doldurur; kamera oranı ekranla uyarlanır ve dokunmatik kontroller için altta ayrı alan bulunur. Küçük iç mekânlar ortalanır.
+- Işık Meyvesi, Orman Mantarı ve Altın Tahıl dış haritalarda E / Etkileş ile toplanır. Bitkiler 120 saniye aktif keşif sonrası yenilenir; süre kayıtla korunur.
+- Mutfaktan 3 tarif hazırlanır: Köy Ekmeği, Luma Çorbası, Piknik Tabağı. Malzemeler ve ekmek dükkândan da alınır.
+- Ekipteki herhangi bir Luma yiyeceklerle iyileştirilir; mevcut açlık, enerji, dostluk sistemiyle bağlantılıdır. Çorba durum etkilerini temizler. Yiyecekler savaş dışında kullanılır.
+- Bir Luma'yı art arda beslemek için 15 saniye aktif keşif gerekir. İlk Piknik görevi 3 toplama, 2 yemek ve 1 besleme ister; bir kez 150 Luma ve bir tabak verir.
+- Mevcut `lumaQuest.slot.*` kayıtları ve ekipler korunur. Eski kayıtlar başlangıç malzemeleri alır; kaydedilmiş yiyecek sayıları tekrar yüklemede korunur.
 
 ## Google AdSense
 

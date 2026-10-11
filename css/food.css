@@ -1,0 +1,89 @@
+/* Picnic update: readable cards, original pixel food art and a portrait world. */
+.food-banner { padding: 18px; border: 2px solid #36684c; background: #e4edd4; color: #203b30; }
+.food-banner small { font-size: 10px; letter-spacing: .08em; }
+.food-banner h3 { margin: 8px 0; font-size: clamp(18px, 3vw, 26px); line-height: 1.2; }
+.food-banner p, .food-note { margin: 8px 0; font-size: 12px; line-height: 1.65; }
+.food-note { opacity: .8; }
+.food-heading { margin: 20px 0 10px; font-size: 14px; }
+.food-quest { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px; background: #f2df9e; border: 2px solid #b9a35f; margin-top: 10px; }
+.food-quest span { flex: 1; font-size: 11px; }
+.food-ingredients { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.food-ingredients > div { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 10px; border: 2px solid #bbc5a2; background: #f5f5df; }
+.food-ingredients span { flex: 1; font-size: 11px; }
+.food-ingredients strong { color: #36684c; }
+.food-icon { flex-shrink: 0; width: 44px; height: 44px; display: block; image-rendering: pixelated; }
+.food-recipes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.food-card { display: flex; flex-direction: column; align-items: start; gap: 8px; padding: 14px; background: #fff9e8; border: 2px solid #d8c896; box-shadow: 0 3px 0 #d5c49c; }
+.food-card strong { font-size: 14px; }
+.food-card small { font-size: 11px; line-height: 1.6; }
+.food-card button { margin-top: auto; width: 100%; min-height: 44px; padding: 10px; background: #91c392; }
+.food-cost { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px; }
+.food-cost span { font-size: 10px; padding: 4px 6px; border-radius: 3px; }
+.food-cost .enough { color: #234c32; background: #d4e8c7; }
+.food-cost .missing { color: #873c2d; background: #f2ddd0; }
+.food-targets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.food-targets button { padding: 10px; }
+.food-companion { display: flex; align-items: center; gap: 14px; padding: 12px; border: 2px solid #94af83; background: #eaf0d9; margin-bottom: 12px; }
+.food-companion > div { flex: 1; min-width: 0; }
+.food-companion small { display: block; margin: 5px 0; font-size: 11px; }
+.food-companion .creature-card-art { flex: 0 0 96px; width: 96px; height: 66px; margin: 0; }
+.food-meter { height: 8px; background: #cad4b8; overflow: hidden; }
+.food-meter i { display: block; height: 100%; background: #54a369; }
+.food-meter.satiety i { background: #bd9046; }
+.food-meals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.panel-screen[data-context="food"] .panel-window { width: min(840px, calc(100vw - 20px)); height: min(720px, calc(100dvh - 20px)); }
+.panel-screen[data-context="food"] .panel-content { overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; padding: 18px; }
+.panel-screen[data-context="food"] button:disabled { opacity: .55; cursor: default; transform: none; }
+.panel-screen[data-context="food"] .panel-window::before, .panel-screen[data-context="food"] .panel-window::after { content: none; }
+.panel-screen[data-context="food"] .panel-window { padding: 0; border-radius: 12px; }
+.panel-screen[data-context="food"] .panel-window header { margin: 0; padding: 14px 18px; }
+.touch-actions { grid-template-columns: repeat(3, 62px); }
+.touch-actions button { font-size: 11px; }
+.touch-actions [data-control="food"] { background: #a9d59a; }
+@media (orientation: portrait) and (max-width: 900px) {
+  body.game-started .screen-frame {
+    position: absolute; top: 0; left: 0; width: 100%;
+    height: calc(100% - 154px - env(safe-area-inset-bottom)); max-height: none;
+    box-shadow: 0 3px 0 #294737;
+  }
+  .game-shell { height: 100dvh; }
+  .touch-controls { padding: 12px 12px max(12px, env(safe-area-inset-bottom)); height: calc(154px + env(safe-area-inset-bottom)); background: linear-gradient(180deg, #162c27, #101b22); }
+  .touch-stick { width: 116px; height: 116px; }
+  .touch-stick::before { top: 55px; }
+  .touch-stick::after { left: 55px; }
+  .touch-actions { gap: 6px; grid-template-columns: repeat(3, minmax(44px, 58px)); }
+  .touch-actions button { min-height: 48px; }
+  .world-hud { flex-wrap: wrap; top: max(8px, env(safe-area-inset-top)); font-size: 10px; }
+  #hudMap { max-width: 68%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #hudMoney { margin-left: auto; }
+  #hudQuest { flex: 1 0 100%; order: 3; }
+  .notification-stack { top: 80px; }
+  .dialogue-box { bottom: max(22px, env(safe-area-inset-bottom)); padding: 18px 14px 38px; font-size: 12px; }
+  .dialogue-next { min-width: 44px; min-height: 36px; }
+  .food-ingredients { gap: 5px; }
+  .food-ingredients > div { flex-direction: column; align-items: center; text-align: center; padding: 8px 4px; }
+  .food-ingredients span { flex: auto; }
+  .food-recipes { grid-template-columns: 1fr; }
+  .food-meals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .food-banner { padding: 12px; }
+  .food-card { padding: 10px; }
+  .food-companion { gap: 8px; }
+  .panel-screen[data-context="food"] .panel-content { padding: 10px; }
+  .panel-screen[data-context="food"] .panel-window { height: calc(100dvh - 16px); }
+}
+@media (max-width: 360px) and (orientation: portrait) {
+  .touch-actions { grid-template-columns: repeat(3, 48px); }
+  .touch-stick { width: 108px; height: 108px; }
+  .touch-stick::before { top: 51px; }
+  .touch-stick::after { left: 51px; }
+  .food-meals { grid-template-columns: 1fr; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .touch-stick { width: 100px; height: 100px; opacity: .82; }
+  .touch-stick::before { top: 47px; }
+  .touch-stick::after { left: 47px; }
+  .touch-controls { padding: 0 max(14px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
+  .touch-actions { gap: 5px; grid-template-columns: repeat(3, 52px); }
+  .touch-actions button { min-height: 38px; opacity: .9; }
+  .panel-screen[data-context="food"] .panel-window { height: calc(100dvh - 12px); }
+}

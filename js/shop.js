@@ -1,7 +1,7 @@
 (function () {
   var L = window.LUMA = window.LUMA || {};
 
-  var stock = ["kucukIksir", "buyukIksir", "panzehir", "lumaKuresi", "gucluLumaKuresi", "kacisTasi"];
+  var stock = ["isikMeyvesi", "ormanMantari", "altinTahil", "koyEkmegi", "kucukIksir", "buyukIksir", "panzehir", "lumaKuresi", "gucluLumaKuresi", "kacisTasi"];
 
   L.Shop = {
     open: function (game) {
@@ -58,6 +58,7 @@
         L.Inventory.add(state, buy, 1);
         L.UI.notify(item.name + " alındı.");
         if (L.Audio) L.Audio.play("pickup");
+        this.game.autosaveSoon();
         this.render();
         return true;
       }
@@ -68,6 +69,7 @@
           state.money += sItem.sell;
           L.UI.notify(sItem.name + " satıldı.");
           if (L.Audio) L.Audio.play("confirm");
+          this.game.autosaveSoon();
           this.render();
         }
         return true;
